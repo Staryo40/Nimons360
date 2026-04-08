@@ -2,6 +2,62 @@
 
 ## List of Content
 
+## UI Consistency
+```bash
+https://coolors.co/ffeaee-006d77-e29578-f4f6f8-1d3557-d62828-2a9d8f-e9c46a-457b9d
+```
+1. Core Brand Colors
+   These are your main UI drivers that will give the app its sophisticated, tech-focused tracking identity.
+
+   - Primary: Deep Teal
+      HEX: #006D77
+      RGB: (0, 109, 119)
+      Usage: Primary action buttons ("Sign In", "Create", "Save"), the Top Header background, the active Bottom Navbar icon, and your own location pin/orientation arrow on the Map.
+   - Secondary/Accent: Soft Coral
+      HEX: #E29578
+      RGB: (226, 149, 120)
+      Usage: Secondary actions like the "Join" buttons in the Discover Families list, the floating "+" button, and the background for the 6-character Family Code display box.
+
+2. Backgrounds & Neutrals
+   Instead of harsh pure black and white, these tinted neutrals keep the app looking modern and reduce eye strain, which is great for a map-heavy app.
+
+   - Background Base: Cool Off-White
+       HEX: #F4F6F8
+       RGB: (244, 246, 248)
+       Usage: The main background color for the Home, Families, and Profile pages.
+   - Surface/Card: Pure White
+      HEX: #FFFFFF
+      RGB: (255, 255, 255)
+      Usage: The background for the Family list cards, the bottom sheets (like User Info and Edit Name), and the pop-ups.
+   - Text Primary: Dark Navy
+      HEX: #1D3557
+      RGB: (29, 53, 87)
+      Usage: Main headings, Family Names, and User Full Names. This provides excellent contrast against the off-white background for your Accessibility Testing bonus.
+   - Text Secondary: Slate Gray
+      HEX: #6C757D
+      RGB: (108, 117, 125)
+      Usage: Secondary information like emails ({NIM}@std.stei.itb.ac.id), member counts, and timestamps.
+
+3. Semantic / Status Colors
+   These colors communicate system status directly to the user, which is critical for the map, battery tracking, and network sensing features.
+
+   - Success / Good: Mint Green
+       HEX: #2A9D8F
+       RGB: (42, 157, 143)
+       Usage: High battery percentage (sent via WebSocket), active Wi-Fi internet status icon, and success messages.
+   - Destructive / Danger: Crimson Red 
+       HEX: #D62828
+       RGB: (214, 40, 40)
+       Usage: Strictly for destructive actions. Use this for the "Sign Out" text on the Profile page, the "Leave Family" button, and the Disconnected Network Pop-up icon.
+   - Caution / Warning: Saffron Yellow
+      HEX: #E9C46A
+      RGB: (233, 196, 106)
+      Usage: Low battery warning on the User Info bottom sheet, or to highlight the "Not a member" status on the Family Detail page.
+   - Information: Muted Blue
+      HEX: #457B9D
+      RGB: (69, 123, 157)
+      Usage: General informational icons, the "Mobile" data network status, or neutral pop-up dialogues.
+
 ## Project Structure
 ```bash
 C:.
