@@ -2,6 +2,10 @@
 
 ## List of Content
 
+```bash
+adb shell pm clear com.labpro.nimons360
+```
+
 ## UI Consistency
 ```bash
 https://coolors.co/ffeaee-006d77-e29578-f4f6f8-1d3557-d62828-2a9d8f-e9c46a-457b9d

@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.androidx.junit.ktx)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.google.material)
 
     // Networking
     implementation(libs.retrofit)
