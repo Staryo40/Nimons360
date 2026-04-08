@@ -1,32 +1,96 @@
 package com.labpro.nimons360
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.getValue
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.labpro.nimons360.core.events.AuthEvent
+import com.labpro.nimons360.core.events.AuthEventBus
+import com.labpro.nimons360.ui.features.auth.LoginActivity
 import com.labpro.nimons360.ui.theme.Nimons360Theme
+import com.labpro.nimons360.viewmodel.MainViewModel
+import com.labpro.nimons360.viewmodel.MainViewModelFactory
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    private val viewModel: MainViewModel by viewModels {
+        MainViewModelFactory((application as MainApplication).userRepository)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        observeAuthEvents()
         enableEdgeToEdge()
         setContent {
+            val state by viewModel.uiState.collectAsStateWithLifecycle()
+
             Nimons360Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    when {
+                        state.isLoading -> {
+                            Text("Loading...", style = MaterialTheme.typography.bodyMedium)
+                        }
+
+                        state.user != null -> {
+                            val user = state.user!!
+                            Greeting(name = user.fullName)
+                        }
+
+                        state.error != null -> {
+                            Text(
+                                text = "Error: ${state.error}",
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    }
                 }
             }
         }
+    }
+
+    private fun observeAuthEvents() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                AuthEventBus.events.collect { event ->
+                    when (event) {
+                        is AuthEvent.SessionExpired,
+                        is AuthEvent.LoggedOut -> navigateToLogin()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun navigateToLogin() {
+        val intent = Intent(this, LoginActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        startActivity(intent)
+        finish()
     }
 }
 
