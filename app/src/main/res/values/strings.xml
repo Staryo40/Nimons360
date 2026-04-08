@@ -1,3 +1,89 @@
 <resources>
     <string name="app_name">Nimons360</string>
+    <string name="tagline">Stay connected with those who matter</string>
+
+    <!-- Auth -->
+    <string name="hint_email">Email address</string>
+    <string name="hint_password">Password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="loading">Loading…</string>
+
+    <!-- Error messages -->
+    <string name="error_empty_fields">Please enter your email and password.</string>
+    <string name="error_invalid_email">Please enter a valid email address.</string>
+    <string name="error_network">No internet connection. Please try again.</string>
+    <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="error_unauthorized">Your session has expired. Please sign in again.</string>
+
+    <!-- Navigation labels -->
+    <string name="nav_home">Home</string>
+    <string name="nav_map">Map</string>
+    <string name="nav_families">Families</string>
+
+    <!-- Home screen -->
+    <string name="section_my_families">MY FAMILIES</string>
+    <string name="section_discover">DISCOVER FAMILIES</string>
+    <string name="btn_join">Join</string>
+    <string name="label_members">%d members</string>
+
+    <!-- Families screen -->
+    <string name="all_families">All</string>
+    <string name="my_families_filter">My Families</string>
+    <string name="section_pinned">PINNED</string>
+    <string name="section_all_families">ALL FAMILIES</string>
+    <string name="search_families_hint">Search families…</string>
+
+    <!-- Family detail -->
+    <string name="family_code_label">FAMILY CODE</string>
+    <string name="family_code_copy_hint">Share this code so others can join your family</string>
+    <string name="not_a_member">Not a member</string>
+    <string name="members_section">MEMBERS</string>
+    <string name="leave_family">Leave Family</string>
+    <string name="join_family">Join Family</string>
+    <string name="join_family_hint">You\'ll need the family code to join</string>
+    <string name="join_prompt">Enter the family code shared by a member of the family to join.</string>
+    <string name="family_code_hint">Family Code</string>
+    <string name="family_code_sub_hint">Ask a member of the family for the code</string>
+    <string name="leave_confirmation">Are you sure you want to leave %s?</string>
+    <string name="btn_leave">Leave</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_join_confirm">Join</string>
+
+    <!-- Create family -->
+    <string name="create_family_title">New Family</string>
+    <string name="family_name_label">FAMILY NAME</string>
+    <string name="family_name_hint">Family name</string>
+    <string name="choose_icon_label">CHOOSE AN ICON</string>
+    <string name="auto_code_info">After creating the family, an auto-generated family code will be produced. Members will need to enter this code to join.</string>
+    <string name="btn_create">Create</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Profile</string>
+    <string name="edit_name_title">Edit Name</string>
+    <string name="display_name_label">Display Name</string>
+    <string name="display_name_visible">This name is visible to your family members</string>
+    <string name="btn_save">Save</string>
+    <string name="app_version">© Nimons360</string>
+
+    <!-- Map -->
+    <string name="map_title">Map</string>
+    <string name="search_location_member">Search location or member…</string>
+    <string name="all_families_filter">All Families</string>
+    <string name="btn_close">Close</string>
+    <string name="label_battery">Battery</string>
+    <string name="label_location">Location</string>
+    <string name="label_network">Wi-Fi Network</string>
+
+    <!-- Network sensing -->
+    <string name="disconnected_title">Disconnected</string>
+    <string name="disconnected_body">Please check your internet connection!</string>
+
+    <!-- Accessibility -->
+    <string name="cd_avatar">User avatar</string>
+    <string name="cd_pin_family">Pin family</string>
+    <string name="cd_copy_code">Copy family code</string>
+    <string name="cd_edit_profile">Edit profile</string>
+    <string name="cd_family_icon">Family icon</string>
+    <string name="cd_map_pin">Location pin for %s</string>
 </resources>

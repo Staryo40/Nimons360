@@ -1,10 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- ── Primary Brand ──────────────────────────────────── -->
+    <color name="primary_teal">#006D77</color>
+    <color name="primary_teal_dark">#004E56</color>
+    <color name="primary_teal_light">#339DA5</color>
+    <color name="on_primary">#FFFFFF</color>
+
+    <!-- ── Secondary / Accent ─────────────────────────────── -->
+    <color name="secondary_coral">#E29578</color>
+    <color name="secondary_coral_dark">#B96E4E</color>
+    <color name="on_secondary">#FFFFFF</color>
+
+    <!-- ── Backgrounds & Surfaces ─────────────────────────── -->
+    <!-- Main page background (Home, Families, Profile) -->
+    <color name="background_base">#F4F6F8</color>
+    <!-- Cards, bottom sheets, pop-ups -->
+    <color name="surface_white">#FFFFFF</color>
+
+    <!-- ── Text ───────────────────────────────────────────── -->
+    <!-- Headings, names, primary content -->
+    <color name="text_primary">#1D3557</color>
+    <!-- Emails, timestamps, secondary info -->
+    <color name="text_secondary">#6C757D</color>
+    <!-- On-dark surfaces (e.g., inside teal header) -->
+    <color name="text_on_dark">#FFFFFF</color>
+
+    <!-- ── Semantic / Status ──────────────────────────────── -->
+    <!-- High battery, Wi-Fi status, success messages -->
+    <color name="success_mint">#2A9D8F</color>
+    <!-- Sign Out, Leave Family, error states, disconnected icon -->
+    <color name="danger_crimson">#D62828</color>
+    <!-- Low battery, "Not a member" warning -->
+    <color name="caution_saffron">#E9C46A</color>
+    <!-- Mobile data status, info dialogues -->
+    <color name="info_muted_blue">#457B9D</color>
+
+    <!-- ── Utility ─────────────────────────────────────────── -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+    <!-- Dividers and subtle borders -->
+    <color name="divider">#E0E4E8</color>
+    <!-- Disabled states -->
+    <color name="disabled_bg">#C8CDD3</color>
+    <color name="disabled_text">#9EA6AE</color>
+    <!-- Ripple / overlay -->
+    <color name="ripple_primary">#1A006D77</color>
+    <color name="ripple_danger">#1AD62828</color>
+
+    <!-- ── Pin avatar palette (map markers) ──────────────── -->
+    <!-- Cycling colors for other users' map pins -->
+    <color name="pin_red">#E63946</color>
+    <color name="pin_green">#2A9D8F</color>
+    <color name="pin_blue">#457B9D</color>
+    <color name="pin_orange">#E29578</color>
+    <color name="pin_purple">#6C4AB6</color>
 </resources>
