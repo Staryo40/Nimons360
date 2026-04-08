@@ -1,58 +1,69 @@
 package com.labpro.nimons360.ui.theme
 
-import android.app.Activity
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
-)
-
+// ── Light colour scheme ───────────────────────────────────────────────────────
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    // Primary – Deep Teal
+    primary             = PrimaryTeal,
+    onPrimary           = OnPrimary,
+    primaryContainer    = PrimaryTealLight,
+    onPrimaryContainer  = TextPrimary,
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    // Secondary – Soft Coral
+    secondary            = SecondaryCoral,
+    onSecondary          = OnSecondary,
+    secondaryContainer   = SecondaryCoral.copy(alpha = 0.20f),
+    onSecondaryContainer = SecondaryCoralDark,
+
+    // Tertiary – Info Blue (reused for additional brand moments)
+    tertiary            = InfoMutedBlue,
+    onTertiary          = OnPrimary,
+
+    // Backgrounds & surfaces
+    background          = BackgroundBase,
+    onBackground        = TextPrimary,
+    surface             = SurfaceWhite,
+    onSurface           = TextPrimary,
+    onSurfaceVariant    = TextSecondary,
+
+    // Outlines & dividers
+    outline             = Divider,
+    outlineVariant      = DisabledBg,
+
+    // Error / destructive
+    error               = DangerCrimson,
+    onError             = OnPrimary,
+    errorContainer      = DangerCrimson.copy(alpha = 0.12f),
+    onErrorContainer    = DangerCrimson,
+
+    // Inverse (used by snackbars)
+    inverseSurface      = TextPrimary,
+    inverseOnSurface    = SurfaceWhite,
+    inversePrimary      = PrimaryTealLight,
+
+    // Scrim for modal overlays
+    scrim               = TextPrimary.copy(alpha = 0.38f),
 )
 
+/**
+ * Nimons360 Compose theme.
+ *
+ * Wrap every Composable entry-point with this theme so colour, typography,
+ * and shape tokens are consistently applied throughout the app.
+ *
+ * Adding `darkTheme` support later is as simple as creating a
+ * `darkColorScheme` and passing it via the `darkTheme` branch below.
+ */
 @Composable
 fun Nimons360Theme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-
     MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
+        colorScheme = LightColorScheme,
+        typography  = Typography,
+        content     = content,
     )
 }
