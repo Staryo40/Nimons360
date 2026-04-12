@@ -1,6 +1,6 @@
 package com.labpro.nimons360.data.model.login
 
-import com.labpro.nimons360.data.model.UserData
+import com.labpro.nimons360.data.model.user.UserData
 
 data class LoginData(
     val token: String,

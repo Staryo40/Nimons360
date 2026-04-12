@@ -1,8 +1,8 @@
 package com.labpro.nimons360.data.remote
 
 import com.labpro.nimons360.core.network.NoAuth
-import com.labpro.nimons360.data.model.UpdateProfileRequest
-import com.labpro.nimons360.data.model.UserResponse
+import com.labpro.nimons360.data.model.user.UpdateProfileRequest
+import com.labpro.nimons360.data.model.user.UserResponse
 import com.labpro.nimons360.data.model.login.LoginRequest
 import com.labpro.nimons360.data.model.login.LoginResponse
 import retrofit2.Response

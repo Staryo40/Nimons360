@@ -10,7 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.labpro.nimons360.data.enums.MainScreenEnum
-import com.labpro.nimons360.data.model.UserData
+import com.labpro.nimons360.data.model.user.UserData
 import com.labpro.nimons360.ui.main.screens.FamilyCompose
 import com.labpro.nimons360.ui.main.screens.HomeCompose
 import com.labpro.nimons360.ui.main.screens.MapCompose
