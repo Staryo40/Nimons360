@@ -1,6 +1,15 @@
 package com.labpro.nimons360.data.remote
 
 import com.labpro.nimons360.core.network.NoAuth
+import com.labpro.nimons360.data.model.family_network.CreateFamilyRequest
+import com.labpro.nimons360.data.model.family_network.DiscoverFamiliesResponse
+import com.labpro.nimons360.data.model.family_network.FamilyDetailResponse
+import com.labpro.nimons360.data.model.family_network.FamilyListResponse
+import com.labpro.nimons360.data.model.family_network.JoinFamilyRequest
+import com.labpro.nimons360.data.model.family_network.JoinFamilyResponse
+import com.labpro.nimons360.data.model.family_network.LeaveFamilyRequest
+import com.labpro.nimons360.data.model.family_network.LeaveFamilyResponse
+import com.labpro.nimons360.data.model.family_network.MyFamiliesResponse
 import com.labpro.nimons360.data.model.user.UpdateProfileRequest
 import com.labpro.nimons360.data.model.user.UserResponse
 import com.labpro.nimons360.data.model.login.LoginRequest
@@ -10,6 +19,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 /**
  * Retrofit service interface for the Nimons360 REST API.
@@ -39,4 +49,33 @@ interface ApiService {
     suspend fun updateMe(
         @Body request: UpdateProfileRequest,
     ): Response<UserResponse>
+
+    // === Families ===
+    /** GET /api/families — all families (id, name, iconUrl only). */
+    @GET("/api/families")
+    suspend fun getAllFamilies(): Response<FamilyListResponse>
+
+    /** GET /api/me/families — families the current user has joined, with members. */
+    @GET("/api/me/families")
+    suspend fun getMyFamilies(): Response<MyFamiliesResponse>
+
+    /** GET /api/families/discover — 5 random families the user hasn't joined. */
+    @GET("/api/families/discover")
+    suspend fun discoverFamilies(): Response<DiscoverFamiliesResponse>
+
+    /** GET /api/families/:id */
+    @GET("/api/families/{familyId}")
+    suspend fun getFamilyDetail(@Path("familyId") familyId: Int): Response<FamilyDetailResponse>
+
+    /** POST /api/families */
+    @POST("/api/families")
+    suspend fun createFamily(@Body request: CreateFamilyRequest): Response<FamilyDetailResponse>
+
+    /** POST /api/families/join */
+    @POST("/api/families/join")
+    suspend fun joinFamily(@Body request: JoinFamilyRequest): Response<JoinFamilyResponse>
+
+    /** POST /api/families/leave */
+    @POST("/api/families/leave")
+    suspend fun leaveFamily(@Body request: LeaveFamilyRequest): Response<LeaveFamilyResponse>
 }

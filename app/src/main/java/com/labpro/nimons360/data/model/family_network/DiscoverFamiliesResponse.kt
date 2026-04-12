@@ -1,4 +1,4 @@
-package com.labpro.nimons360.data.model.family_response
+package com.labpro.nimons360.data.model.family_network
 
 import com.labpro.nimons360.data.model.family.DiscoverFamily
 
