@@ -48,7 +48,6 @@ fun HomeCompose(
             .background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(bottom = 24.dp),
     ) {
-        // ── My Families ───────────────────────────────────────────────────────
         item { SectionHeader("MY FAMILIES") }
 
         item {
@@ -70,7 +69,6 @@ fun HomeCompose(
             }
         }
 
-        // ── Discover Families ─────────────────────────────────────────────────
         item { SectionHeader("DISCOVER FAMILIES") }
 
         when {
@@ -91,7 +89,6 @@ fun HomeCompose(
     }
 }
 
-// ── My Family card (horizontal scroll) ───────────────────────────────────────
 
 @Composable
 private fun MyFamilyCard(

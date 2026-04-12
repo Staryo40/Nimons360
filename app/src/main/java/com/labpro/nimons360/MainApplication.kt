@@ -4,6 +4,7 @@ import android.app.Application
 import com.labpro.nimons360.core.utils.TokenManager
 import com.labpro.nimons360.data.remote.RetrofitClient
 import com.labpro.nimons360.data.repository.AuthRepository
+import com.labpro.nimons360.data.repository.FamilyRepository
 import com.labpro.nimons360.data.repository.UserRepository
 
 /**
@@ -24,6 +25,10 @@ class MainApplication : Application() {
 
     val userRepository: UserRepository by lazy {
         UserRepository()
+    }
+
+    val familyRepository: FamilyRepository by lazy {
+        FamilyRepository()
     }
 
     override fun onCreate() {
