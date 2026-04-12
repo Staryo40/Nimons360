@@ -26,6 +26,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.labpro.nimons360.core.events.AuthEvent
 import com.labpro.nimons360.core.events.AuthEventBus
 import com.labpro.nimons360.ui.features.auth.LoginActivity
+import com.labpro.nimons360.ui.main.MainContent
 import com.labpro.nimons360.ui.theme.Nimons360Theme
 import com.labpro.nimons360.viewmodel.MainViewModel
 import com.labpro.nimons360.viewmodel.MainViewModelFactory
@@ -56,7 +57,7 @@ class MainActivity : ComponentActivity() {
 
                         state.user != null -> {
                             val user = state.user!!
-                            Greeting(name = user.fullName)
+                            MainContent(user)
                         }
 
                         state.error != null -> {
@@ -91,21 +92,5 @@ class MainActivity : ComponentActivity() {
         }
         startActivity(intent)
         finish()
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Nimons360Theme {
-        Greeting("Android")
     }
 }
