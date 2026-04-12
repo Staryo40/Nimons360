@@ -41,7 +41,7 @@ fun UserAvatar(
         Text(
             text       = initial,
             color      = textColor,
-            style      = MaterialTheme.typography.labelMedium,
+            style      = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.Bold,
         )
     }
