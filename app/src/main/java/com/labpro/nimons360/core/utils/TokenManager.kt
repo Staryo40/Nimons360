@@ -16,6 +16,8 @@ import androidx.security.crypto.MasterKey
  */
 class TokenManager(context: Context) {
 
+    // Runs when constructed
+    // - EncryptedSharedPreferences.create has if/else for if encrypted preferences already exists or not
     private val prefs: SharedPreferences = EncryptedSharedPreferences.create(
         context,
         FILE_NAME,
