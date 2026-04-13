@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_base"
-    tools:context=".ui.features.families.CreateFamilyActivity">
+    tools:context=".ui.features.families.CreateFamilyFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -198,7 +198,6 @@
                         android:focusable="true"
                         android:foreground="?attr/selectableItemBackground"
                         android:padding="@dimen/spacing_sm">
-                        <android.view.ViewGroup.LayoutParams/>
                         <ImageView
                             android:id="@+id/ivIcon1"
                             android:layout_width="match_parent"
