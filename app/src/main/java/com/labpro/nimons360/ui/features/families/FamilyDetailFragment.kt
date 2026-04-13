@@ -1,0 +1,378 @@
+package com.labpro.nimons360.ui.features.families
+
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.graphics.drawable.Drawable
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.widget.FrameLayout
+import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import coil.load                              // Requires: implementation("io.coil-kt:coil:2.7.0")
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.labpro.nimons360.MainApplication
+import com.labpro.nimons360.R
+import com.labpro.nimons360.data.model.family.FamilyDetail
+import com.labpro.nimons360.data.model.family.FamilyMember
+import com.labpro.nimons360.data.model.ui_state.FamilyDetailUiState
+import com.labpro.nimons360.viewmodel.FamilyDetailViewModel
+import com.labpro.nimons360.viewmodel.FamilyDetailViewModelFactory
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
+import kotlin.collections.forEachIndexed
+import kotlin.collections.lastIndex
+
+/**
+ * Fullscreen DialogFragment showing family detail.
+ * Inflates [R.layout.fragment_family_detail] (XML).
+ *
+ * Navigation from Compose / another Fragment:
+ *   FamilyDetailFragment.newInstance(familyId)
+ *       .show(supportFragmentManager, FamilyDetailFragment.TAG)
+ */
+class FamilyDetailFragment : DialogFragment() {
+
+    // ── Arguments ─────────────────────────────────────────────────────────────
+
+    private val familyId: Int by lazy {
+        requireArguments().getInt(ARG_FAMILY_ID)
+    }
+    private val currentUserEmail: String by lazy {
+        requireArguments().getString(ARG_CURRENT_USER_EMAIL, "")
+    }
+
+    // ── ViewModel ─────────────────────────────────────────────────────────────
+
+    private val viewModel: FamilyDetailViewModel by viewModels {
+        FamilyDetailViewModelFactory(
+            familyId   = familyId,
+            repository = (requireActivity().application as MainApplication).familyRepository,
+        )
+    }
+
+    // ── Views ─────────────────────────────────────────────────────────────────
+
+    private lateinit var toolbar: Toolbar
+    private lateinit var loadingOverlay: FrameLayout
+    private lateinit var ivFamilyIcon: android.widget.ImageView
+    private lateinit var tvFamilyName: TextView
+    private lateinit var tvFamilyMeta: TextView
+    private lateinit var tvNotMemberBadge: TextView
+    private lateinit var familyCodeSection: LinearLayout
+    private lateinit var tvFamilyCode: TextView
+    private lateinit var btnCopyCode: ImageButton
+    private lateinit var membersCard: MaterialCardView
+    private lateinit var membersContainer: LinearLayout
+    private lateinit var joinHintSection: LinearLayout
+    private lateinit var btnAction: MaterialButton
+    private lateinit var pbAction: ProgressBar
+    private lateinit var tvActionError: TextView
+
+    /** Avatar background colors cycled per member index. */
+    private val avatarColors: List<Int> by lazy {
+        listOf(
+            ContextCompat.getColor(requireContext(), R.color.primary_teal),
+            ContextCompat.getColor(requireContext(), R.color.pin_red),
+            ContextCompat.getColor(requireContext(), R.color.pin_green),
+            ContextCompat.getColor(requireContext(), R.color.pin_blue),
+            ContextCompat.getColor(requireContext(), R.color.pin_orange),
+            ContextCompat.getColor(requireContext(), R.color.pin_purple),
+        )
+    }
+
+    // ── Lifecycle ─────────────────────────────────────────────────────────────
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NO_FRAME, R.style.Theme_Nimons360)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View = inflater.inflate(R.layout.fragment_family_detail, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindViews(view)
+        setupToolbar()
+        setupJoinDialogResultListener()
+        observeState()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.setLayout(MATCH_PARENT, MATCH_PARENT)
+    }
+
+    // ── Setup ─────────────────────────────────────────────────────────────────
+
+    private fun bindViews(root: View) {
+        toolbar           = root.findViewById(R.id.toolbar)
+        loadingOverlay    = root.findViewById(R.id.loadingOverlay)
+        ivFamilyIcon      = root.findViewById(R.id.ivFamilyIcon)
+        tvFamilyName      = root.findViewById(R.id.tvFamilyName)
+        tvFamilyMeta      = root.findViewById(R.id.tvFamilyMeta)
+        tvNotMemberBadge  = root.findViewById(R.id.tvNotMemberBadge)
+        familyCodeSection = root.findViewById(R.id.familyCodeSection)
+        tvFamilyCode      = root.findViewById(R.id.tvFamilyCode)
+        btnCopyCode       = root.findViewById(R.id.btnCopyCode)
+        membersCard       = root.findViewById(R.id.membersCard)
+        membersContainer  = root.findViewById(R.id.membersContainer)
+        joinHintSection   = root.findViewById(R.id.joinHintSection)
+        btnAction         = root.findViewById(R.id.btnAction)
+        pbAction          = root.findViewById(R.id.pbAction)
+        tvActionError     = root.findViewById(R.id.tvActionError)
+    }
+
+    private fun setupToolbar() {
+        toolbar.setNavigationOnClickListener { dismiss() }
+    }
+
+    /**
+     * Listen for the result from [JoinFamilyDialog] shown via [childFragmentManager].
+     * When the user confirms a valid code, delegate to the ViewModel.
+     */
+    private fun setupJoinDialogResultListener() {
+        childFragmentManager.setFragmentResultListener(
+            JoinFamilyDialog.REQUEST_KEY,
+            viewLifecycleOwner,
+        ) { _, bundle ->
+            val code = bundle.getString(JoinFamilyDialog.KEY_CODE) ?: return@setFragmentResultListener
+            viewModel.joinFamily(code)
+        }
+    }
+
+    private fun observeState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state -> render(state) }
+            }
+        }
+    }
+
+    // ── Rendering ─────────────────────────────────────────────────────────────
+
+    private fun render(state: FamilyDetailUiState) {
+        // Initial loading screen
+        loadingOverlay.isVisible = state.isLoading && state.family == null
+
+        // Top-level error (couldn't load at all)
+        if (state.error != null && state.family == null) {
+            Toast.makeText(requireContext(), state.error, Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val family = state.family ?: return
+        renderFamily(family)
+
+        // Action row
+        pbAction.isVisible      = state.isActionLoading
+        btnAction.isEnabled     = !state.isActionLoading
+        tvActionError.isVisible = state.actionError != null
+        tvActionError.text      = state.actionError
+
+        // Navigate back after successful leave
+        if (state.navigateBack) {
+            viewModel.onNavigatedBack()
+            dismiss()
+            return
+        }
+
+        // Snackbar / toast confirmation
+        if (state.snackbarMessage != null) {
+            Toast.makeText(requireContext(), state.snackbarMessage, Toast.LENGTH_SHORT).show()
+            viewModel.clearSnackbar()
+        }
+    }
+
+    private fun renderFamily(family: FamilyDetail) {
+        // Toolbar title
+        toolbar.title = family.name
+
+        // Hero card
+        ivFamilyIcon.load(family.iconUrl) { crossfade(true) }
+        tvFamilyName.text = family.name
+        tvFamilyMeta.text = buildMeta(family)
+
+        // Membership-dependent sections
+        if (family.isMember) {
+            tvNotMemberBadge.isVisible = false
+
+            // Show family code
+            familyCodeSection.isVisible = true
+            tvFamilyCode.text = family.familyCode ?: "------"
+            btnCopyCode.setOnClickListener { copyCodeToClipboard(family.familyCode) }
+
+            // Show real member list
+            membersCard.isVisible    = true
+            joinHintSection.isVisible = false
+            buildMemberRows(family.members)
+
+            // Leave button (danger red)
+            btnAction.text = "Leave Family"
+            btnAction.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.danger_crimson))
+            btnAction.setOnClickListener { confirmLeave(family.name) }
+        } else {
+            tvNotMemberBadge.isVisible = true
+
+            // Hide code, show blurred hint
+            familyCodeSection.isVisible = false
+            membersCard.isVisible       = false
+            joinHintSection.isVisible   = true
+            buildCensoredMemberRows(family.members)
+
+            // Join button (primary teal)
+            btnAction.text = "Join Family"
+            btnAction.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.primary_teal))
+            btnAction.setOnClickListener { showJoinDialog() }
+        }
+    }
+
+    // ── Member rows ───────────────────────────────────────────────────────────
+
+    private fun buildMemberRows(members: List<FamilyMember>) {
+        membersContainer.removeAllViews()
+        members.forEachIndexed { index, member ->
+            val row = layoutInflater.inflate(
+                R.layout.item_family_member,
+                membersContainer,
+                false,
+            )
+            bindMemberRow(row, member, index, isCurrentUser = member.email == currentUserEmail)
+            membersContainer.addView(row)
+
+            // Divider between rows (not after the last)
+            if (index < members.lastIndex) {
+                membersContainer.addView(makeDivider())
+            }
+        }
+    }
+
+    /** Shows censored rows (no ids, names/emails are masked by the server). */
+    private fun buildCensoredMemberRows(members: List<FamilyMember>) {
+        membersContainer.removeAllViews()
+        // The joined/blurred hint replaces the card — nothing to render here.
+    }
+
+    private fun bindMemberRow(
+        row: View,
+        member: FamilyMember,
+        colorIndex: Int,
+        isCurrentUser: Boolean,
+    ) {
+        val initial = member.fullName.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+        val color   = avatarColors[colorIndex % avatarColors.size]
+
+        // Avatar
+        val avatarBg = row.findViewById<View>(R.id.avatarBg)
+        avatarBg.background?.mutate()?.setTint(color)
+
+        row.findViewById<TextView>(R.id.tvAvatarInitial).text  = initial
+        row.findViewById<TextView>(R.id.tvMemberName).text     = member.fullName
+        row.findViewById<TextView>(R.id.tvMemberEmail).text    = member.email
+        row.findViewById<TextView>(R.id.tvYouBadge).isVisible  = isCurrentUser
+    }
+
+    private fun makeDivider(): View {
+        val divider = View(requireContext())
+        divider.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, 1).apply {
+            setMargins(
+                resources.getDimensionPixelSize(R.dimen.spacing_xl), // inset to align with text
+                0, 0, 0,
+            )
+        }
+        divider.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.divider))
+        return divider
+    }
+
+    // ── Actions ───────────────────────────────────────────────────────────────
+
+    private fun showJoinDialog() {
+        JoinFamilyDialog()
+            .show(childFragmentManager, JoinFamilyDialog.TAG)
+    }
+
+    private fun confirmLeave(familyName: String) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setIcon(R.drawable.ic_not_member)
+            .setTitle("Leave Family")
+            .setMessage("Are you sure you want to leave $familyName?")
+            .setPositiveButton("Leave") { _, _ -> viewModel.leaveFamily() }
+            .setNegativeButton("Cancel", null)
+            // Override the positive button text colour to danger red
+            .create()
+            .apply {
+                setOnShowListener {
+                    getButton(android.app.AlertDialog.BUTTON_POSITIVE)
+                        ?.setTextColor(
+                            ContextCompat.getColor(requireContext(), R.color.danger_crimson)
+                        )
+                }
+            }
+            .show()
+    }
+
+    private fun copyCodeToClipboard(code: String?) {
+        if (code == null) return
+        val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        clipboard.setPrimaryClip(ClipData.newPlainText("Family Code", code))
+        Toast.makeText(requireContext(), "Code copied!", Toast.LENGTH_SHORT).show()
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private fun buildMeta(family: FamilyDetail): String {
+        val count = "${family.members.size} member${if (family.members.size != 1) "s" else ""}"
+        val date  = family.createdAt?.let { parseDate(it) } ?: ""
+        return if (date.isNotEmpty()) "$count · Created $date" else count
+    }
+
+    private fun parseDate(iso: String): String = try {
+        val inFmt  = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
+        val outFmt = SimpleDateFormat("MMM yyyy", Locale.US)
+        outFmt.format(inFmt.parse(iso)!!)
+    } catch (_: Exception) { "" }
+
+    // ── Companion ─────────────────────────────────────────────────────────────
+
+    companion object {
+        const val TAG                     = "FamilyDetailFragment"
+        private const val ARG_FAMILY_ID          = "family_id"
+        private const val ARG_CURRENT_USER_EMAIL = "current_user_email"
+
+        /**
+         * @param familyId         the family to display.
+         * @param currentUserEmail used to render the "You" badge on the current user's row.
+         */
+        fun newInstance(
+            familyId: Int,
+            currentUserEmail: String = "",
+        ) = FamilyDetailFragment().apply {
+            arguments = bundleOf(
+                ARG_FAMILY_ID          to familyId,
+                ARG_CURRENT_USER_EMAIL to currentUserEmail,
+            )
+        }
+    }
+}
