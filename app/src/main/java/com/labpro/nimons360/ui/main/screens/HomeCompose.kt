@@ -22,6 +22,7 @@ import com.labpro.nimons360.data.model.user.UserData
 import com.labpro.nimons360.ui.main.screens.home.DiscoverFamilyItem
 import com.labpro.nimons360.ui.main.screens.home.MyFamilyCard
 import androidx.compose.material3.pulltorefresh.*
+import androidx.compose.ui.Alignment
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,18 +70,44 @@ fun HomeCompose(
 
             item { SectionHeader("DISCOVER FAMILIES") }
 
-            when {
-                state.isLoadingDiscover -> item { LoadingSection() }
-                state.discoverFamilies.isEmpty() -> item {
-                    EmptyStateCard("No new families to discover right now.")
-                }
-                else -> {
-                    items(state.discoverFamilies) { family ->
-                        DiscoverFamilyItem(
-                            family = family,
-                            onJoin = { },
-                        )
-                        RowDivider()
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                    ),
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                    ),
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        when {
+                            state.isLoadingDiscover -> {
+                                LoadingSection()
+                            }
+
+                            state.discoverFamilies.isEmpty() -> {
+                                Box(modifier = Modifier.padding(24.dp).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                                    Text("No new families to discover right now.", style = MaterialTheme.typography.bodyMedium)
+                                }
+                            }
+
+                            else -> {
+                                state.discoverFamilies.forEachIndexed { index, family ->
+                                    DiscoverFamilyItem(
+                                        family = family,
+                                        onJoin = { },
+                                    )
+
+                                    if (index < state.discoverFamilies.lastIndex) {
+                                        RowDivider()
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

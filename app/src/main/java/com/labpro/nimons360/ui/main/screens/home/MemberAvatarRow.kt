@@ -26,7 +26,7 @@ fun MemberAvatarRow(
         members.take(maxVisible).forEachIndexed { index, member ->
             UserAvatar(
                 name       = member.fullName,
-                size       = 24,
+                size       = 28,
                 colorIndex = index,
                 modifier   = Modifier
                     .clip(RoundedCornerShape(50))
@@ -43,7 +43,7 @@ fun MemberAvatarRow(
             ) {
                 Text(
                     text  = "+${total - maxVisible}",
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.surface,
                 )
             }

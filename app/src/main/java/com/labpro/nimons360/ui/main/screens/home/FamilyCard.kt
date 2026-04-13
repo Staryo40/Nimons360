@@ -39,7 +39,6 @@ fun MyFamilyCard(
             modifier = Modifier.padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            // Family icon placeholder circle
             Box(
                 modifier = Modifier
                     .size(44.dp)
@@ -69,7 +68,6 @@ fun MyFamilyCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            // Member avatar stack (max 3 + overflow)
             MemberAvatarRow(members = family.members, total = family.members.size)
         }
     }
