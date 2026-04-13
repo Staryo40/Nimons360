@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:minHeight="@dimen/touch_target_min"
+    android:orientation="horizontal"
+    android:paddingHorizontal="@dimen/page_horizontal_padding"
+    android:paddingVertical="12dp">
+
+    <FrameLayout
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="12dp">
+
+        <View
+            android:id="@+id/avatarBg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_member_avatar" />
+
+        <TextView
+            android:id="@+id/tvAvatarInitial"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_md"
+            android:textStyle="bold"
+            tools:text="A" />
+
+    </FrameLayout>
+
+    <!-- Name + email -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvMemberName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_body"
+            android:textStyle="bold"
+            tools:text="St. SharkRotater9000" />
+
+        <TextView
+            android:id="@+id/tvMemberEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_sm"
+            tools:text="xxx@std.stei.itb.ac.id" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvYouBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_you_badge"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="3dp"
+        android:text="You"
+        android:textColor="@color/primary_teal"
+        android:textSize="@dimen/text_xs"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+</LinearLayout>

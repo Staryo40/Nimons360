@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_base"
+    tools:context=".ui.features.families.FamilyDetailActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/surface_white"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_back"
+            app:navigationIconTint="@color/text_primary"
+            app:titleTextColor="@color/text_primary"
+            app:titleTextAppearance="@style/TextAppearance.Nimons360.Headline"
+            tools:title="Maulana Family" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            app:dividerColor="@color/divider" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:overScrollMode="never"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/spacing_xxl">
+
+            <LinearLayout
+                android:id="@+id/contentContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_max="600dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/heroCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/page_horizontal_padding"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    app:cardBackgroundColor="@color/primary_teal"
+                    app:cardCornerRadius="@dimen/radius_card"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/spacing_md">
+
+                        <!-- Family icon -->
+                        <ImageView
+                            android:id="@+id/ivFamilyIcon"
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:layout_marginEnd="@dimen/spacing_md"
+                            android:background="@drawable/bg_icon_item_hero"
+                            android:contentDescription="@string/cd_family_icon"
+                            android:padding="6dp"
+                            android:scaleType="fitCenter"
+                            tools:src="@mipmap/ic_launcher" />
+
+                        <!-- Name + meta -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvFamilyName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/text_lg"
+                                android:textStyle="bold"
+                                tools:text="Maulana Family" />
+
+                            <TextView
+                                android:id="@+id/tvFamilyMeta"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#CCFFFFFF"
+                                android:textSize="@dimen/text_sm"
+                                tools:text="4 members · Created Mar 2024" />
+
+                            <!-- "Not a member" badge -->
+                            <TextView
+                                android:id="@+id/tvNotMemberBadge"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/spacing_xs"
+                                android:background="@drawable/bg_not_member_badge"
+                                android:drawableStart="@drawable/ic_not_member"
+                                android:drawablePadding="4dp"
+                                android:paddingHorizontal="8dp"
+                                android:paddingVertical="3dp"
+                                android:text="Not a member"
+                                android:textColor="@color/caution_saffron"
+                                android:textSize="@dimen/text_xs"
+                                android:visibility="gone"
+                                tools:visibility="visible" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <LinearLayout
+                    android:id="@+id/familyCodeSection"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/page_horizontal_padding"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/spacing_xs"
+                        android:text="FAMILY CODE"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="@dimen/text_xs"
+                        android:letterSpacing="0.08" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_family_code"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/spacing_md"
+                        android:paddingVertical="@dimen/spacing_sm">
+
+                        <TextView
+                            android:id="@+id/tvFamilyCode"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="monospace"
+                            android:textColor="@color/secondary_coral_dark"
+                            android:textSize="@dimen/text_xl"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.15"
+                            tools:text="MFA287" />
+
+                        <ImageButton
+                            android:id="@+id/btnCopyCode"
+                            android:layout_width="@dimen/touch_target_min"
+                            android:layout_height="@dimen/touch_target_min"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/cd_copy_code"
+                            android:src="@drawable/ic_copy" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:text="Share this code so others can join your family"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="@dimen/text_sm" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/page_horizontal_padding"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:layout_marginBottom="@dimen/spacing_xs"
+                    android:text="MEMBERS"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/text_xs"
+                    android:letterSpacing="0.08" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/membersCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/page_horizontal_padding"
+                    app:cardBackgroundColor="@color/surface_white"
+                    app:cardCornerRadius="@dimen/radius_card"
+                    app:cardElevation="1dp">
+
+                    <LinearLayout
+                        android:id="@+id/membersContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <LinearLayout
+                    android:id="@+id/joinHintSection"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/page_horizontal_padding"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:background="@drawable/bg_error_banner"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Join this family to see member details and interact with them on the map."
+                        android:textColor="@color/text_secondary"
+                        android:textSize="@dimen/text_sm" />
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnAction"
+                    style="@style/Widget.Nimons360.Button.Primary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/page_horizontal_padding"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:text="@string/join_family"
+                    tools:text="Leave Family" />
+
+                <!-- Action loading indicator -->
+                <ProgressBar
+                    android:id="@+id/pbAction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:indeterminateTint="@color/primary_teal"
+                    android:visibility="gone" />
+
+                <!-- Action error -->
+                <TextView
+                    android:id="@+id/tvActionError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/page_horizontal_padding"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:background="@drawable/bg_error_banner"
+                    android:paddingHorizontal="@dimen/spacing_md"
+                    android:paddingVertical="@dimen/spacing_sm"
+                    android:textColor="@color/danger_crimson"
+                    android:textSize="@dimen/text_sm"
+                    android:visibility="gone"
+                    tools:text="Failed to join family." />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <FrameLayout
+        android:id="@+id/loadingOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_base"
+        android:visibility="visible">
+
+        <ProgressBar
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/primary_teal" />
+
+    </FrameLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
