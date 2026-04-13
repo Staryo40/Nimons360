@@ -27,7 +27,6 @@ class HomeViewModel(
         loadDiscoverFamilies()
     }
 
-    // ── My Families ───────────────────────────────────────────────
     private fun loadMyFamilies() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoadingMyFamilies = true) }
@@ -56,7 +55,6 @@ class HomeViewModel(
         }
     }
 
-    // ── Discover Families ─────────────────────────────────────────
     private fun loadDiscoverFamilies() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoadingDiscover = true) }
