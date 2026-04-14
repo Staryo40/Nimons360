@@ -28,12 +28,16 @@ import androidx.compose.ui.Alignment
 @Composable
 fun HomeCompose(
     user: UserData,
-    vm: HomeViewModel = viewModel(
-        factory = HomeViewModelFactory(
-            (LocalContext.current.applicationContext as MainApplication).familyRepository
-        )
-    ),
+    onFamilyClick: (familyId: Int) -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val vm: HomeViewModel = viewModel(
+        factory = remember {
+            val app = context.applicationContext as MainApplication
+            HomeViewModelFactory(app.familyRepository)
+        }
+    )
+
     val state by vm.uiState.collectAsState()
     val isRefreshing = state.isLoadingMyFamilies || state.isLoadingDiscover
 
@@ -62,7 +66,10 @@ fun HomeCompose(
                         modifier = Modifier.padding(bottom = 8.dp),
                     ) {
                         items(state.myFamilies) { family ->
-                            MyFamilyCard(family = family, onClick = { })
+                            MyFamilyCard(
+                                family = family,
+                                onClick = { onFamilyClick(family.id) }
+                            )
                         }
                     }
                 }
@@ -99,7 +106,7 @@ fun HomeCompose(
                                 state.discoverFamilies.forEachIndexed { index, family ->
                                     DiscoverFamilyItem(
                                         family = family,
-                                        onJoin = { },
+                                        onJoin = { onFamilyClick(family.id) },
                                     )
 
                                     if (index < state.discoverFamilies.lastIndex) {

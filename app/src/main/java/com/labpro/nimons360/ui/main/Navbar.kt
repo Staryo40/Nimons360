@@ -37,7 +37,7 @@ fun Navbar(
             onClick  = { onScreenSelected(MainScreenEnum.HOME) },
             label    = { Text("Home") },
             icon     = {
-                Icon(
+                Icon(   
                     if (currentScreen == MainScreenEnum.HOME) Icons.Filled.Home
                     else Icons.Outlined.Home,
                     contentDescription = "Home",
