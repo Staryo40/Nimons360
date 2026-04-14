@@ -2,24 +2,20 @@ package com.labpro.nimons360
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.getValue
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.content.ContextCompat.startActivity
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -32,18 +28,24 @@ import com.labpro.nimons360.viewmodel.MainViewModel
 import com.labpro.nimons360.viewmodel.MainViewModelFactory
 import kotlinx.coroutines.launch
 
-class MainActivity : ComponentActivity() {
+
+// Homework, whats the difference?:
+// Before: ComponentActivity()
+// After : AppCompatActivity()
+class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels {
         MainViewModelFactory((application as MainApplication).userRepository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         observeAuthEvents()
         enableEdgeToEdge()
         setContent {
             val state by viewModel.uiState.collectAsStateWithLifecycle()
+            val context = LocalContext.current
 
             Nimons360Theme {
                 Box(
@@ -57,7 +59,9 @@ class MainActivity : ComponentActivity() {
 
                         state.user != null -> {
                             val user = state.user!!
-                            MainContent(user)
+                            MainContent(
+                                user=user
+                            )
                         }
 
                         state.error != null -> {
