@@ -18,6 +18,8 @@ import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -51,8 +53,6 @@ import kotlin.collections.lastIndex
  */
 class FamilyDetailFragment : DialogFragment() {
 
-    // ── Arguments ─────────────────────────────────────────────────────────────
-
     private val familyId: Int by lazy {
         requireArguments().getInt(ARG_FAMILY_ID)
     }
@@ -60,16 +60,12 @@ class FamilyDetailFragment : DialogFragment() {
         requireArguments().getString(ARG_CURRENT_USER_EMAIL, "")
     }
 
-    // ── ViewModel ─────────────────────────────────────────────────────────────
-
     private val viewModel: FamilyDetailViewModel by viewModels {
         FamilyDetailViewModelFactory(
             familyId   = familyId,
             repository = (requireActivity().application as MainApplication).familyRepository,
         )
     }
-
-    // ── Views ─────────────────────────────────────────────────────────────────
 
     private lateinit var toolbar: Toolbar
     private lateinit var loadingOverlay: FrameLayout
@@ -87,7 +83,6 @@ class FamilyDetailFragment : DialogFragment() {
     private lateinit var pbAction: ProgressBar
     private lateinit var tvActionError: TextView
 
-    /** Avatar background colors cycled per member index. */
     private val avatarColors: List<Int> by lazy {
         listOf(
             ContextCompat.getColor(requireContext(), R.color.primary_teal),
@@ -98,8 +93,6 @@ class FamilyDetailFragment : DialogFragment() {
             ContextCompat.getColor(requireContext(), R.color.pin_purple),
         )
     }
-
-    // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -114,6 +107,20 @@ class FamilyDetailFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        bindViews(view)
+        val appBar = view.findViewById<View>(R.id.appBarLayout)
+        ViewCompat.setOnApplyWindowInsetsListener(appBar) { v, insets ->
+            val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            v.setPadding(
+                v.paddingLeft,
+                statusBarInsets.top,
+                v.paddingRight,
+                v.paddingBottom
+            )
+            insets
+        }
+
         bindViews(view)
         setupToolbar()
         setupJoinDialogResultListener()
@@ -124,8 +131,6 @@ class FamilyDetailFragment : DialogFragment() {
         super.onStart()
         dialog?.window?.setLayout(MATCH_PARENT, MATCH_PARENT)
     }
-
-    // ── Setup ─────────────────────────────────────────────────────────────────
 
     private fun bindViews(root: View) {
         toolbar           = root.findViewById(R.id.toolbar)
@@ -171,13 +176,9 @@ class FamilyDetailFragment : DialogFragment() {
         }
     }
 
-    // ── Rendering ─────────────────────────────────────────────────────────────
-
     private fun render(state: FamilyDetailUiState) {
-        // Initial loading screen
         loadingOverlay.isVisible = state.isLoading && state.family == null
 
-        // Top-level error (couldn't load at all)
         if (state.error != null && state.family == null) {
             Toast.makeText(requireContext(), state.error, Toast.LENGTH_LONG).show()
             return
@@ -186,20 +187,17 @@ class FamilyDetailFragment : DialogFragment() {
         val family = state.family ?: return
         renderFamily(family)
 
-        // Action row
         pbAction.isVisible      = state.isActionLoading
         btnAction.isEnabled     = !state.isActionLoading
         tvActionError.isVisible = state.actionError != null
         tvActionError.text      = state.actionError
 
-        // Navigate back after successful leave
         if (state.navigateBack) {
             viewModel.onNavigatedBack()
             dismiss()
             return
         }
 
-        // Snackbar / toast confirmation
         if (state.snackbarMessage != null) {
             Toast.makeText(requireContext(), state.snackbarMessage, Toast.LENGTH_SHORT).show()
             viewModel.clearSnackbar()
@@ -207,36 +205,29 @@ class FamilyDetailFragment : DialogFragment() {
     }
 
     private fun renderFamily(family: FamilyDetail) {
-        // Toolbar title
         toolbar.title = family.name
 
-        // Hero card
         ivFamilyIcon.load(family.iconUrl) { crossfade(true) }
         tvFamilyName.text = family.name
         tvFamilyMeta.text = buildMeta(family)
 
-        // Membership-dependent sections
         if (family.isMember) {
             tvNotMemberBadge.isVisible = false
 
-            // Show family code
             familyCodeSection.isVisible = true
             tvFamilyCode.text = family.familyCode ?: "------"
             btnCopyCode.setOnClickListener { copyCodeToClipboard(family.familyCode) }
 
-            // Show real member list
             membersCard.isVisible    = true
             joinHintSection.isVisible = false
             buildMemberRows(family.members)
 
-            // Leave button (danger red)
             btnAction.text = "Leave Family"
             btnAction.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.danger_crimson))
             btnAction.setOnClickListener { confirmLeave(family.name) }
         } else {
             tvNotMemberBadge.isVisible = true
 
-            // Hide code, show blurred hint
             familyCodeSection.isVisible = false
             membersCard.isVisible       = false
             joinHintSection.isVisible   = true
@@ -249,7 +240,6 @@ class FamilyDetailFragment : DialogFragment() {
         }
     }
 
-    // ── Member rows ───────────────────────────────────────────────────────────
 
     private fun buildMemberRows(members: List<FamilyMember>) {
         membersContainer.removeAllViews()
@@ -269,10 +259,8 @@ class FamilyDetailFragment : DialogFragment() {
         }
     }
 
-    /** Shows censored rows (no ids, names/emails are masked by the server). */
     private fun buildCensoredMemberRows(members: List<FamilyMember>) {
         membersContainer.removeAllViews()
-        // The joined/blurred hint replaces the card — nothing to render here.
     }
 
     private fun bindMemberRow(
@@ -284,7 +272,6 @@ class FamilyDetailFragment : DialogFragment() {
         val initial = member.fullName.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
         val color   = avatarColors[colorIndex % avatarColors.size]
 
-        // Avatar
         val avatarBg = row.findViewById<View>(R.id.avatarBg)
         avatarBg.background?.mutate()?.setTint(color)
 
@@ -298,7 +285,7 @@ class FamilyDetailFragment : DialogFragment() {
         val divider = View(requireContext())
         divider.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, 1).apply {
             setMargins(
-                resources.getDimensionPixelSize(R.dimen.spacing_xl), // inset to align with text
+                resources.getDimensionPixelSize(R.dimen.spacing_xl),
                 0, 0, 0,
             )
         }
@@ -320,7 +307,6 @@ class FamilyDetailFragment : DialogFragment() {
             .setMessage("Are you sure you want to leave $familyName?")
             .setPositiveButton("Leave") { _, _ -> viewModel.leaveFamily() }
             .setNegativeButton("Cancel", null)
-            // Override the positive button text colour to danger red
             .create()
             .apply {
                 setOnShowListener {
@@ -340,8 +326,6 @@ class FamilyDetailFragment : DialogFragment() {
         Toast.makeText(requireContext(), "Code copied!", Toast.LENGTH_SHORT).show()
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
     private fun buildMeta(family: FamilyDetail): String {
         val count = "${family.members.size} member${if (family.members.size != 1) "s" else ""}"
         val date  = family.createdAt?.let { parseDate(it) } ?: ""
@@ -354,7 +338,6 @@ class FamilyDetailFragment : DialogFragment() {
         outFmt.format(inFmt.parse(iso)!!)
     } catch (_: Exception) { "" }
 
-    // ── Companion ─────────────────────────────────────────────────────────────
 
     companion object {
         const val TAG                     = "FamilyDetailFragment"

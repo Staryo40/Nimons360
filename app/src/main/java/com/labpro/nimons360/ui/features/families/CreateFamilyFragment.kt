@@ -10,6 +10,8 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -46,7 +48,6 @@ class CreateFamilyFragment : DialogFragment() {
         )
     }
 
-    // ── Views ─────────────────────────────────────────────────────────────────
 
     private lateinit var btnCancel: MaterialButton
     private lateinit var btnCreate: MaterialButton
@@ -56,16 +57,12 @@ class CreateFamilyFragment : DialogFragment() {
     private lateinit var tvError: TextView
     private lateinit var loadingOverlay: FrameLayout
 
-    /** Parallel lists — index matches FAMILY_ICON_URLS. */
     private lateinit var iconContainers: List<FrameLayout>
     private lateinit var iconImageViews: List<ImageView>
 
-    // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // STYLE_NO_FRAME removes the default dialog chrome; the app theme
-        // provides the status/nav bar colours for the fullscreen window.
         setStyle(STYLE_NO_FRAME, R.style.Theme_Nimons360)
     }
 
@@ -77,6 +74,20 @@ class CreateFamilyFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        bindViews(view)
+        val appBar = view.findViewById<View>(R.id.appBarLayout)
+        ViewCompat.setOnApplyWindowInsetsListener(appBar) { v, insets ->
+            val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            v.setPadding(
+                v.paddingLeft,
+                statusBarInsets.top,
+                v.paddingRight,
+                v.paddingBottom
+            )
+            insets
+        }
+
         bindViews(view)
         makeIconsSquare()
         loadIconImages()
@@ -86,11 +97,10 @@ class CreateFamilyFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        // Expand the dialog window to fill the entire screen.
         dialog?.window?.setLayout(MATCH_PARENT, MATCH_PARENT)
     }
 
-    // ── Setup ─────────────────────────────────────────────────────────────────
+    // === onViewCreated methods ===
 
     private fun bindViews(root: View) {
         btnCancel      = root.findViewById(R.id.btnCancel)
@@ -123,10 +133,6 @@ class CreateFamilyFragment : DialogFragment() {
         )
     }
 
-    /**
-     * Force each icon container to be square (height = measured width) once the
-     * view is laid out, so the grid looks correct across all screen densities.
-     */
     private fun makeIconsSquare() {
         iconContainers.forEach { container ->
             container.post {
@@ -143,7 +149,6 @@ class CreateFamilyFragment : DialogFragment() {
                 crossfade(true)
             }
         }
-        // Also preload the first icon into the preview
         ivSelectedIcon.load(FAMILY_ICON_URLS[0]) { crossfade(true) }
     }
 
@@ -176,29 +181,24 @@ class CreateFamilyFragment : DialogFragment() {
         }
     }
 
-    // ── Rendering ─────────────────────────────────────────────────────────────
+    // Rendering
 
     private fun render(state: CreateFamilyUiState) {
-        // Loading overlay
         loadingOverlay.isVisible = state.isLoading
         btnCreate.isEnabled = !state.isLoading
 
-        // Icon selection — update selected state on all containers
         iconContainers.forEachIndexed { index, container ->
             val isSelected = index == state.selectedIconIndex
             container.isSelected = isSelected
-            // Refresh the background drawable to pick up the new state
             container.background = container.background?.apply { jumpToCurrentState() }
                 ?: container.background
         }
 
-        // Preview the selected icon
         if (state.selectedIconIndex in FAMILY_ICON_URLS.indices) {
             ivSelectedIcon.load(FAMILY_ICON_URLS[state.selectedIconIndex]) { crossfade(false) }
             ivSelectedIcon.isSelected = true
         }
 
-        // Validation error on the name field
         if (state.error != null && state.familyName.isBlank()) {
             tilFamilyName.error = state.error
             tvError.isVisible = false
@@ -208,7 +208,6 @@ class CreateFamilyFragment : DialogFragment() {
             tvError.text = state.error
         }
 
-        // Navigation: dismiss self → open FamilyDetailFragment for the new family
         if (state.navigateToFamilyId != null) {
             viewModel.onNavigated()
             navigateToDetail(state.navigateToFamilyId)
@@ -221,8 +220,6 @@ class CreateFamilyFragment : DialogFragment() {
             .newInstance(familyId)
             .show(parentFragmentManager, FamilyDetailFragment.TAG)
     }
-
-    // ── Companion ─────────────────────────────────────────────────────────────
 
     companion object {
         const val TAG = "CreateFamilyFragment"

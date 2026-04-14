@@ -77,8 +77,6 @@ class JoinFamilyDialog : DialogFragment() {
     override fun onStart() {
         super.onStart()
         dialog?.window?.apply {
-            // Let the AlertDialog determine its own size; make sure the
-            // underlying window doesn't clip it.
             setLayout(WRAP_CONTENT, WRAP_CONTENT)
             setBackgroundDrawableResource(android.R.color.transparent)
         }
@@ -90,8 +88,6 @@ class JoinFamilyDialog : DialogFragment() {
         const val KEY_CODE    = "family_code"
     }
 }
-
-// ── Compose UI ────────────────────────────────────────────────────────────────
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
