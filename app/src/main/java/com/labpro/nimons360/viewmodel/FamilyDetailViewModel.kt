@@ -42,8 +42,6 @@ class FamilyDetailViewModel(
         }
     }
 
-    // ── Membership actions ────────────────────────────────────────────────────
-
     /**
      * Join the family using the 6-character [code] from [JoinFamilyDialog].
      * On success, reload the family detail so [isMember] flips to true and the
