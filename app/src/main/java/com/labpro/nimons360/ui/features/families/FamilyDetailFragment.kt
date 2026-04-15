@@ -233,7 +233,6 @@ class FamilyDetailFragment : DialogFragment() {
             joinHintSection.isVisible   = true
             buildCensoredMemberRows(family.members)
 
-            // Join button (primary teal)
             btnAction.text = "Join Family"
             btnAction.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.primary_teal))
             btnAction.setOnClickListener { showJoinDialog() }
@@ -252,7 +251,6 @@ class FamilyDetailFragment : DialogFragment() {
             bindMemberRow(row, member, index, isCurrentUser = member.email == currentUserEmail)
             membersContainer.addView(row)
 
-            // Divider between rows (not after the last)
             if (index < members.lastIndex) {
                 membersContainer.addView(makeDivider())
             }
@@ -292,8 +290,6 @@ class FamilyDetailFragment : DialogFragment() {
         divider.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.divider))
         return divider
     }
-
-    // ── Actions ───────────────────────────────────────────────────────────────
 
     private fun showJoinDialog() {
         JoinFamilyDialog()
@@ -352,10 +348,10 @@ class FamilyDetailFragment : DialogFragment() {
             familyId: Int,
             currentUserEmail: String = "",
         ) = FamilyDetailFragment().apply {
-            arguments = bundleOf(
-                ARG_FAMILY_ID          to familyId,
-                ARG_CURRENT_USER_EMAIL to currentUserEmail,
-            )
+            arguments = Bundle().apply {
+                putInt(ARG_FAMILY_ID, familyId)
+                putString(ARG_CURRENT_USER_EMAIL, currentUserEmail)
+            }
         }
     }
 }
