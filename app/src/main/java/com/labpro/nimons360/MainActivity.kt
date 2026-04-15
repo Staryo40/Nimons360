@@ -21,7 +21,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.labpro.nimons360.core.events.AuthEvent
 import com.labpro.nimons360.core.events.AuthEventBus
 import com.labpro.nimons360.ui.features.auth.LoginActivity
-import com.labpro.nimons360.ui.features.families.CreateFamilyFragment
 import com.labpro.nimons360.ui.main.MainContent
 import com.labpro.nimons360.ui.theme.Nimons360Theme
 import com.labpro.nimons360.viewmodel.MainViewModel
@@ -54,10 +53,7 @@ class MainActivity : AppCompatActivity() {
 
                         state.user != null -> {
                             val user = state.user!!
-                            MainContent(
-                                user = user,
-                                onCreateFamily = ::showCreateFamily,
-                            )
+                            MainContent(user = user)
                         }
 
                         state.error != null -> {
@@ -92,13 +88,5 @@ class MainActivity : AppCompatActivity() {
         }
         startActivity(intent)
         finish()
-    }
-
-    private fun showCreateFamily() {
-        if (supportFragmentManager.isStateSaved) return
-        if (supportFragmentManager.findFragmentByTag(CreateFamilyFragment.TAG) != null) return
-
-        CreateFamilyFragment()
-            .show(supportFragmentManager, CreateFamilyFragment.TAG)
     }
 }
