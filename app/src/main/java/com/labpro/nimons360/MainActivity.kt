@@ -8,12 +8,11 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.getValue
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -51,7 +50,6 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContent {
             val state by viewModel.uiState.collectAsStateWithLifecycle()
-            val context = LocalContext.current
 
             Nimons360Theme {
                 NetworkSensingWrapper(networkMonitor = networkMonitor) {
@@ -64,12 +62,13 @@ class MainActivity : AppCompatActivity() {
                                 Text("Loading...", style = MaterialTheme.typography.bodyMedium)
                             }
 
-                            state.user != null -> {
-                                val user = state.user!!
-                                MainContent(
-                                    user = user
-                                )
-                            }
+                        state.user != null -> {
+                            val user = state.user!!
+                            MainContent(
+                                user = user,
+                                onProfileClick = {},
+                            )
+                        }
 
                             state.error != null -> {
                                 Text(
