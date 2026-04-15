@@ -1,0 +1,339 @@
+package com.labpro.nimons360.ui.features.map
+
+import android.Manifest
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.labpro.nimons360.MainApplication
+import com.labpro.nimons360.R
+import com.labpro.nimons360.data.model.map.MapMember
+import com.labpro.nimons360.data.model.map.MapSocket
+import com.labpro.nimons360.data.model.map.MapUiState
+import com.labpro.nimons360.viewmodel.MapViewModel
+import com.labpro.nimons360.viewmodel.MapViewModelFactory
+import kotlinx.coroutines.launch
+import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
+
+class MapFragment : Fragment() {
+    private lateinit var mapView: MapView
+    private lateinit var bannerCard: MaterialCardView
+    private lateinit var grantCard: MaterialCardView
+    private lateinit var btnGrant: MaterialButton
+    private lateinit var tvBanner: TextView
+    private lateinit var tvStatus: TextView
+    private lateinit var pbLocate: ProgressBar
+
+    private lateinit var locationTracker: LocationTracker
+    private lateinit var orientationTracker: OrientationTracker
+    private lateinit var batteryTracker: BatteryTracker
+    private lateinit var netTracker: NetTracker
+
+    private val selfMarker by lazy { Marker(mapView) }
+    private val memberMap = linkedMapOf<Int, Marker>()
+    private var infoDialog: AlertDialog? = null
+    private var hasMoved = false
+    private var trackersOn = false
+
+    private val viewModel: MapViewModel by viewModels {
+        val app = requireActivity().application as MainApplication
+        MapViewModelFactory(
+            user = readUser(),
+            token = { app.tokenManager.getToken() },
+        )
+    }
+
+    private val permissionCall = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { result ->
+        val granted = result.values.any { it }
+        viewModel.setPermission(granted)
+        if (granted) {
+            startTrackers()
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Configuration.getInstance().userAgentValue = requireContext().packageName
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View = inflater.inflate(R.layout.fragment_map, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bind(view)
+        setupMap()
+        setupTrackers()
+        observeState()
+        btnGrant.setOnClickListener { askPermission() }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        mapView.onResume()
+        val granted = locationTracker.hasPermission()
+        viewModel.setPermission(granted)
+        viewModel.bind()
+        if (granted) {
+            startTrackers()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        stopTrackers()
+        viewModel.unbind()
+        mapView.onPause()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        infoDialog?.dismiss()
+        memberMap.values.forEach { mapView.overlays.remove(it) }
+        mapView.overlays.remove(selfMarker)
+        memberMap.clear()
+    }
+
+    private fun bind(root: View) {
+        mapView = root.findViewById(R.id.mapView)
+        bannerCard = root.findViewById(R.id.bannerCard)
+        grantCard = root.findViewById(R.id.grantCard)
+        btnGrant = root.findViewById(R.id.btnGrant)
+        tvBanner = root.findViewById(R.id.tvBanner)
+        tvStatus = root.findViewById(R.id.tvStatus)
+        pbLocate = root.findViewById(R.id.pbLocate)
+    }
+
+    private fun setupMap() {
+        mapView.setTileSource(TileSourceFactory.MAPNIK)
+        mapView.setMultiTouchControls(true)
+        mapView.controller.setZoom(16.0)
+        mapView.controller.setCenter(BANDUNG)
+        mapView.zoomController.setVisibility(org.osmdroid.views.CustomZoomButtonsController.Visibility.NEVER)
+    }
+
+    private fun setupTrackers() {
+        val ctx = requireContext()
+        locationTracker = LocationTracker(ctx)
+        orientationTracker = OrientationTracker(ctx)
+        batteryTracker = BatteryTracker(ctx)
+        netTracker = NetTracker(ctx)
+    }
+
+    private fun observeState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect(::render)
+            }
+        }
+    }
+
+    private fun render(state: MapUiState) {
+        grantCard.isVisible = state.showGrant
+        bannerCard.isVisible = !state.banner.isNullOrBlank()
+        tvBanner.text = state.banner
+        pbLocate.isVisible = state.isLocating
+        tvStatus.text = buildStatus(state)
+
+        renderSelf(state)
+        renderMembers(state)
+
+        if (state.selected != null) {
+            showInfo(state.selected)
+            viewModel.hideMember()
+        }
+    }
+
+    private fun renderSelf(state: MapUiState) {
+        val lat = state.self.latitude ?: return
+        val lon = state.self.longitude ?: return
+        val point = GeoPoint(lat, lon)
+
+        if (!mapView.overlays.contains(selfMarker)) {
+            selfMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+            selfMarker.title = state.self.fullName
+            mapView.overlays.add(selfMarker)
+        }
+
+        selfMarker.position = point
+        selfMarker.icon = MapPinMaker.self(
+            requireContext(),
+            state.self.fullName.firstOrNull()?.uppercase() ?: "Y",
+            state.self.rotation,
+        )
+        selfMarker.setInfoWindow(null)
+
+        if (!hasMoved) {
+            mapView.controller.animateTo(point)
+            hasMoved = true
+        }
+
+        mapView.invalidate()
+    }
+
+    private fun renderMembers(state: MapUiState) {
+        val keep = state.members.map { it.userId }.toSet()
+
+        memberMap.keys.toList()
+            .filterNot(keep::contains)
+            .forEach { key ->
+                memberMap.remove(key)?.let { marker ->
+                    mapView.overlays.remove(marker)
+                }
+            }
+
+        state.members.forEachIndexed { index, member ->
+            val marker = memberMap[member.userId] ?: Marker(mapView).also {
+                it.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+                it.setOnMarkerClickListener { _, _ ->
+                    viewModel.showMember(member)
+                    true
+                }
+                memberMap[member.userId] = it
+                mapView.overlays.add(it)
+            }
+
+            marker.position = GeoPoint(member.latitude, member.longitude)
+            marker.title = member.fullName
+            marker.snippet = member.email
+            marker.icon = MapPinMaker.member(
+                requireContext(),
+                member.fullName.firstOrNull()?.uppercase() ?: "?",
+                pinColors[index % pinColors.size],
+            )
+            marker.setOnMarkerClickListener { _, _ ->
+                viewModel.showMember(member)
+                true
+            }
+        }
+
+        mapView.invalidate()
+    }
+
+    private fun startTrackers() {
+        if (trackersOn) return
+        trackersOn = true
+        locationTracker.start(
+            onPoint = viewModel::setLocation,
+            onError = viewModel::setLocationError,
+        )
+        orientationTracker.start(viewModel::setRotation)
+        batteryTracker.start(viewModel::setBattery)
+        netTracker.start(viewModel::setNet)
+    }
+
+    private fun stopTrackers() {
+        if (!trackersOn) return
+        trackersOn = false
+        locationTracker.stop()
+        orientationTracker.stop()
+        batteryTracker.stop()
+        netTracker.stop()
+    }
+
+    private fun askPermission() {
+        permissionCall.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+            )
+        )
+    }
+
+    private fun showInfo(member: MapMember) {
+        val view = layoutInflater.inflate(R.layout.dialog_map_member, null)
+        view.findViewById<TextView>(R.id.tvName).text = member.fullName
+        view.findViewById<TextView>(R.id.tvEmail).text = member.email
+        view.findViewById<TextView>(R.id.tvLoc).text = getString(
+            R.string.map_loc_value,
+            member.latitude,
+            member.longitude,
+        )
+        view.findViewById<TextView>(R.id.tvBattery).text = getString(
+            R.string.map_battery_value,
+            member.batteryLevel?.let { "$it%" } ?: getString(R.string.map_unknown),
+        )
+        view.findViewById<TextView>(R.id.tvCharge).text = getString(
+            R.string.map_charge_value,
+            when (member.isCharging) {
+                true -> getString(R.string.map_charging)
+                false -> getString(R.string.map_not_charging)
+                null -> getString(R.string.map_unknown)
+            }
+        )
+        view.findViewById<TextView>(R.id.tvNet).text = getString(
+            R.string.map_net_value,
+            member.internetStatus?.replaceFirstChar { it.uppercase() } ?: getString(R.string.map_unknown),
+        )
+
+        infoDialog?.dismiss()
+        infoDialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.map_member_title)
+            .setView(view)
+            .setPositiveButton(R.string.btn_close, null)
+            .show()
+    }
+
+    private fun buildStatus(state: MapUiState): String = when {
+        state.showGrant -> getString(R.string.map_permission_waiting)
+        state.isLocating -> getString(R.string.map_waiting_location)
+        state.socket is MapSocket.Connected -> getString(R.string.map_live_ready)
+        state.socket is MapSocket.Connecting -> getString(R.string.map_connecting)
+        else -> getString(R.string.map_idle_status, state.members.size)
+    }
+
+    private val pinColors by lazy {
+        listOf(
+            ContextCompat.getColor(requireContext(), R.color.pin_red),
+            ContextCompat.getColor(requireContext(), R.color.pin_green),
+            ContextCompat.getColor(requireContext(), R.color.pin_blue),
+            ContextCompat.getColor(requireContext(), R.color.pin_orange),
+            ContextCompat.getColor(requireContext(), R.color.pin_purple),
+        )
+    }
+
+    companion object {
+        private const val ARG_ID = "arg_id"
+        private const val ARG_NAME = "arg_name"
+        private const val ARG_EMAIL = "arg_email"
+        private val BANDUNG = GeoPoint(-6.9175, 107.6191)
+
+        fun newInstance(user: com.labpro.nimons360.data.model.user.UserData): MapFragment = MapFragment().apply {
+            arguments = Bundle().apply {
+                putInt(ARG_ID, user.id)
+                putString(ARG_NAME, user.fullName)
+                putString(ARG_EMAIL, user.email)
+            }
+        }
+    }
+
+    private fun readUser() = com.labpro.nimons360.data.model.user.UserData(
+        id = requireArguments().getInt(ARG_ID),
+        nim = "",
+        email = requireArguments().getString(ARG_EMAIL).orEmpty(),
+        fullName = requireArguments().getString(ARG_NAME).orEmpty(),
+    )
+}
