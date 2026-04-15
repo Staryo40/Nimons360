@@ -74,6 +74,22 @@
     <string name="label_battery">Battery</string>
     <string name="label_location">Location</string>
     <string name="label_network">Wi-Fi Network</string>
+    <string name="map_need_permission">Location access needed</string>
+    <string name="map_need_permission_body">Allow location permission so Nimons360 can place your pin and share live presence.</string>
+    <string name="map_grant_permission">Grant Permission</string>
+    <string name="map_waiting_location">Waiting for your location…</string>
+    <string name="map_permission_waiting">Location permission is not granted yet.</string>
+    <string name="map_live_ready">Live location is active.</string>
+    <string name="map_connecting">Connecting to live map…</string>
+    <string name="map_idle_status">%1$d members active on the map.</string>
+    <string name="map_member_title">Member Info</string>
+    <string name="map_loc_value">Location: %.5f, %.5f</string>
+    <string name="map_battery_value">Battery: %1$s</string>
+    <string name="map_charge_value">Charging: %1$s</string>
+    <string name="map_net_value">Internet: %1$s</string>
+    <string name="map_unknown">Unknown</string>
+    <string name="map_charging">Charging</string>
+    <string name="map_not_charging">Not charging</string>
 
     <!-- Network sensing -->
     <string name="disconnected_title">Disconnected</string>
