@@ -1,7 +1,9 @@
 package com.labpro.nimons360.data.repository
 
 import com.labpro.nimons360.core.utils.safeCall
+import com.labpro.nimons360.data.local.FamilyDao
 import com.labpro.nimons360.data.model.NetworkResult
+import com.labpro.nimons360.data.model.family.PinnedFamilyEntity
 import com.labpro.nimons360.data.model.family_network.CreateFamilyRequest
 import com.labpro.nimons360.data.model.family_network.DiscoverFamiliesResponse
 import com.labpro.nimons360.data.model.family_network.FamilyDetailResponse
@@ -14,8 +16,11 @@ import com.labpro.nimons360.data.model.family_network.MyFamiliesResponse
 import com.labpro.nimons360.data.model.user.UpdateProfileRequest
 import com.labpro.nimons360.data.model.user.UserData
 import com.labpro.nimons360.data.remote.RetrofitClient
+import kotlinx.coroutines.flow.Flow
 
-class FamilyRepository {
+class FamilyRepository(
+    private val dao: FamilyDao
+) {
 
     suspend fun getAllFamilies(): NetworkResult<FamilyListResponse> = safeCall(TAG) {
         val response = RetrofitClient.apiService.getAllFamilies()
@@ -91,6 +96,19 @@ class FamilyRepository {
             NetworkResult.Success(body)
         } else {
             NetworkResult.Error("Failed to leave family ${request.familyId} (HTTP ${response.code()}).")
+        }
+    }
+
+    fun observePinnedIds(): Flow<List<Int>> {
+        return dao.observePinnedIds()
+    }
+
+    suspend fun togglePin(familyId: Int) {
+        val isPinned = dao.isPinned(familyId)
+        if (isPinned) {
+            dao.deletePinned(familyId)
+        } else {
+            dao.insertPinned(PinnedFamilyEntity(familyId))
         }
     }
 
