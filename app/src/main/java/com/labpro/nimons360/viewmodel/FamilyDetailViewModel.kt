@@ -71,7 +71,8 @@ class FamilyDetailViewModel(
     fun leaveFamily() {
         viewModelScope.launch {
             _uiState.update { it.copy(isActionLoading = true, actionError = null) }
-            when (val r = repository.leaveFamily(LeaveFamilyRequest(familyId))) {
+            val r = repository.leaveFamily(LeaveFamilyRequest(familyId))
+            when (r) {
                 is NetworkResult.Success -> _uiState.update {
                     it.copy(isActionLoading = false, navigateBack = true)
                 }

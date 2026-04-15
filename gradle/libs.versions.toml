@@ -1,5 +1,6 @@
 [versions]
 agp = "8.10.1"
+ksp = "2.0.21-1.0.25"
 kotlin = "2.0.21"
 coreKtx = "1.18.0"
 junit = "4.13.2"
@@ -77,4 +78,4 @@ google-webrtc = { group = "io.github.webrtc-sdk", name = "android", version.ref 
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-
+google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
