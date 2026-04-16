@@ -7,15 +7,9 @@ import com.labpro.nimons360.data.local.AppDatabase
 import com.labpro.nimons360.data.remote.RetrofitClient
 import com.labpro.nimons360.data.repository.AuthRepository
 import com.labpro.nimons360.data.repository.FamilyRepository
+import com.labpro.nimons360.data.repository.LocationRepository
 import com.labpro.nimons360.data.repository.UserRepository
 
-/**
- * Application class — acts as a lightweight dependency container.
- *
- * Responsibilities:
- *  - Initialize singleton-like app-wide dependencies
- *  - Provide AuthRepository to ViewModels
- */
 class MainApplication : Application() {
 
     lateinit var database: AppDatabase
@@ -36,6 +30,10 @@ class MainApplication : Application() {
         FamilyRepository(database.familyDao())
     }
 
+    val locationRepository: LocationRepository by lazy {
+        LocationRepository(database.favoriteLocationDao())
+    }
+
     override fun onCreate() {
         super.onCreate()
         tokenManager = TokenManager(applicationContext)
@@ -45,6 +43,8 @@ class MainApplication : Application() {
             applicationContext,
             AppDatabase::class.java,
             "nimons_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 }
