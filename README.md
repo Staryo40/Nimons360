@@ -2,6 +2,8 @@
 
 ## List of Content
 
+Debug command to clear tokens
+
 ```bash
 adb shell pm clear com.labpro.nimons360
 ```
