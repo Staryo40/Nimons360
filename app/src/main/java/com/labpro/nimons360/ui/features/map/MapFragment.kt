@@ -23,7 +23,7 @@ import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
 import com.labpro.nimons360.data.model.map.MapMember
 import com.labpro.nimons360.data.model.map.MapSocket
-import com.labpro.nimons360.data.model.map.MapUiState
+import com.labpro.nimons360.data.model.ui_state.MapUiState
 import com.labpro.nimons360.viewmodel.MapViewModel
 import com.labpro.nimons360.viewmodel.MapViewModelFactory
 import kotlinx.coroutines.launch

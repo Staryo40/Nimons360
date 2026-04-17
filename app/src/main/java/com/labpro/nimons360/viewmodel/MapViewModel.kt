@@ -7,9 +7,9 @@ import com.labpro.nimons360.data.model.map.MapMember
 import com.labpro.nimons360.data.model.map.MapPoint
 import com.labpro.nimons360.data.model.map.MapSelf
 import com.labpro.nimons360.data.model.map.MapSocket
-import com.labpro.nimons360.data.model.map.MapUiState
 import com.labpro.nimons360.data.model.map.PresenceEvent
 import com.labpro.nimons360.data.model.map.PresenceSend
+import com.labpro.nimons360.data.model.ui_state.MapUiState
 import com.labpro.nimons360.data.model.user.UserData
 import com.labpro.nimons360.ui.features.map.MapNetMapper
 import com.labpro.nimons360.ui.features.map.PresenceSocket
