@@ -3,7 +3,6 @@ package com.labpro.nimons360.ui.features.families
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +16,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -26,7 +24,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import coil.load                              // Requires: implementation("io.coil-kt:coil:2.7.0")
+import coil.load
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -35,13 +33,12 @@ import com.labpro.nimons360.R
 import com.labpro.nimons360.data.model.family.FamilyDetail
 import com.labpro.nimons360.data.model.family.FamilyMember
 import com.labpro.nimons360.data.model.ui_state.FamilyDetailUiState
+import com.labpro.nimons360.ui.features.live.LiveActivity
 import com.labpro.nimons360.viewmodel.FamilyDetailViewModel
 import com.labpro.nimons360.viewmodel.FamilyDetailViewModelFactory
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
-import kotlin.collections.forEachIndexed
-import kotlin.collections.lastIndex
 
 /**
  * Fullscreen DialogFragment showing family detail.
@@ -83,6 +80,8 @@ class FamilyDetailFragment : DialogFragment() {
     private lateinit var pbAction: ProgressBar
     private lateinit var tvActionError: TextView
 
+    private var btnLive: MaterialButton? = null
+
     private val avatarColors: List<Int> by lazy {
         listOf(
             ContextCompat.getColor(requireContext(), R.color.primary_teal),
@@ -121,7 +120,6 @@ class FamilyDetailFragment : DialogFragment() {
             insets
         }
 
-        bindViews(view)
         setupToolbar()
         setupJoinDialogResultListener()
         observeState()
@@ -218,6 +216,8 @@ class FamilyDetailFragment : DialogFragment() {
             tvFamilyCode.text = family.familyCode ?: "------"
             btnCopyCode.setOnClickListener { copyCodeToClipboard(family.familyCode) }
 
+            injectLiveButton(family)
+
             membersCard.isVisible    = true
             joinHintSection.isVisible = false
             buildMemberRows(family.members)
@@ -229,6 +229,7 @@ class FamilyDetailFragment : DialogFragment() {
             tvNotMemberBadge.isVisible = true
 
             familyCodeSection.isVisible = false
+            btnLive?.isVisible = false
             membersCard.isVisible       = false
             joinHintSection.isVisible   = true
             buildCensoredMemberRows(family.members)
@@ -239,6 +240,37 @@ class FamilyDetailFragment : DialogFragment() {
         }
     }
 
+    private fun injectLiveButton(family: FamilyDetail) {
+        if (btnLive == null) {
+            btnLive = MaterialButton(requireContext()).apply {
+                text = "Live Room"
+                setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.pin_orange))
+                val params = LinearLayout.LayoutParams(MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                params.setMargins(0, 16, 0, 0)
+                layoutParams = params
+
+                setOnClickListener {
+                    showLiveOptionsDialog(family.id.toString())
+                }
+            }
+            familyCodeSection.addView(btnLive)
+        }
+        btnLive?.isVisible = true
+    }
+
+    private fun showLiveOptionsDialog(roomId: String) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Family Live Room")
+            .setMessage("Do you want to start a live broadcast or just watch?")
+            .setPositiveButton("Start Live") { _, _ ->
+                startActivity(LiveActivity.newIntent(requireContext(), roomId, true))
+            }
+            .setNegativeButton("Watch") { _, _ ->
+                startActivity(LiveActivity.newIntent(requireContext(), roomId, false))
+            }
+            .setNeutralButton("Cancel", null)
+            .show()
+    }
 
     private fun buildMemberRows(members: List<FamilyMember>) {
         membersContainer.removeAllViews()
@@ -333,7 +365,6 @@ class FamilyDetailFragment : DialogFragment() {
         val outFmt = SimpleDateFormat("MMM yyyy", Locale.US)
         outFmt.format(inFmt.parse(iso)!!)
     } catch (_: Exception) { "" }
-
 
     companion object {
         const val TAG                     = "FamilyDetailFragment"

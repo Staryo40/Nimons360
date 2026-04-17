@@ -50,6 +50,11 @@
             android:name=".MainActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ui.features.live.LiveActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Nimons360" />
+
     </application>
 
 </manifest>
