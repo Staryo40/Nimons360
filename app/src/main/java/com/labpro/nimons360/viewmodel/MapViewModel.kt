@@ -13,6 +13,10 @@ import com.labpro.nimons360.data.model.ui_state.MapUiState
 import com.labpro.nimons360.data.model.user.UserData
 import com.labpro.nimons360.ui.features.map.MapNetMapper
 import com.labpro.nimons360.ui.features.map.PresenceSocket
+import com.labpro.nimons360.data.model.map.FavoriteLocationEntity
+import com.labpro.nimons360.data.repository.LocationRepository
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +28,7 @@ import java.time.Instant
 class MapViewModel(
     user: UserData,
     token: () -> String?,
+    private val locationRepository: LocationRepository
 ) : ViewModel() {
     private val selfId = user.id
 
@@ -47,6 +52,20 @@ class MapViewModel(
 
     private var sendJob: Job? = null
     private var trimJob: Job? = null
+
+    val favoriteLocations: StateFlow<List<FavoriteLocationEntity>> = locationRepository.observeFavoriteLocations()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    fun toggleFavoriteLocation(latitude: Double, longitude: Double, title: String) {
+        viewModelScope.launch {
+            val isFavorite = favoriteLocations.value.any { it.latitude == latitude && it.longitude == longitude }
+            if (isFavorite) {
+                locationRepository.removeFavoriteLocation(latitude, longitude)
+            } else {
+                locationRepository.addFavoriteLocation(latitude, longitude, title)
+            }
+        }
+    }
 
     fun bind() {
         socket.resume()
