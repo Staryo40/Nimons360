@@ -75,7 +75,6 @@ class CreateFamilyFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bindViews(view)
         val appBar = view.findViewById<View>(R.id.appBarLayout)
         ViewCompat.setOnApplyWindowInsetsListener(appBar) { v, insets ->
             val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())

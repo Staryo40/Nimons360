@@ -97,4 +97,16 @@
         <item name="cardBackgroundColor">@color/secondary_coral</item>
         <item name="cardCornerRadius">8dp</item>
     </style>
+
+    <!-- Profile -->
+    <style name="Theme.Nimons360.ProfileDialog" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:windowAnimationStyle">@style/ProfileAnimation</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
+
+    <style name="ProfileAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_in_right</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_right</item>
+    </style>
 </resources>

@@ -23,7 +23,7 @@ class MainApplication : Application() {
     }
 
     val userRepository: UserRepository by lazy {
-        UserRepository()
+        UserRepository(tokenManager)
     }
 
     val familyRepository: FamilyRepository by lazy {
