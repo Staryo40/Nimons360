@@ -51,17 +51,17 @@ class ProfileFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val appBar = view.findViewById<View>(R.id.appBarLayout)
-        ViewCompat.setOnApplyWindowInsetsListener(appBar) { v, insets ->
-            val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            v.setPadding(
-                v.paddingLeft,
-                statusBarInsets.top,
-                v.paddingRight,
-                v.paddingBottom
-            )
-            insets
-        }
+//        val appBar = view.findViewById<View>(R.id.appBarLayout)
+//        ViewCompat.setOnApplyWindowInsetsListener(appBar) { v, insets ->
+//            val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+//            v.setPadding(
+//                v.paddingLeft,
+//                statusBarInsets.top,
+//                v.paddingRight,
+//                v.paddingBottom
+//            )
+//            insets
+//        }
 
         tvFullName = view.findViewById(R.id.tvFullName)
         tvEmail = view.findViewById(R.id.tvEmail)
@@ -103,14 +103,10 @@ class ProfileFragment : DialogFragment() {
                     state.name.firstOrNull()?.uppercase() ?: ""
 
                 if (state.isLoggedOut) {
-                    navigateToLogin()
+                    viewModel.logout()
                 }
             }
         }
-    }
-
-    private fun navigateToLogin() {
-
     }
 
     private fun showEditNameBottomSheet() {
