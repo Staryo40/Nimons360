@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.resolver.SourceDistributionResolver.Companion.artifactType
 import java.util.Properties
 import java.io.FileInputStream
 
@@ -6,12 +7,29 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.ksp)
+    id("com.google.gms.google-services")
+    id("com.google.firebase.appdistribution")
 }
+
+// Properties
 val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
     localProperties.load(FileInputStream(localPropertiesFile))
 }
+
+// Env
+val env = Properties()
+val envFile = rootProject.file(".env")
+
+if (envFile.exists()) {
+    envFile.inputStream().use { stream ->
+        env.load(stream)
+    }
+}
+
+val testersList = env.getProperty("FIREBASE_TESTERS") ?: ""
+val firebaseAppId = env.getProperty("FIREBASE_APP_ID") ?: ""
 
 android {
     namespace = "com.labpro.nimons360"
@@ -48,6 +66,13 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+
+    configure<com.google.firebase.appdistribution.gradle.AppDistributionExtension> {
+        releaseNotes = "Initial testing build"
+        testers = testersList
+        artifactType = "APK"
+        appId = firebaseAppId
     }
 }
 
@@ -113,4 +138,7 @@ dependencies {
         exclude(group = "com.github.AgoraIO-Community.VideoUIKit-Android", module = "final-debug")
     }
 
+    // firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
+    implementation("com.google.firebase:firebase-analytics")
 }
