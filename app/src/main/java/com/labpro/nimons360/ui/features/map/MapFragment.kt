@@ -21,6 +21,7 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
+import com.labpro.nimons360.data.model.map.FavoriteLocationEntity
 import com.labpro.nimons360.data.model.map.MapMember
 import com.labpro.nimons360.data.model.map.MapSocket
 import com.labpro.nimons360.data.model.map.MapUiState
@@ -28,10 +29,13 @@ import com.labpro.nimons360.viewmodel.MapViewModel
 import com.labpro.nimons360.viewmodel.MapViewModelFactory
 import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
+import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
+import kotlin.math.abs
 
 class MapFragment : Fragment() {
     private lateinit var mapView: MapView
@@ -49,6 +53,7 @@ class MapFragment : Fragment() {
 
     private val selfMarker by lazy { Marker(mapView) }
     private val memberMap = linkedMapOf<Int, Marker>()
+    private val favoriteMarkers = mutableListOf<Marker>()
     private var infoDialog: AlertDialog? = null
     private var hasMoved = false
     private var trackersOn = false
@@ -58,6 +63,7 @@ class MapFragment : Fragment() {
         MapViewModelFactory(
             user = readUser(),
             token = { app.tokenManager.getToken() },
+            locationRepository = app.locationRepository
         )
     }
 
@@ -113,8 +119,10 @@ class MapFragment : Fragment() {
         super.onDestroyView()
         infoDialog?.dismiss()
         memberMap.values.forEach { mapView.overlays.remove(it) }
+        favoriteMarkers.forEach { mapView.overlays.remove(it) }
         mapView.overlays.remove(selfMarker)
         memberMap.clear()
+        favoriteMarkers.clear()
     }
 
     private fun bind(root: View) {
@@ -133,6 +141,46 @@ class MapFragment : Fragment() {
         mapView.controller.setZoom(16.0)
         mapView.controller.setCenter(BANDUNG)
         mapView.zoomController.setVisibility(org.osmdroid.views.CustomZoomButtonsController.Visibility.NEVER)
+
+        val mapEventsReceiver = object : MapEventsReceiver {
+            override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean = false
+            override fun longPressHelper(p: GeoPoint?): Boolean {
+                if (p != null) {
+                    showAddFavoriteDialog(p)
+                }
+                return true
+            }
+        }
+        mapView.overlays.add(MapEventsOverlay(mapEventsReceiver))
+    }
+
+    private fun showAddFavoriteDialog(p: GeoPoint) {
+        val input = android.widget.EditText(requireContext()).apply {
+            hint = "e.g., Home, Basecamp"
+            setSingleLine()
+        }
+
+        val container = android.widget.FrameLayout(requireContext()).apply {
+            val params = android.widget.FrameLayout.LayoutParams(
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(64, 16, 64, 0)
+            }
+            input.layoutParams = params
+            addView(input)
+        }
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Add Favorite Location")
+            .setMessage("Enter a name for this location:")
+            .setView(container)
+            .setPositiveButton("Save") { _, _ ->
+                val title = input.text.toString().takeIf { it.isNotBlank() } ?: "Favorite Location"
+                viewModel.toggleFavoriteLocation(p.latitude, p.longitude, title)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun setupTrackers() {
@@ -146,7 +194,8 @@ class MapFragment : Fragment() {
     private fun observeState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collect(::render)
+                launch { viewModel.uiState.collect(::render) }
+                launch { viewModel.favoriteLocations.collect(::renderFavorites) }
             }
         }
     }
@@ -165,6 +214,39 @@ class MapFragment : Fragment() {
             showInfo(state.selected)
             viewModel.hideMember()
         }
+    }
+
+    private fun renderFavorites(favorites: List<FavoriteLocationEntity>) {
+        favoriteMarkers.forEach { mapView.overlays.remove(it) }
+        favoriteMarkers.clear()
+
+        val defaultIcon = ContextCompat.getDrawable(requireContext(), org.osmdroid.library.R.drawable.marker_default)?.mutate()
+        defaultIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.pin_orange))
+
+        favorites.forEach { fav ->
+            val marker = Marker(mapView).apply {
+                position = GeoPoint(fav.latitude, fav.longitude)
+                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                icon = defaultIcon
+            }
+
+            marker.setOnMarkerClickListener { _, _ ->
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(fav.title)
+                    .setMessage("Coordinates:\nLat: ${fav.latitude}\nLon: ${fav.longitude}")
+                    .setPositiveButton("Remove") { _, _ ->
+                        viewModel.toggleFavoriteLocation(fav.latitude, fav.longitude, "")
+                    }
+                    .setNegativeButton("Close", null)
+                    .show()
+                true
+            }
+
+            favoriteMarkers.add(marker)
+            mapView.overlays.add(marker)
+        }
+
+        mapView.invalidate()
     }
 
     private fun renderSelf(state: MapUiState) {
