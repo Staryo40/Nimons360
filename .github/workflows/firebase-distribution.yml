@@ -3,7 +3,7 @@ name: Build & Distribute APK
 on:
   push:
     branches:
-      - chore/firebase-setup
+      - chore/firebase-config
 
 jobs:
   build:
