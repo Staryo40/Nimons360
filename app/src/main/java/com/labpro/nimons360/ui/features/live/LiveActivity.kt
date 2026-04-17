@@ -5,7 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import com.labpro.nimons360.BuildConfig
 import io.agora.agorauikit_android.AgoraConnectionData
 import io.agora.agorauikit_android.AgoraVideoViewer
 import io.agora.rtc2.Constants
@@ -17,7 +19,7 @@ class LiveActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val appID = com.labpro.nimons360.BuildConfig.AGORA_APP_ID
+        val appID = BuildConfig.AGORA_APP_ID
 
         val roomID = intent.getStringExtra(EXTRA_ROOM_ID) ?: return
         val isHost = intent.getBooleanExtra(EXTRA_IS_HOST, false)
@@ -35,13 +37,13 @@ class LiveActivity : AppCompatActivity() {
 
         val role = if (isHost) Constants.CLIENT_ROLE_BROADCASTER else Constants.CLIENT_ROLE_AUDIENCE
         agView?.join(channel = roomID, fetchToken = false, role = role)
-    }
 
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        super.onBackPressed()
-        agView?.leaveChannel()
-        finish()
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                agView?.leaveChannel()
+                finish()
+            }
+        })
     }
 
     override fun onDestroy() {
