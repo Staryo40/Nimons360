@@ -54,8 +54,7 @@ class MainActivity : AppCompatActivity() {
                         state.user != null -> {
                             val user = state.user!!
                             MainContent(
-                                user = user,
-                                onProfileClick = {},
+                                user = user
                             )
                         }
 

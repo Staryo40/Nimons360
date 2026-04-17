@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.androidx.junit.ktx)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.google.material)
+    implementation(libs.androidx.drawerlayout)
 
     // Networking
     implementation(libs.retrofit)

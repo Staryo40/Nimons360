@@ -1,12 +1,15 @@
 package com.labpro.nimons360.data.repository
 
+import com.labpro.nimons360.core.utils.TokenManager
 import com.labpro.nimons360.core.utils.safeCall
 import com.labpro.nimons360.data.model.NetworkResult
 import com.labpro.nimons360.data.model.user.UpdateProfileRequest
 import com.labpro.nimons360.data.model.user.UserData
 import com.labpro.nimons360.data.remote.RetrofitClient
 
-class UserRepository {
+class UserRepository(
+    private val tokenManager: TokenManager
+) {
 
     suspend fun getProfile(): NetworkResult<UserData> = safeCall(TAG) {
         val response = RetrofitClient.apiService.getMe()
