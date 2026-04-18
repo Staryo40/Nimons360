@@ -288,9 +288,18 @@ adb shell pm clear com.labpro.nimons360
 
 ## Team Roles
 
-| No  | Feature               | Contributors |
-| --- | --------------------- | ------------ |
-| 1   | Login                 | 13523064     |
-| 2   | Register              | 13523064     |
-| 3   | Buyer Navigation Bar  | 13523100     |
-| 4   | Seller Navigation Bar | 13523064     |
+| No | Feature                | Contributors |
+|----|------------------------|--------------|
+| 1  | Livestreaming          | 13523114     |
+| 2  | Network Sensing        | 13523114     |
+| 3  | OpenAPI                | 13523114     |
+| 4  | Mark Favorite Location | 13523114     |
+| 5  | Map & GPS              | 13523068     |
+| 6  | Websocket              | 13523068     |
+| 7  | User Info              | 13523068     |
+| 8  | Internet Status        | 13523068     |
+| 9  | Accessibility Testing  | 13523068     |
+| 10 | Auth                   | 13523100     |
+| 11 | Header & Bottom Navbar | 13523100     |
+| 12 | Home                   | 13523100     |
+| 13 | Families List          | 13523100     |
