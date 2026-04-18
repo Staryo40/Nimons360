@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
 import com.labpro.nimons360.viewmodel.ProfileViewModel
@@ -33,6 +34,7 @@ class EditNameBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val tilName  = view.findViewById<TextInputLayout>(R.id.tilDisplayName)
         val etName = view.findViewById<TextInputEditText>(R.id.etDisplayName)
         val btnSave = view.findViewById<Button>(R.id.btnSave)
         val btnCancel = view.findViewById<Button>(R.id.btnCancel)
@@ -41,11 +43,15 @@ class EditNameBottomSheet : BottomSheetDialogFragment() {
         btnCancel.setOnClickListener { dismiss() }
 
         btnSave.setOnClickListener {
-            val newName = etName.text?.toString().orEmpty()
-            if (newName.isNotBlank()) {
-                viewModel.updateName(newName)
-                dismiss()
+            val newName = etName.text?.toString().orEmpty().trim()
+            if (newName.isBlank()) {
+                tilName.error = "Name cannot be empty."
+                etName.requestFocus()
+                return@setOnClickListener
             }
+            tilName.error = null
+            viewModel.updateName(newName)
+            dismiss()
         }
     }
 

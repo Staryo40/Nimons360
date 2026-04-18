@@ -102,6 +102,9 @@
     <string name="map_need_permission">Location access needed</string>
     <string name="map_need_permission_body">Allow location permission so Nimons360 can place your pin and share live presence.</string>
     <string name="map_grant_permission">Grant Permission</string>
+    <string name="map_location_off_title">Location is turned off</string>
+    <string name="map_location_off_body">Turn location services back on so the map can show your position and continue live tracking.</string>
+    <string name="map_open_location_settings">Open Settings</string>
     <string name="map_waiting_location">Waiting for your location…</string>
     <string name="map_permission_waiting">Location permission is not granted yet.</string>
     <string name="map_live_ready">Live location is active.</string>

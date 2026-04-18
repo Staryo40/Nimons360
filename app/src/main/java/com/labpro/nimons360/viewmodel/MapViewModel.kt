@@ -98,6 +98,25 @@ class MapViewModel(
         )
     }
 
+    fun setLocationEnabled(enabled: Boolean) {
+        val state = _uiState.value
+        _uiState.value = if (enabled) {
+            state.copy(
+                banner = state.banner?.takeUnless { it.contains("location services", ignoreCase = true) },
+                isLocating = state.self.latitude == null,
+            )
+        } else {
+            state.copy(
+                self = state.self.copy(
+                    latitude = null,
+                    longitude = null,
+                ),
+                banner = "Turn on location services to start live map tracking.",
+                isLocating = false,
+            )
+        }
+    }
+
     fun setRotation(rotation: Float) {
         _uiState.value = _uiState.value.copy(
             self = _uiState.value.self.copy(rotation = rotation),

@@ -62,12 +62,16 @@ class MainActivity : AppCompatActivity() {
                                 Text("Loading...", style = MaterialTheme.typography.bodyMedium)
                             }
 
-                        state.user != null -> {
-                            val user = state.user!!
-                            MainContent(
-                                user = user
-                            )
-                        }
+                            state.user != null -> {
+                                val user = state.user!!
+                                val currentScreen by viewModel.currentScreen.collectAsStateWithLifecycle()
+
+                                MainContent(
+                                    user = user,
+                                    currentScreen = currentScreen,
+                                    onScreenChange = { viewModel.setScreen(it) }
+                                )
+                            }
 
                             state.error != null -> {
                                 Text(

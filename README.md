@@ -1,6 +1,229 @@
-# MAD Assignment 2026 Milestone 1
+# Nimons360: Family location safety Android App
+
+<p align="center">
+  <a href="https://kotlinlang.org/">
+    <img src="https://img.shields.io/badge/Kotlin-1.9.10-blue.svg" alt="Kotlin Version" />
+  </a>
+  <a href="https://gradle.org/">
+    <img src="https://img.shields.io/badge/Gradle-8.3-green.svg" alt="Gradle Version" />
+  </a>
+
+  <a href="https://developer.android.com/training/data-storage/room">
+    <img src="https://img.shields.io/badge/Room_Persistence-Local_DB-3DDC84.svg?logo=android&logoColor=white" alt="Room" />
+  </a>
+  <a href="https://en.wikipedia.org/wiki/WebSocket">
+    <img src="https://img.shields.io/badge/WebSocket-Real--time-010101.svg?logo=socket.io&logoColor=white" alt="WebSocket" />
+  </a>
+  <a href="https://developer.android.com/training/articles/keystore">
+    <img src="https://img.shields.io/badge/Android_Keystore-Security-FB8C00.svg?logo=google-cloud&logoColor=white" alt="Keystore" />
+  </a>
+  <a href="https://github.com/osmdroid/osmdroid">
+    <img src="https://img.shields.io/badge/osmdroid-OpenStreetMap-73C13D.svg?logo=openstreetmap&logoColor=white" alt="osmdroid" />
+  </a>
+</p>
+
+<p align="center">
+    <img src="public/NimonsIcon432.png" alt="Application Logo" width="500"/>
+</p>
+
+Stay connected with your loved ones to ensure their safety.
+
+UI uses this main color palette
+
+```bash
+https://coolors.co/ffeaee-006d77-e29578-f4f6f8-1d3557-d62828-2a9d8f-e9c46a-457b9d
+```
+
+<p align="center">
+    <img src="public/App.gif" alt="Application interface" width="400"/>
+</p>
 
 ## List of Content
+
+- [Features](#features)
+- [Libraries](#libraries)
+- [Screenshots and Accessibility Testing](#screenshots-and-accessibility-testing)
+- [Project Structure](#project-structure)
+- [Running the Program](#running-the-program)
+- [Creator](#creator)
+- [Team Roles](#team-roles)
+
+## Features
+
+## Libraries
+
+- Jetpack Compose – Declarative UI framework
+- Material 3 – Modern Material Design components
+- AndroidX Core & Lifecycle – Core utilities and lifecycle-aware components
+- Navigation (Compose + Fragment) – App navigation handling
+- DrawerLayout – Side navigation UI support
+
+- Coil – Image loading for Compose
+
+- Retrofit – REST API client
+- Gson – JSON serialization/deserialization
+- OkHttp (+ Logging Interceptor) – Networking layer
+
+- Room – SQLite database abstraction
+- AndroidX Security Crypto – EncryptedSharedPreferences
+
+- osmdroid – OpenStreetMap-based map rendering
+- Google Play Services Location – Location tracking
+
+- AndroidX Media3 (ExoPlayer) – Media playback
+- WebRTC – Real-time communication
+- Agora VideoUIKit – Live streaming UI components
+
+- Firebase Analytics – User analytics
+- Firebase App Distribution – App distribution for testers
+
+- Kotlin Coroutines – Asynchronous programming
+
+- JUnit – Unit testing
+- AndroidX Test (JUnit, Espresso) – Instrumented testing
+- Compose UI Test – UI testing for Compose
+- Kotlin Coroutines Test – Coroutine testing utilities
+
+- Kotlin (Android + Compose)
+- KSP (Kotlin Symbol Processing) – Used by Room
+- Google Services Plugin – Firebase integration
+- Firebase App Distribution Plugin – CI/CD distribution
+
+## Screenshots and Accessibility Testing
+
+### Original Interface
+
+| No  | Page                                                     | Screenshot                                                              |
+| --- | -------------------------------------------------------- | ----------------------------------------------------------------------- |
+| 1   | Splash Screen                                            | <img src="Screenshots/Original/Splashscreen.png" width="140">           |
+| 2   | Login Screen                                             | <img src="Screenshots/Original/Login.png" width="140">                  |
+| 3   | Login Validation: Email Kosong                           | <img src="Screenshots/Original/field_login_kosong_1.png" width="140">   |
+| 4   | Login Validation: Password Kosong                        | <img src="Screenshots/Original/field_login_kosong_2.png" width="140">   |
+| 5   | Login Validation: Email atau Pass Salah                  | <img src="Screenshots/Original/Fail_login.png" width="140">             |
+| 6   | Home Screen                                              | <img src="Screenshots/Original/Home.png" alt="Home Screen" width="140"> |
+| 7   | My Families Screen: Sebelum bergabung dengan Family Baru | <img src="Screenshots/Original/my_family_1.png" width="140">            |
+| 8   | My Families Screen: Setelah bergabung dengan Family Baru | <img src="Screenshots/Original/my_family_2.png" width="140">            |
+| 9   | Families Search Result                                   | <img src="Screenshots/Original/Search_Fam.png" width="140">             |
+| 10  | Create Family Screen                                     | <img src="Screenshots/Original/Create_New_Fam.png" width="140">         |
+| 11  | Create Family Validation: Nama Family Kosong             | <img src="Screenshots/Original/nama_fam_kosong.png" width="140">        |
+| 12  | Join Family Dialog                                       | <img src="Screenshots/Original/Join_Fam_1.png" width="140">             |
+| 13  | Join Family Berhasil                                     | <img src="Screenshots/Original/Join_Fam_2.png" width="140">             |
+| 14  | Join Family Validation: Salah Kode                       | <img src="Screenshots/Original/join_salah.png" width="140">             |
+| 15  | Family Detail Screen: Overview                           | <img src="Screenshots/Original/Fam_detail_1.png" width="140">           |
+| 16  | Family Detail Screen: Members Section                    | <img src="Screenshots/Original/Fam_detail_2.png" width="140">           |
+| 17  | Leave Family Confirmation                                | <img src="Screenshots/Original/leave_fam.png" width="140">              |
+| 18  | Profile Screen                                           | <img src="Screenshots/Original/profile.png" width="140">                |
+| 19  | Edit Profile Screen                                      | <img src="Screenshots/Original/edit_profile.png" width="140">           |
+| 20  | Profile Screen After Edit                                | <img src="Screenshots/Original/after_edit_profile.png" width="140">     |
+| 21  | Map Screen: Location Permission Prompt                   | <img src="Screenshots/Original/grand_permission_loc.png" width="140">   |
+| 22  | Map Screen: Location Permission Granted                  | <img src="Screenshots/Original/grand_permission_loc_2.png" width="140"> |
+| 23  | Map Screen: Lokasi 1                                     | <img src="Screenshots/Original/fam_loc_1.png" width="140">              |
+| 24  | Map Screen: Lokasi 2                                     | <img src="Screenshots/Original/fam_loc_2.png" width="140">              |
+| 25  | Map Member Details: Lokasi 1                             | <img src="Screenshots/Original/fam_loc_detail_1.png" width="140">       |
+| 26  | Map Member Details: Lokasi 2                             | <img src="Screenshots/Original/fam_loc_detail_2.png" width="140">       |
+| 27  | Favorite Location Flow: Sebelum Pin                      | <img src="Screenshots/Original/pin_before.png" width="140">             |
+| 28  | Favorite Location Flow: Setelah Pin 1                    | <img src="Screenshots/Original/pin_after.png" width="140">              |
+| 29  | Favorite Location Flow: Setelah Pin 2                    | <img src="Screenshots/Original/pin_after_2.png" width="140">            |
+| 30  | Favorite Locations Overview: Variant 1                   | <img src="Screenshots/Original/fav1.jpeg" width="140">                  |
+| 31  | Favorite Locations Overview: Variant 2                   | <img src="Screenshots/Original/fav2.jpeg" width="140">                  |
+| 32  | Favorite Locations Overview: Variant 3                   | <img src="Screenshots/Original/fav3.jpeg" width="140">                  |
+| 33  | Connectivity Status: Wi-Fi                               | <img src="Screenshots/Original/internet_wifi.png" width="140">          |
+| 34  | Connectivity Status: Mobile                              | <img src="Screenshots/Original/internet_mobile.png" width="140">        |
+| 35  | Connectivity Status: Offline                             | <img src="Screenshots/Original/Disconnect.jpeg"  width="140">           |
+| 36  | Live Location Active                                     | <img src="Screenshots/Original/live_loc_aktif.png" width="140">         |
+| 37  | Live Room Join                                           | <img src="Screenshots/Original/Live_1.png" width="140">                 |
+| 38  | Live Room Screen: 1                                      | <img src="Screenshots/Original/live.png" width="140">                   |
+| 39  | Live Room Screen: 2                                      | <img src="Screenshots/Original/live_2.png" width="140">                 |
+
+### Accessibility Testing
+
+| No  | Page             | Screenshot                                                                                |
+| --- | ---------------- | ----------------------------------------------------------------------------------------- |
+| 1   | Home belum login | <img src="/public/page_screenshots/home_unsigned.png" alt="Home belum login" width="140"> |
+| 2   | Login            | <img src="/public/page_screenshots/login.png" alt="Login" width="140">                    |
+
+### Improved Interface after Accessibility Testing
+
+| No  | Page             | Screenshot                                                                                |
+| --- | ---------------- | ----------------------------------------------------------------------------------------- |
+| 1   | Home belum login | <img src="/public/page_screenshots/home_unsigned.png" alt="Home belum login" width="140"> |
+| 2   | Login            | <img src="/public/page_screenshots/login.png" alt="Login" width="140">                    |
+
+## Project Structure
+
+The source code in `app/src/main/java` is divided as follows:
+
+1. `core`  
+   Contains low-level utilities and app-wide helpers.  
+   Includes network monitoring, safe API call wrappers, token management, and internal event communication (event bus).
+
+2. `data`  
+   Handles all data-related logic.  
+   Includes:
+   - `model` → Data classes for API, database, and UI state
+   - `remote` → API service, Retrofit setup, and interceptors
+   - `local` → Room database and DAO definitions
+   - `repository` → Abstraction layer combining local + remote data sources
+   - `enums` → Shared enums used across the app
+
+3. `ui`  
+   Contains all UI-related components.  
+   Organized into:
+   - `features` → Feature-based screens (auth, families, map, profile, live)
+   - `main` → Main navigation, Compose screens, and shared layout structure
+   - `theme` → App theming (colors, typography, styling)
+   - `shared` → Reusable UI components
+
+4. `viewmodel`  
+   Contains all ViewModels and their factories.  
+   Responsible for managing UI state, handling business logic, and connecting repositories to the UI layer.
+
+5. `MainActivity.kt`  
+   Entry point of the application.  
+   Hosts the main UI and navigation container.
+
+6. `MainApplication.kt`  
+   Application-level setup.  
+   Initializes global dependencies such as repositories, database, and token manager.
+
+---
+
+While `app/src/main/res` contains Android resources used by the app:
+
+1. `anim`  
+   Animation resources.
+
+2. `drawable`  
+   Images, shapes, and drawable assets.
+
+3. `layout`  
+   XML-based UI layouts (used alongside Compose where needed).
+
+4. `mipmap`  
+   App launcher icons for different screen densities.
+
+5. `values`  
+   Static resources such as strings, colors, dimensions, and themes.
+
+## Program Commands
+
+### Building APK
+
+You could use the APK "app-release" in the "apk" directory and use in an android device or emulator
+
+Should you want to build the project yourself, run the following command in root of this project for debug build:
+
+```bash
+./gradlew assembleDebug
+```
+
+For release build:
+
+```bash
+./gradlew assembleRelease
+```
+
+### Additional Commands
 
 Debug command to clear tokens
 
@@ -8,107 +231,57 @@ Debug command to clear tokens
 adb shell pm clear com.labpro.nimons360
 ```
 
-## UI Consistency
-```bash
-https://coolors.co/ffeaee-006d77-e29578-f4f6f8-1d3557-d62828-2a9d8f-e9c46a-457b9d
-```
-1. Core Brand Colors
-   These are your main UI drivers that will give the app its sophisticated, tech-focused tracking identity.
+## Creators
 
-   - Primary: Deep Teal
-      HEX: #006D77
-      RGB: (0, 109, 119)
-      Usage: Primary action buttons ("Sign In", "Create", "Save"), the Top Header background, the active Bottom Navbar icon, and your own location pin/orientation arrow on the Map.
-   - Secondary/Accent: Soft Coral
-      HEX: #E29578
-      RGB: (226, 149, 120)
-      Usage: Secondary actions like the "Join" buttons in the Discover Families list, the floating "+" button, and the background for the 6-character Family Code display box.
+<table>
+    <tr align="left">
+        <td><b>NIM</b></td>
+        <td><b>Name</b></td>
+        <td align="center"><b>GitHub</b></td>
+    </tr>
+    <tr align="left">
+        <td>13523068</td>
+        <td>Muh. Rusmin Nurwadin</td>
+        <td align="center" >
+            <div style="margin-right: 20px;">
+            <a href="https://github.com/Rusmn" >
+                <img src="https://avatars.githubusercontent.com/u/103303974?v=4" width="48px;" alt=""/> 
+                <br/> <sub><b> @Rusmn </b></sub>
+            </a><br/>
+            </div>
+        </td>
+    </tr>
+    <tr align="left">
+        <td>13523100</td>
+        <td>Aryo Wisanggeni</td>
+        <td align="center" >
+            <div style="margin-right: 20px;">
+            <a href="https://github.com/Staryo40" >
+                <img src="https://avatars.githubusercontent.com/u/139449070?v=4" width="48px;" alt=""/> 
+                <br/> <sub><b> @Staryo40 </b></sub>
+            </a><br/>
+            </div>
+        </td>
+    </tr>
+    <tr align="left">
+        <td>13523114</td>
+        <td>Guntara Hambali</td>
+        <td align="center" >
+            <div style="margin-right: 20px;">
+            <a href="https://github.com/guntarahmbl" >
+                <img src="https://avatars.githubusercontent.com/u/102271055?v=4" width="48px;" alt=""/> 
+                <br/> <sub><b> @guntarahmbl </b></sub>
+            </a><br/>
+            </div>
+        </td>
+    </tr>
+</table>
 
-2. Backgrounds & Neutrals
-   Instead of harsh pure black and white, these tinted neutrals keep the app looking modern and reduce eye strain, which is great for a map-heavy app.
+## Team Roles
 
-   - Background Base: Cool Off-White
-       HEX: #F4F6F8
-       RGB: (244, 246, 248)
-       Usage: The main background color for the Home, Families, and Profile pages.
-   - Surface/Card: Pure White
-      HEX: #FFFFFF
-      RGB: (255, 255, 255)
-      Usage: The background for the Family list cards, the bottom sheets (like User Info and Edit Name), and the pop-ups.
-   - Text Primary: Dark Navy
-      HEX: #1D3557
-      RGB: (29, 53, 87)
-      Usage: Main headings, Family Names, and User Full Names. This provides excellent contrast against the off-white background for your Accessibility Testing bonus.
-   - Text Secondary: Slate Gray
-      HEX: #6C757D
-      RGB: (108, 117, 125)
-      Usage: Secondary information like emails ({NIM}@std.stei.itb.ac.id), member counts, and timestamps.
-
-3. Semantic / Status Colors
-   These colors communicate system status directly to the user, which is critical for the map, battery tracking, and network sensing features.
-
-   - Success / Good: Mint Green
-       HEX: #2A9D8F
-       RGB: (42, 157, 143)
-       Usage: High battery percentage (sent via WebSocket), active Wi-Fi internet status icon, and success messages.
-   - Destructive / Danger: Crimson Red 
-       HEX: #D62828
-       RGB: (214, 40, 40)
-       Usage: Strictly for destructive actions. Use this for the "Sign Out" text on the Profile page, the "Leave Family" button, and the Disconnected Network Pop-up icon.
-   - Caution / Warning: Saffron Yellow
-      HEX: #E9C46A
-      RGB: (233, 196, 106)
-      Usage: Low battery warning on the User Info bottom sheet, or to highlight the "Not a member" status on the Family Detail page.
-   - Information: Muted Blue
-      HEX: #457B9D
-      RGB: (69, 123, 157)
-      Usage: General informational icons, the "Mobile" data network status, or neutral pop-up dialogues.
-
-## Project Structure
-```bash
-C:.
-├───java/com/labpro/nimons360
-│   ├── MainActivity.kt        # Entry point: Handles UI 
-│   ├── MainApplication.kt     # Global app context & initialization
-│   ├── core/                  # App-wide cross-cutting concerns
-│   │   ├── events/            # Singletons for event handling (e.g., AuthEventBus)
-│   │   └── utils/             # Helper functions and Kotlin Extensions
-│   ├── data/                  # The "Model" in MVVM: Data handling and logic
-│   │   ├── enums/             # Global enums (e.g., UserRole, ApiStatus)
-│   │   ├── local/             # Local storage (Room Database, SharedPrefs)
-│   │   ├── model/             # POJOs and Data classes (API/DB entities)
-│   │   ├── remote/            # Network layer (Retrofit interfaces, DTOs)
-│   │   └── repository/        # Single source of truth for data access
-│   ├── ui/                    # The "View" in MVVM: All UI-related components
-│   │   ├── features/          # Unified secondary/XML-based modules
-│   │   │   ├── auth/          # XML-based Login/Register (Activities/Fragments)
-│   │   │   └── profile/       # XML-based Profile/Drawer (Fragments)
-│   │   ├── main/              # Modern Compose-based main flow
-│   │   │   ├── MainContent.kt # Compose Skeleton (Scaffold, Header, BottomNav)
-│   │   │   ├── NavGraph.kt    # Navigation routes and hardcoded logic
-│   │   │   └── screens/       # Individual Composable tab implementations
-│   │   └── theme/             # Jetpack Compose styling and theme definitions
-│   └── viewmodel/             # The "VM" in MVVM: Bridge between UI and Data
-│       ├── AuthViewModel.kt   # Logic for Authentication
-│       └── MainViewModel.kt   # Logic for Main Content and Tabs
-└── res/                       # Android XML Resources
-    ├── drawable/              # Vector graphics and bitmap images
-    ├── layout/                # UI definitions for XML Activities/Fragments
-    ├── menu/                  # Actions for Toolbar, Drawer, and BottomNav
-    ├── mipmap-.../            # App icons for various screen densities
-    ├── values/                # Strings, Colors, Dimens, and Style definitions
-    └── xml/                   # Configuration files (e.g., Network Security)
-```
-
-## Libraries Used
-
-- osmdroid (`org.osmdroid:osmdroid-android`)
-  Used for the XML-based map screen because it is open source, does not need billing, supports pan/zoom well, and fits the milestone requirement.
-- Google Play Services Location (`com.google.android.gms:play-services-location`)
-  Used through `FusedLocationProviderClient` to read the latest user location with better accuracy and lower battery cost than manual provider handling.
-- OkHttp WebSocket (`com.squareup.okhttp3:okhttp`)
-  Used for the live presence socket to send `update_presence`, keep the connection alive with `ping`, and receive realtime member position updates.
-- Android Sensor Framework (`SensorManager`, `TYPE_ROTATION_VECTOR`)
-  Used to derive azimuth/rotation in degrees so the current user marker can reflect phone orientation and include the value in presence payloads.
-- Material Components (`com.google.android.material:material`)
-  Used for cards, dialogs, and the permission/status surfaces on the Map screen so the XML UI stays visually consistent with the rest of the app.
+| No  | Feature               | Contributors |
+| --- | --------------------- | ------------ |
+| 1   | Login                 | 13523064     |
+| 2   | Register              | 13523064     |
+| 3   | Buyer Navigation Bar  | 13523100     |
+| 4   | Seller Navigation Bar | 13523064     |

@@ -27,8 +27,8 @@
             android:paddingVertical="@dimen/spacing_md">
 
             <FrameLayout
-                android:layout_width="72dp"
-                android:layout_height="72dp"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
                 android:layout_marginEnd="@dimen/spacing_md">
 
                 <View
@@ -43,7 +43,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:textColor="@color/white"
-                    android:textSize="30sp"
+                    android:textSize="28sp"
                     android:textStyle="bold"
                     tools:text="B" />
 
@@ -57,18 +57,22 @@
 
                 <TextView
                     android:id="@+id/tvName"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="2"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_xl"
                     android:textStyle="bold"
-                    tools:text="Brohambali" />
+                    tools:text="Brohambali dengan nama yang sangat panjang sekali" />
 
                 <TextView
                     android:id="@+id/tvEmail"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_xs"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:textColor="#CCFFFFFF"
                     android:textSize="@dimen/text_sm"
                     tools:text="13523114@std.stei.itb.ac.id" />

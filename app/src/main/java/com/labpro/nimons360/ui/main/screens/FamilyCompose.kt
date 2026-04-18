@@ -22,6 +22,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -67,6 +68,10 @@ fun FamilyCompose(
 
     val pinnedFamilies = filteredFamilies.filter { it.id in state.pinnedIds }
     val unpinnedFamilies = filteredFamilies.filter { it.id !in state.pinnedIds }
+
+    LaunchedEffect(Unit) {
+            vm.load()
+    }
 
     Column(
         modifier = Modifier
