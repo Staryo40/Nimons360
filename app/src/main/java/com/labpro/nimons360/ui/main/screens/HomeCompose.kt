@@ -11,7 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import com.labpro.nimons360.MainApplication
+import com.labpro.nimons360.ui.features.families.CreateFamilyFragment
+import com.labpro.nimons360.ui.features.families.FamilyDetailFragment
 import com.labpro.nimons360.ui.main.shared.EmptyStateCard
 import com.labpro.nimons360.ui.main.shared.LoadingSection
 import com.labpro.nimons360.ui.main.shared.RowDivider
@@ -40,6 +45,30 @@ fun HomeCompose(
 
     val state by vm.uiState.collectAsState()
     val isRefreshing = state.isLoadingMyFamilies || state.isLoadingDiscover
+
+    val fm = remember { (context as FragmentActivity).supportFragmentManager }
+
+    DisposableEffect(fm) {
+        val callback = object : FragmentManager.FragmentLifecycleCallbacks() {
+            override fun onFragmentDestroyed(fragmentManager: FragmentManager, fragment: Fragment) {
+                if (fragment is CreateFamilyFragment || fragment is FamilyDetailFragment) {
+                    vm.refresh()
+                }
+            }
+        }
+
+        fm.registerFragmentLifecycleCallbacks(callback, false)
+
+        onDispose {
+            fm.unregisterFragmentLifecycleCallbacks(callback)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+//        if (state.myFamilies.isEmpty() && state.discoverFamilies.isEmpty()) {
+            vm.refresh()
+//        }
+    }
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,
