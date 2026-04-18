@@ -1,7 +1,0 @@
-The following is a list of opportunities to improve the accessibility of Nimons360. Each item corresponds to an outlined area on the attached screenshot.
-
-Text contrast
-com.labpro.nimons360:id/etFamilyName
-Consider increasing this item's text foreground to background contrast ratio.
-The item's text contrast ratio is 2.99. This ratio is based on an estimated foreground color of #8E8F90 and an estimated background color of #F4F6F8. Consider increasing this item's text contrast ratio to 4.50 or greater.
-

@@ -1,7 +1,0 @@
-The following is a list of opportunities to improve the accessibility of Nimons360. Each item corresponds to an outlined area on the attached screenshot.
-
-Text Scaling
-[181,641][357,817]
-This ViewGroup has a fixed size and contains a TextView with scalable text.
-Consider modifying the LayoutParams to allow for text expansion.
-

@@ -1,7 +1,0 @@
-The following is a list of opportunities to improve the accessibility of Nimons360. Each item corresponds to an outlined area on the attached screenshot.
-
-Touch target
-[1036,1918][1047,2050]
-Consider making this clickable item larger.
-This item's width is 4dp. Consider making the width of this touch target 48dp or larger. A parent container may be handling touch events for this item. If selecting the larger container performs the same action as selecting this item, consider defining this item as not clickable. If a different action is performed, consider increasing the size of this item.
-
