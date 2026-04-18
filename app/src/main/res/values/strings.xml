@@ -96,6 +96,8 @@
     <string name="btn_close">Close</string>
     <string name="label_battery">Battery</string>
     <string name="label_location">Location</string>
+    <string name="label_charging">Charging</string>
+    <string name="label_internet">Internet</string>
     <string name="label_network">Wi-Fi Network</string>
     <string name="map_need_permission">Location access needed</string>
     <string name="map_need_permission_body">Allow location permission so Nimons360 can place your pin and share live presence.</string>
