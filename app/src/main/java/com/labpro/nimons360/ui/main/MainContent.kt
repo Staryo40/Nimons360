@@ -27,10 +27,10 @@ import com.labpro.nimons360.ui.main.shared.UserAvatar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainContent(
-    user: UserData
+    user: UserData,
+    currentScreen: MainScreenEnum,
+    onScreenChange: (MainScreenEnum) -> Unit
 ) {
-    var currentScreen by remember { mutableStateOf(MainScreenEnum.HOME) }
-
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val fm = (context as FragmentActivity).supportFragmentManager
@@ -115,7 +115,7 @@ fun MainContent(
                 )
                 Navbar(
                     currentScreen    = currentScreen,
-                    onScreenSelected = { currentScreen = it },
+                    onScreenSelected = { onScreenChange(it) },
                 )
             }
         },
