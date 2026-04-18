@@ -51,25 +51,13 @@ class ProfileFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        val appBar = view.findViewById<View>(R.id.appBarLayout)
-//        ViewCompat.setOnApplyWindowInsetsListener(appBar) { v, insets ->
-//            val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-//            v.setPadding(
-//                v.paddingLeft,
-//                statusBarInsets.top,
-//                v.paddingRight,
-//                v.paddingBottom
-//            )
-//            insets
-//        }
-
         tvFullName = view.findViewById(R.id.tvFullName)
         tvEmail = view.findViewById(R.id.tvEmail)
         tvAvatarInitials = view.findViewById(R.id.tvAvatarInitials)
 
-        val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
-        toolbar.navigationContentDescription = getString(R.string.cd_back)
-        toolbar.setNavigationOnClickListener { dismiss() }
+        view.findViewById<View>(R.id.btnClose).setOnClickListener {
+            dismiss()
+        }
 
         setupListeners(view)
         observeState()
