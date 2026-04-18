@@ -19,12 +19,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.labpro.nimons360.R
 
 @Composable
 fun DisconnectedDialog() {
@@ -52,7 +54,7 @@ fun DisconnectedDialog() {
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.WifiOff,
-                        contentDescription = "Disconnected Icon",
+                        contentDescription = null,
                         tint = Color.Black,
                         modifier = Modifier.size(32.dp)
                     )
@@ -61,7 +63,7 @@ fun DisconnectedDialog() {
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
-                    text = "Disconnected",
+                    text = stringResource(R.string.disconnected_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
                     color = Color.Black
@@ -70,7 +72,7 @@ fun DisconnectedDialog() {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Please check your internet connection!",
+                    text = stringResource(R.string.disconnected_body),
                     fontSize = 14.sp,
                     color = Color.DarkGray,
                     textAlign = TextAlign.Center
