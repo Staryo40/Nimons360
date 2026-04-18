@@ -19,13 +19,23 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:contentDescription="@string/cd_back"
-            app:navigationIcon="@drawable/ic_close"
-            app:navigationIconTint="@color/text_primary"
             app:title="@string/profile_title"
             app:titleCentered="true"
             app:titleTextAppearance="@style/TextAppearance.Nimons360.Headline"
-            app:titleTextColor="@color/text_primary" />
+            app:titleTextColor="@color/text_primary">
+
+            <ImageButton
+                android:id="@+id/btnClose"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="end"
+                android:layout_marginEnd="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/cd_back"
+                android:src="@drawable/ic_close"
+                app:tint="@color/text_primary" />
+
+        </androidx.appcompat.widget.Toolbar>
 
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
