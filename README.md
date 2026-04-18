@@ -137,10 +137,17 @@ https://coolors.co/ffeaee-006d77-e29578-f4f6f8-1d3557-d62828-2a9d8f-e9c46a-457b9
 
 ### Accessibility Testing
 
-| No  | Page             | Screenshot                                                                                |
-| --- | ---------------- | ----------------------------------------------------------------------------------------- |
-| 1   | Home belum login | <img src="/public/page_screenshots/home_unsigned.png" alt="Home belum login" width="140"> |
-| 2   | Login            | <img src="/public/page_screenshots/login.png" alt="Login" width="140">                    |
+| No  | Page | Screenshot |
+| --- | ---- | ---------- |
+| 1   | Home Screen | <img src="Screenshots/Accessibility_Before/Home/screenshot_Nimons360_2026-04-18-18:00:57.png" alt="Accessibility Before Home Screen" width="140"> |
+| 2   | Families Screen | <img src="Screenshots/Accessibility_Before/Family/screenshot_Nimons360_2026-04-18-18:01:41.png" alt="Accessibility Before Families Screen" width="140"> |
+| 3   | Profile Screen | <img src="Screenshots/Accessibility_Before/Profile/screenshot_Nimons360_2026-04-18-18:02:22.png" alt="Accessibility Before Profile Screen" width="140"> |
+| 4   | Create Family Screen | <img src="Screenshots/Accessibility_Before/Create Family/screenshot_Nimons360_2026-04-18-18:03:30.png" alt="Accessibility Before Create Family Screen" width="140"> |
+| 5   | Family Detail Screen | <img src="Screenshots/Accessibility_Before/Detail Family/screenshot_Nimons360_2026-04-18-18:04:03.png" alt="Accessibility Before Family Detail Screen" width="140"> |
+| 6   | Map Member Detail Dialog | <img src="Screenshots/Accessibility_Before/Map User Detail/screenshot_Nimons360_2026-04-18-18:04:41.png" alt="Accessibility Before Map Member Detail Dialog" width="140"> |
+| 7   | Login Screen | <img src="Screenshots/Accessibility_Before/Login/screenshot_Nimons360_2026-04-18-18:05:49.png" alt="Accessibility Before Login Screen" width="140"> |
+
+*Keterangan dapat dilihat pada `Screenshots/Accessibility_Before`.*
 
 ### Improved Interface after Accessibility Testing
 
@@ -148,6 +155,8 @@ https://coolors.co/ffeaee-006d77-e29578-f4f6f8-1d3557-d62828-2a9d8f-e9c46a-457b9
 | --- | ---------------- | ----------------------------------------------------------------------------------------- |
 | 1   | Home belum login | <img src="/public/page_screenshots/home_unsigned.png" alt="Home belum login" width="140"> |
 | 2   | Login            | <img src="/public/page_screenshots/login.png" alt="Login" width="140">                    |
+
+*Keterangan dapat dilihat pada `Screenshots/Accessibility_After`.*
 
 ## Project Structure
 

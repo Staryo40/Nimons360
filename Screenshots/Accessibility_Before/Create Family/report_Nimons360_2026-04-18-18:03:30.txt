@@ -1,0 +1,52 @@
+The following is a list of opportunities to improve the accessibility of Nimons360. Each item corresponds to an outlined area on the attached screenshot.
+
+Image contrast
+com.labpro.nimons360:id/ivIcon1
+Consider increasing the contrast ratio between this image's foreground and background.
+The image's contrast ratio is 2.45. This ratio is based on an estimated foreground color of #5A96C7 and an estimated background color of #D6E5E8. Consider increasing this ratio to 3.00 or greater.
+
+Image contrast
+com.labpro.nimons360:id/ivIcon7
+Consider increasing the contrast ratio between this image's foreground and background.
+The image's contrast ratio is 2.34. This ratio is based on an estimated foreground color of #E7991B and an estimated background color of #FFFFFF. Consider increasing this ratio to 3.00 or greater.
+
+Image contrast
+com.labpro.nimons360:id/ivIcon8
+Consider increasing the contrast ratio between this image's foreground and background.
+The image's contrast ratio is 2.46. This ratio is based on an estimated foreground color of #C2A23C and an estimated background color of #FFFFFF. Consider increasing this ratio to 3.00 or greater.
+
+Item type label
+com.labpro.nimons360:id/ivSelectedIcon
+This item's content description might contain unnecessary text.
+This item's content description, "Selected family icon", contains the state "selected".
+
+Item type label
+com.labpro.nimons360:id/iconContainer1
+This item's content description might contain unnecessary text.
+This item's content description, "Choose family icon 1, selected", contains the state "selected".
+
+Text contrast
+[44,612][259,653]
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 4.33. This ratio is based on an estimated foreground color of #6C757D and an estimated background color of #F4F6F8. Consider increasing this item's text contrast ratio to 4.50 or greater.
+
+Text contrast
+com.labpro.nimons360:id/textinput_counter
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 4.33. This ratio is based on an estimated foreground color of #6C757D and an estimated background color of #F4F6F8. Consider increasing this item's text contrast ratio to 4.50 or greater.
+
+Text contrast
+[99,906][1036,1039]
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 4.33. This ratio is based on an estimated foreground color of #6C757D and an estimated background color of #F4F6F8. Consider increasing this item's text contrast ratio to 4.50 or greater.
+
+Text contrast
+[44,1105][319,1146]
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 4.33. This ratio is based on an estimated foreground color of #6C757D and an estimated background color of #F4F6F8. Consider increasing this item's text contrast ratio to 4.50 or greater.
+
+Text Scaling
+[0,105][1080,259]
+This ViewGroup has a fixed height and contains a TextView with scalable text.
+Consider modifying the LayoutParams to allow for text expansion.
+

@@ -1,0 +1,102 @@
+The following is a list of opportunities to improve the accessibility of Nimons360. Each item corresponds to an outlined area on the attached screenshot.
+
+Item descriptions
+[0,116][154,270]
+Multiple items have the same description.
+This clickable item's speakable text: "Navigate up" is identical to that of 1 other item(s).
+
+Text contrast
+[44,612][253,653]
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 4.33. This ratio is based on an estimated foreground color of #6C757D and an estimated background color of #F4F6F8. Consider increasing this item's text contrast ratio to 4.50 or greater.
+
+Text contrast
+[44,851][778,900]
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 4.33. This ratio is based on an estimated foreground color of #6C757D and an estimated background color of #F4F6F8. Consider increasing this item's text contrast ratio to 4.50 or greater.
+
+Text contrast
+[44,916][1036,1048]
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 2.39. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #E29578. Consider increasing this item's text contrast ratio to 4.50 or greater.
+
+Text contrast
+[44,1092][200,1133]
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 4.33. This ratio is based on an estimated foreground color of #6C757D and an estimated background color of #F4F6F8. Consider increasing this item's text contrast ratio to 4.50 or greater.
+
+Text contrast
+com.labpro.nimons360:id/tvMemberEmail
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 4.34. This ratio is based on an estimated foreground color of #6C757D and an estimated background color of #F2F7F8. Consider increasing this item's text contrast ratio to 4.50 or greater.
+
+Text contrast
+com.labpro.nimons360:id/tvAvatarInitial
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 4.17. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #E63946. Consider increasing this item's text contrast ratio to 4.50 or greater.
+
+Text contrast
+com.labpro.nimons360:id/tvMemberEmail
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 4.34. This ratio is based on an estimated foreground color of #6C757D and an estimated background color of #F2F7F8. Consider increasing this item's text contrast ratio to 4.50 or greater.
+
+Text contrast
+com.labpro.nimons360:id/tvAvatarInitial
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 3.32. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #2A9D8F. Consider increasing this item's text contrast ratio to 4.50 or greater.
+
+Text contrast
+com.labpro.nimons360:id/tvMemberEmail
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 4.34. This ratio is based on an estimated foreground color of #6C757D and an estimated background color of #F2F7F8. Consider increasing this item's text contrast ratio to 4.50 or greater.
+
+Text contrast
+com.labpro.nimons360:id/tvMemberEmail
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 4.34. This ratio is based on an estimated foreground color of #6C757D and an estimated background color of #F2F7F8. Consider increasing this item's text contrast ratio to 4.50 or greater.
+
+Text contrast
+com.labpro.nimons360:id/tvAvatarInitial
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 2.39. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #E29578. Consider increasing this item's text contrast ratio to 4.50 or greater.
+
+Text contrast
+com.labpro.nimons360:id/tvMemberEmail
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 4.34. This ratio is based on an estimated foreground color of #6C757D and an estimated background color of #F2F7F8. Consider increasing this item's text contrast ratio to 4.50 or greater. This item may be obscured by other on-screen content. Consider manually testing this item's contrast.
+
+Unexposed Text
+com.labpro.nimons360:id/toolbar
+Possible text detected: Test12345
+Ensure this item's accessibility label includes its visible text.
+
+Text Scaling
+com.labpro.nimons360:id/toolbar
+This ViewGroup has a fixed height and contains a TextView with scalable text.
+Consider modifying the LayoutParams to allow for text expansion.
+
+Text Scaling
+[88,1318][198,1428]
+This ViewGroup has a fixed size and contains a TextView with scalable text.
+Consider modifying the LayoutParams to allow for text expansion.
+
+Text Scaling
+[88,1637][198,1747]
+This ViewGroup has a fixed size and contains a TextView with scalable text.
+Consider modifying the LayoutParams to allow for text expansion.
+
+Text Scaling
+[88,1814][198,1924]
+This ViewGroup has a fixed size and contains a TextView with scalable text.
+Consider modifying the LayoutParams to allow for text expansion.
+
+Text Scaling
+[88,1991][198,2101]
+This ViewGroup has a fixed size and contains a TextView with scalable text.
+Consider modifying the LayoutParams to allow for text expansion.
+
+Text Scaling
+[88,2213][198,2323]
+This ViewGroup has a fixed size and contains a TextView with scalable text.
+Consider modifying the LayoutParams to allow for text expansion.
+
