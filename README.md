@@ -139,13 +139,13 @@ https://coolors.co/ffeaee-006d77-e29578-f4f6f8-1d3557-d62828-2a9d8f-e9c46a-457b9
 
 | No  | Page | Screenshot |
 | --- | ---- | ---------- |
-| 1   | Home Screen | <img src="Screenshots/Accessibility_Before/Home/screenshot_Nimons360_2026-04-18-18:00:57.png" alt="Accessibility Before Home Screen" width="140"> |
-| 2   | Families Screen | <img src="Screenshots/Accessibility_Before/Family/screenshot_Nimons360_2026-04-18-18:01:41.png" alt="Accessibility Before Families Screen" width="140"> |
-| 3   | Profile Screen | <img src="Screenshots/Accessibility_Before/Profile/screenshot_Nimons360_2026-04-18-18:02:22.png" alt="Accessibility Before Profile Screen" width="140"> |
-| 4   | Create Family Screen | <img src="Screenshots/Accessibility_Before/Create Family/screenshot_Nimons360_2026-04-18-18:03:30.png" alt="Accessibility Before Create Family Screen" width="140"> |
-| 5   | Family Detail Screen | <img src="Screenshots/Accessibility_Before/Detail Family/screenshot_Nimons360_2026-04-18-18:04:03.png" alt="Accessibility Before Family Detail Screen" width="140"> |
-| 6   | Map Member Detail Dialog | <img src="Screenshots/Accessibility_Before/Map User Detail/screenshot_Nimons360_2026-04-18-18:04:41.png" alt="Accessibility Before Map Member Detail Dialog" width="140"> |
-| 7   | Login Screen | <img src="Screenshots/Accessibility_Before/Login/screenshot_Nimons360_2026-04-18-18:05:49.png" alt="Accessibility Before Login Screen" width="140"> |
+| 1   | Home Screen | <img src="Screenshots/Accessibility_Before/Home/screenshot_Nimons360_2026-04-18-18:00:57.png" width="140"> |
+| 2   | Families Screen | <img src="Screenshots/Accessibility_Before/Family/screenshot_Nimons360_2026-04-18-18:01:41.png" width="140"> |
+| 3   | Profile Screen | <img src="Screenshots/Accessibility_Before/Profile/screenshot_Nimons360_2026-04-18-18:02:22.png" width="140"> |
+| 4   | Create Family Screen | <img src="Screenshots/Accessibility_Before/Create Family/screenshot_Nimons360_2026-04-18-18:03:30.png" width="140"> |
+| 5   | Family Detail Screen | <img src="Screenshots/Accessibility_Before/Detail Family/screenshot_Nimons360_2026-04-18-18:04:03.png" width="140"> |
+| 6   | Map Member Detail Dialog | <img src="Screenshots/Accessibility_Before/Map User Detail/screenshot_Nimons360_2026-04-18-18:04:41.png" width="140"> |
+| 7   | Login Screen | <img src="Screenshots/Accessibility_Before/Login/screenshot_Nimons360_2026-04-18-18:05:49.png" width="140"> |
 
 *Keterangan dapat dilihat pada `Screenshots/Accessibility_Before`.*
 
@@ -153,13 +153,13 @@ https://coolors.co/ffeaee-006d77-e29578-f4f6f8-1d3557-d62828-2a9d8f-e9c46a-457b9
 
 | No  | Page | Screenshot |
 | --- | ---- | ---------- |
-| 1   | Home Screen | <img src="Screenshots/Accessuility_After/Home/screenshot_Nimons360_2026-04-18-20:10:29.png" alt="Accessibility After Home Screen" width="140"> |
-| 2   | Families Screen | <img src="Screenshots/Accessuility_After/Family/screenshot_Nimons360_[1036,1918][1047,2050]_12884901962_2026-04-18-20:11:31.png" alt="Accessibility After Families Screen" width="140"> |
-| 3   | Create Family Screen | <img src="Screenshots/Accessuility_After/Create Family/screenshot_Nimons360_com.labpro.nimons360:id-etFamilyName_12884901906_2026-04-18-20:12:22.png" alt="Accessibility After Create Family Screen" width="140"> |
-| 4   | Family Detail Screen | <img src="Screenshots/Accessuility_After/Family Detail/screenshot_Nimons360_2026-04-18-20:12:57.png" alt="Accessibility After Family Detail Screen" width="140"> |
-| 5   | Profile Screen | <img src="Screenshots/Accessuility_After/Profile/screenshot_Nimons360_2026-04-18-20:13:31.png" alt="Accessibility After Profile Screen" width="140"> |
-| 6   | Map Member Detail Dialog | <img src="Screenshots/Accessuility_After/Map Profile/screenshot_Nimons360_2026-04-18-20:16:31.png" alt="Accessibility After Map Member Detail Dialog" width="140"> |
-| 7   | Login Screen | <img src="Screenshots/Accessuility_After/Login/screenshot_Nimons360_2026-04-18-20:09:44.png" alt="Accessibility After Login Screen" width="140"> |
+| 1   | Home Screen | <img src="Screenshots/Accessuility_After/Home/screenshot_Nimons360_2026-04-18-20:10:29.png" width="140"> |
+| 2   | Families Screen | <img src="Screenshots/Accessuility_After/Family/screenshot_Nimons360_[1036,1918][1047,2050]_12884901962_2026-04-18-20:11:31.png" width="140"> |
+| 3   | Create Family Screen | <img src="Screenshots/Accessuility_After/Create Family/screenshot_Nimons360_com.labpro.nimons360:id-etFamilyName_12884901906_2026-04-18-20:12:22.png" width="140"> |
+| 4   | Family Detail Screen | <img src="Screenshots/Accessuility_After/Family Detail/screenshot_Nimons360_2026-04-18-20:12:57.png" width="140"> |
+| 5   | Profile Screen | <img src="Screenshots/Accessuility_After/Profile/screenshot_Nimons360_2026-04-18-20:13:31.png" width="140"> |
+| 6   | Map Member Detail Dialog | <img src="Screenshots/Accessuility_After/Map Profile/screenshot_Nimons360_2026-04-18-20:16:31.png" width="140"> |
+| 7   | Login Screen | <img src="Screenshots/Accessuility_After/Login/screenshot_Nimons360_2026-04-18-20:09:44.png" width="140"> |
 
 Berdasarkan report yang disimpan pada folder screenshot, total temuan Accessibility Scanner pada 7 layar yang diuji turun dari kurang lebih 81 suggestion pada kondisi before menjadi kurang lebih 10 suggestion pada kondisi after. Penurunan ini dicapai melalui perbaikan label elemen, kontras teks, dan ukuran minimum area sentuh tanpa mengubah alur maupun fungsionalitas utama aplikasi.
 
