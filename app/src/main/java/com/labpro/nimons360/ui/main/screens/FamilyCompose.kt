@@ -25,9 +25,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.labpro.nimons360.MainApplication
+import com.labpro.nimons360.R
 import com.labpro.nimons360.data.enums.FamilyFilter
 import com.labpro.nimons360.data.model.user.UserData
 import com.labpro.nimons360.ui.main.screens.family.FamilyListItem
@@ -74,7 +76,8 @@ fun FamilyCompose(
         OutlinedTextField(
             value         = state.searchQuery,
             onValueChange = { vm.setSearch(it) },
-            placeholder   = { Text("Search families…") },
+            label         = { Text(stringResource(R.string.search_families_label)) },
+            placeholder   = { Text(stringResource(R.string.search_families_hint)) },
             leadingIcon   = {
                 Icon(
                     Icons.Outlined.Search,
@@ -100,7 +103,7 @@ fun FamilyCompose(
             FilterChip(
                 selected = state.filter == FamilyFilter.ALL,
                 onClick  = { vm.setFilter(FamilyFilter.ALL) },
-                label    = { Text("All") },
+                label    = { Text(stringResource(R.string.all_families)) },
                 colors   = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = MaterialTheme.colorScheme.primary,
                     selectedLabelColor     = MaterialTheme.colorScheme.onPrimary,
@@ -109,7 +112,7 @@ fun FamilyCompose(
             FilterChip(
                 selected = state.filter == FamilyFilter.MY_FAMILIES,
                 onClick  = { vm.setFilter(FamilyFilter.MY_FAMILIES) },
-                label    = { Text("My Families") },
+                label    = { Text(stringResource(R.string.my_families_filter)) },
                 colors   = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = MaterialTheme.colorScheme.primary,
                     selectedLabelColor     = MaterialTheme.colorScheme.onPrimary,
@@ -120,7 +123,7 @@ fun FamilyCompose(
         when {
             state.isLoading -> LoadingSection(Modifier.fillMaxSize())
             state.error != null -> EmptyStateCard(
-                state.error ?: "Something went wrong.",
+                state.error ?: stringResource(R.string.error_generic),
                 modifier = Modifier.padding(16.dp),
             )
             else -> {
@@ -129,7 +132,7 @@ fun FamilyCompose(
                     contentPadding = PaddingValues(bottom = 96.dp), // FAB clearance
                 ) {
                     if (pinnedFamilies.isNotEmpty()) {
-                        item { SectionHeader("PINNED") }
+                        item { SectionHeader(stringResource(R.string.section_pinned)) }
                         items(pinnedFamilies, key = { "pin_${it.id}" }) { family ->
                             FamilyListItem(
                                 family      = family,
@@ -145,8 +148,8 @@ fun FamilyCompose(
                     if (unpinnedFamilies.isNotEmpty()) {
                         item {
                             SectionHeader(
-                                if (pinnedFamilies.isEmpty()) "ALL FAMILIES"
-                                else "ALL FAMILIES"
+                                if (pinnedFamilies.isEmpty()) stringResource(R.string.section_all_families)
+                                else stringResource(R.string.section_all_families)
                             )
                         }
                         items(unpinnedFamilies, key = { "fam_${it.id}" }) { family ->
@@ -163,7 +166,7 @@ fun FamilyCompose(
                     if (pinnedFamilies.isEmpty() && unpinnedFamilies.isEmpty()) {
                         item {
                             EmptyStateCard(
-                                "No families match your search.",
+                                stringResource(R.string.families_empty_search),
                                 modifier = Modifier.padding(16.dp),
                             )
                         }
@@ -173,4 +176,3 @@ fun FamilyCompose(
         }
     }
 }
-

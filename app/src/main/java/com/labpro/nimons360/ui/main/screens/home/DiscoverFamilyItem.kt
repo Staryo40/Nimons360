@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -42,7 +43,7 @@ fun DiscoverFamilyItem(
     ) {
         AsyncImage(
             model = family.iconUrl,
-            contentDescription = null,
+            contentDescription = stringResource(R.string.cd_discover_family_icon, family.name),
             contentScale = ContentScale.Crop,
             error = painterResource(id = R.drawable.ic_placeholder_avatar),
             modifier = Modifier
@@ -73,7 +74,7 @@ fun DiscoverFamilyItem(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
             modifier = Modifier.height(40.dp),
         ) {
-            Text("Join", style = MaterialTheme.typography.labelMedium)
+            Text(stringResource(R.string.btn_join), style = MaterialTheme.typography.labelMedium)
         }
     }
 }

@@ -19,9 +19,10 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:contentDescription="@string/cd_back"
             app:navigationIcon="@drawable/ic_close"
             app:navigationIconTint="@color/text_primary"
-            app:title="Profile"
+            app:title="@string/profile_title"
             app:titleCentered="true"
             app:titleTextAppearance="@style/TextAppearance.Nimons360.Headline"
             app:titleTextColor="@color/text_primary" />

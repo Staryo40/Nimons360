@@ -12,7 +12,9 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.labpro.nimons360.R
 import com.labpro.nimons360.data.enums.MainScreenEnum
 
 @Composable
@@ -20,6 +22,10 @@ fun Navbar(
     currentScreen: MainScreenEnum,
     onScreenSelected: (MainScreenEnum) -> Unit,
 ) {
+    val homeLabel = stringResource(R.string.nav_home)
+    val mapLabel = stringResource(R.string.nav_map)
+    val familiesLabel = stringResource(R.string.nav_families)
+
     val itemColors = NavigationBarItemDefaults.colors(
         selectedIconColor   = MaterialTheme.colorScheme.primary,
         selectedTextColor   = MaterialTheme.colorScheme.primary,
@@ -35,12 +41,12 @@ fun Navbar(
         NavigationBarItem(
             selected = currentScreen == MainScreenEnum.HOME,
             onClick  = { onScreenSelected(MainScreenEnum.HOME) },
-            label    = { Text("Home") },
+            label    = { Text(homeLabel) },
             icon     = {
                 Icon(   
                     if (currentScreen == MainScreenEnum.HOME) Icons.Filled.Home
                     else Icons.Outlined.Home,
-                    contentDescription = "Home",
+                    contentDescription = stringResource(R.string.cd_nav_home),
                 )
             },
             colors = itemColors,
@@ -49,12 +55,12 @@ fun Navbar(
         NavigationBarItem(
             selected = currentScreen == MainScreenEnum.MAP,
             onClick  = { onScreenSelected(MainScreenEnum.MAP) },
-            label    = { Text("Map") },
+            label    = { Text(mapLabel) },
             icon     = {
                 Icon(
                     if (currentScreen == MainScreenEnum.MAP) Icons.Filled.LocationOn
                     else Icons.Outlined.LocationOn,
-                    contentDescription = "Map",
+                    contentDescription = stringResource(R.string.cd_nav_map),
                 )
             },
             colors = itemColors,
@@ -63,12 +69,12 @@ fun Navbar(
         NavigationBarItem(
             selected = currentScreen == MainScreenEnum.FAMILY,
             onClick  = { onScreenSelected(MainScreenEnum.FAMILY) },
-            label    = { Text("Families") },
+            label    = { Text(familiesLabel) },
             icon     = {
                 Icon(
                     if (currentScreen == MainScreenEnum.FAMILY) Icons.Filled.Group
                     else Icons.Outlined.Group,
-                    contentDescription = "Families",
+                    contentDescription = stringResource(R.string.cd_nav_families),
                 )
             },
             colors = itemColors,

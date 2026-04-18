@@ -12,7 +12,8 @@
     <FrameLayout
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginEnd="12dp">
+        android:layout_marginEnd="12dp"
+        android:importantForAccessibility="no">
 
         <View
             android:id="@+id/avatarBg"
@@ -65,7 +66,7 @@
         android:background="@drawable/bg_you_badge"
         android:paddingHorizontal="8dp"
         android:paddingVertical="3dp"
-        android:text="You"
+        android:text="@string/member_you"
         android:textColor="@color/primary_teal"
         android:textSize="@dimen/text_xs"
         android:textStyle="bold"

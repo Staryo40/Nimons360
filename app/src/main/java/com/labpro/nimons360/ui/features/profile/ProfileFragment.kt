@@ -68,6 +68,7 @@ class ProfileFragment : DialogFragment() {
         tvAvatarInitials = view.findViewById(R.id.tvAvatarInitials)
 
         val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
+        toolbar.navigationContentDescription = getString(R.string.cd_back)
         toolbar.setNavigationOnClickListener { dismiss() }
 
         setupListeners(view)
