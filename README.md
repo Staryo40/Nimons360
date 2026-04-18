@@ -26,9 +26,10 @@
     <img src="public/NimonsIcon432.png" alt="Application Logo" width="500"/>
 </p>
 
-Stay connected with your loved ones to ensure their safety. 
+Stay connected with your loved ones to ensure their safety.
 
 UI uses this main color palette
+
 ```bash
 https://coolors.co/ffeaee-006d77-e29578-f4f6f8-1d3557-d62828-2a9d8f-e9c46a-457b9d
 ```
@@ -36,7 +37,6 @@ https://coolors.co/ffeaee-006d77-e29578-f4f6f8-1d3557-d62828-2a9d8f-e9c46a-457b9
 <p align="center">
     <img src="public/App.gif" alt="Application interface" width="400"/>
 </p>
-
 
 ## List of Content
 
@@ -92,22 +92,62 @@ https://coolors.co/ffeaee-006d77-e29578-f4f6f8-1d3557-d62828-2a9d8f-e9c46a-457b9
 ## Screenshots and Accessibility Testing
 
 ### Original Interface
-| No | Page             | Screenshot                                                   |
-|----|------------------|--------------------------------------------------------------|
-| 1  | Home belum login | ![Screenshot](/public/page_screenshots/home_unsigned.png)         |
-| 2  | Login            | ![Screenshot](/public/page_screenshots/login.png)                 |
+
+| No  | Page                                                     | Screenshot                                                              |
+| --- | -------------------------------------------------------- | ----------------------------------------------------------------------- |
+| 1   | Splash Screen                                            | <img src="Screenshots/Original/Splashscreen.png" width="140">           |
+| 2   | Login Screen                                             | <img src="Screenshots/Original/Login.png" width="140">                  |
+| 3   | Login Validation: Email Kosong                           | <img src="Screenshots/Original/field_login_kosong_1.png" width="140">   |
+| 4   | Login Validation: Password Kosong                        | <img src="Screenshots/Original/field_login_kosong_2.png" width="140">   |
+| 5   | Login Validation: Email atau Pass Salah                  | <img src="Screenshots/Original/Fail_login.png" width="140">             |
+| 6   | Home Screen                                              | <img src="Screenshots/Original/Home.png" alt="Home Screen" width="140"> |
+| 7   | My Families Screen: Sebelum bergabung dengan Family Baru | <img src="Screenshots/Original/my_family_1.png" width="140">            |
+| 8   | My Families Screen: Setelah bergabung dengan Family Baru | <img src="Screenshots/Original/my_family_2.png" width="140">            |
+| 9   | Families Search Result                                   | <img src="Screenshots/Original/Search_Fam.png" width="140">             |
+| 10  | Create Family Screen                                     | <img src="Screenshots/Original/Create_New_Fam.png" width="140">         |
+| 11  | Create Family Validation: Nama Family Kosong             | <img src="Screenshots/Original/nama_fam_kosong.png" width="140">        |
+| 12  | Join Family Dialog                                       | <img src="Screenshots/Original/Join_Fam_1.png" width="140">             |
+| 13  | Join Family Berhasil                                     | <img src="Screenshots/Original/Join_Fam_2.png" width="140">             |
+| 14  | Join Family Validation: Salah Kode                       | <img src="Screenshots/Original/join_salah.png" width="140">             |
+| 15  | Family Detail Screen: Overview                           | <img src="Screenshots/Original/Fam_detail_1.png" width="140">           |
+| 16  | Family Detail Screen: Members Section                    | <img src="Screenshots/Original/Fam_detail_2.png" width="140">           |
+| 17  | Leave Family Confirmation                                | <img src="Screenshots/Original/leave_fam.png" width="140">              |
+| 18  | Profile Screen                                           | <img src="Screenshots/Original/profile.png" width="140">                |
+| 19  | Edit Profile Screen                                      | <img src="Screenshots/Original/edit_profile.png" width="140">           |
+| 20  | Profile Screen After Edit                                | <img src="Screenshots/Original/after_edit_profile.png" width="140">     |
+| 21  | Map Screen: Location Permission Prompt                   | <img src="Screenshots/Original/grand_permission_loc.png" width="140">   |
+| 22  | Map Screen: Location Permission Granted                  | <img src="Screenshots/Original/grand_permission_loc_2.png" width="140"> |
+| 23  | Map Screen: Lokasi 1                                     | <img src="Screenshots/Original/fam_loc_1.png" width="140">              |
+| 24  | Map Screen: Lokasi 2                                     | <img src="Screenshots/Original/fam_loc_2.png" width="140">              |
+| 25  | Map Member Details: Lokasi 1                             | <img src="Screenshots/Original/fam_loc_detail_1.png" width="140">       |
+| 26  | Map Member Details: Lokasi 2                             | <img src="Screenshots/Original/fam_loc_detail_2.png" width="140">       |
+| 27  | Favorite Location Flow: Sebelum Pin                      | <img src="Screenshots/Original/pin_before.png" width="140">             |
+| 28  | Favorite Location Flow: Setelah Pin 1                    | <img src="Screenshots/Original/pin_after.png" width="140">              |
+| 29  | Favorite Location Flow: Setelah Pin 2                    | <img src="Screenshots/Original/pin_after_2.png" width="140">            |
+| 30  | Favorite Locations Overview: Variant 1                   | <img src="Screenshots/Original/fav1.jpeg" width="140">                  |
+| 31  | Favorite Locations Overview: Variant 2                   | <img src="Screenshots/Original/fav2.jpeg" width="140">                  |
+| 32  | Favorite Locations Overview: Variant 3                   | <img src="Screenshots/Original/fav3.jpeg" width="140">                  |
+| 33  | Connectivity Status: Wi-Fi                               | <img src="Screenshots/Original/internet_wifi.png" width="140">          |
+| 34  | Connectivity Status: Mobile                              | <img src="Screenshots/Original/internet_mobile.png" width="140">        |
+| 35  | Connectivity Status: Offline                             | <img src="Screenshots/Original/Disconnect.jpeg"  width="140">           |
+| 36  | Live Location Active                                     | <img src="Screenshots/Original/live_loc_aktif.png" width="140">         |
+| 37  | Live Room Join                                           | <img src="Screenshots/Original/Live_1.png" width="140">                 |
+| 38  | Live Room Screen: 1                                      | <img src="Screenshots/Original/live.png" width="140">                   |
+| 39  | Live Room Screen: 2                                      | <img src="Screenshots/Original/live_2.png" width="140">                 |
 
 ### Accessibility Testing
-| No | Page             | Screenshot                                                   |
-|----|------------------|--------------------------------------------------------------|
-| 1  | Home belum login | ![Screenshot](/public/page_screenshots/home_unsigned.png)         |
-| 2  | Login            | ![Screenshot](/public/page_screenshots/login.png)                 |
+
+| No  | Page             | Screenshot                                                                                |
+| --- | ---------------- | ----------------------------------------------------------------------------------------- |
+| 1   | Home belum login | <img src="/public/page_screenshots/home_unsigned.png" alt="Home belum login" width="140"> |
+| 2   | Login            | <img src="/public/page_screenshots/login.png" alt="Login" width="140">                    |
 
 ### Improved Interface after Accessibility Testing
-| No | Page             | Screenshot                                                   |
-|----|------------------|--------------------------------------------------------------|
-| 1  | Home belum login | ![Screenshot](/public/page_screenshots/home_unsigned.png)         |
-| 2  | Login            | ![Screenshot](/public/page_screenshots/login.png)                 |
+
+| No  | Page             | Screenshot                                                                                |
+| --- | ---------------- | ----------------------------------------------------------------------------------------- |
+| 1   | Home belum login | <img src="/public/page_screenshots/home_unsigned.png" alt="Home belum login" width="140"> |
+| 2   | Login            | <img src="/public/page_screenshots/login.png" alt="Login" width="140">                    |
 
 ## Project Structure
 
@@ -120,19 +160,19 @@ The source code in `app/src/main/java` is divided as follows:
 2. `data`  
    Handles all data-related logic.  
    Includes:
-    - `model` → Data classes for API, database, and UI state
-    - `remote` → API service, Retrofit setup, and interceptors
-    - `local` → Room database and DAO definitions
-    - `repository` → Abstraction layer combining local + remote data sources
-    - `enums` → Shared enums used across the app
+   - `model` → Data classes for API, database, and UI state
+   - `remote` → API service, Retrofit setup, and interceptors
+   - `local` → Room database and DAO definitions
+   - `repository` → Abstraction layer combining local + remote data sources
+   - `enums` → Shared enums used across the app
 
 3. `ui`  
    Contains all UI-related components.  
    Organized into:
-    - `features` → Feature-based screens (auth, families, map, profile, live)
-    - `main` → Main navigation, Compose screens, and shared layout structure
-    - `theme` → App theming (colors, typography, styling)
-    - `shared` → Reusable UI components
+   - `features` → Feature-based screens (auth, families, map, profile, live)
+   - `main` → Main navigation, Compose screens, and shared layout structure
+   - `theme` → App theming (colors, typography, styling)
+   - `shared` → Reusable UI components
 
 4. `viewmodel`  
    Contains all ViewModels and their factories.  
@@ -166,15 +206,19 @@ While `app/src/main/res` contains Android resources used by the app:
    Static resources such as strings, colors, dimensions, and themes.
 
 ## Program Commands
+
 ### Building APK
+
 You could use the APK "app-release" in the "apk" directory and use in an android device or emulator
 
 Should you want to build the project yourself, run the following command in root of this project for debug build:
+
 ```bash
 ./gradlew assembleDebug
 ```
 
 For release build:
+
 ```bash
 ./gradlew assembleRelease
 ```
@@ -182,6 +226,7 @@ For release build:
 ### Additional Commands
 
 Debug command to clear tokens
+
 ```bash
 adb shell pm clear com.labpro.nimons360
 ```
@@ -234,9 +279,9 @@ adb shell pm clear com.labpro.nimons360
 
 ## Team Roles
 
-| No  | Feature             | Contributors |
-|-----|---------------------|--------------------|
-| 1   | Login               | 13523064           |
-| 2   | Register            | 13523064           |
-| 3   | Buyer Navigation Bar| 13523100           |
-| 4   | Seller Navigation Bar| 13523064          |
+| No  | Feature               | Contributors |
+| --- | --------------------- | ------------ |
+| 1   | Login                 | 13523064     |
+| 2   | Register              | 13523064     |
+| 3   | Buyer Navigation Bar  | 13523100     |
+| 4   | Seller Navigation Bar | 13523064     |
