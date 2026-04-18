@@ -7,11 +7,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.labpro.nimons360.R
 import com.labpro.nimons360.data.enums.MainScreenEnum
 import com.labpro.nimons360.data.model.user.UserData
 import com.labpro.nimons360.ui.features.families.CreateFamilyFragment
@@ -67,8 +69,8 @@ fun MainContent(
 
     val screenTitle = when (currentScreen) {
         MainScreenEnum.HOME   -> "Nimons360"
-        MainScreenEnum.MAP    -> "Map"
-        MainScreenEnum.FAMILY -> "Families"
+        MainScreenEnum.MAP    -> context.getString(R.string.map_title)
+        MainScreenEnum.FAMILY -> context.getString(R.string.nav_families)
     }
 
     Scaffold(
@@ -86,6 +88,10 @@ fun MainContent(
                         UserAvatar(
                             name = user.fullName,
                             size = 40,
+                            contentDescription = stringResource(
+                                R.string.cd_profile_avatar,
+                                user.fullName,
+                            ),
                             modifier = Modifier.padding(end = 8.dp),
                             onClick = { openProfile() }
                         )
@@ -124,7 +130,7 @@ fun MainContent(
                 ) {
                     Icon(
                         Icons.Default.Add,
-                        contentDescription = "Create Family",
+                        contentDescription = stringResource(R.string.cd_create_family),
                         modifier           = Modifier.size(28.dp),
                     )
                 }

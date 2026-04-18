@@ -1,4 +1,8 @@
-package com.labpro.nimons360.data.model.map
+package com.labpro.nimons360.data.model.ui_state
+
+import com.labpro.nimons360.data.model.map.MapMember
+import com.labpro.nimons360.data.model.map.MapSelf
+import com.labpro.nimons360.data.model.map.MapSocket
 
 data class MapUiState(
     val self: MapSelf,

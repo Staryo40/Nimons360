@@ -17,6 +17,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -112,14 +113,14 @@ private fun JoinFamilyDialogContent(
         },
         title = {
             Text(
-                text  = "Join Family",
+                text  = stringResource(R.string.join_family),
                 style = MaterialTheme.typography.headlineSmall,
             )
         },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
-                    text  = "Enter the family code shared by a member of the family to join.",
+                    text  = stringResource(R.string.join_prompt),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -133,12 +134,12 @@ private fun JoinFamilyDialogContent(
                         }
                         hasError = false
                     },
-                    label   = { Text("Family Code") },
+                    label   = { Text(stringResource(R.string.family_code_hint)) },
                     isError = hasError,
                     supportingText = if (hasError) {
-                        { Text("Please enter the 6-character code.") }
+                        { Text(stringResource(R.string.family_code_error)) }
                     } else {
-                        { Text("Ask a member of the family for the code") }
+                        { Text(stringResource(R.string.family_code_sub_hint)) }
                     },
                     singleLine = true,
                     textStyle  = LocalTextStyle.current.copy(
@@ -174,13 +175,13 @@ private fun JoinFamilyDialogContent(
                     containerColor = MaterialTheme.colorScheme.primary,
                 ),
             ) {
-                Text("Join")
+                Text(stringResource(R.string.btn_join_confirm))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text(
-                    text  = "Cancel",
+                    text  = stringResource(R.string.btn_cancel),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
