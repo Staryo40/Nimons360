@@ -1,7 +1,13 @@
 package com.labpro.nimons360.ui.features.map
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.location.LocationManager
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +16,7 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -56,8 +63,20 @@ class MapFragment : Fragment() {
     private val memberMap = linkedMapOf<Int, Marker>()
     private val favoriteMarkers = mutableListOf<Marker>()
     private var infoDialog: AlertDialog? = null
+    private var locationSettingsDialog: AlertDialog? = null
     private var hasMoved = false
     private var trackersOn = false
+    private var locationWatcherOn = false
+
+    private val locationProviderReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == LocationManager.PROVIDERS_CHANGED_ACTION ||
+                intent?.action == LocationManager.MODE_CHANGED_ACTION
+            ) {
+                handleLocationAvailability(showDialog = locationTracker.hasPermission())
+            }
+        }
+    }
 
     private val viewModel: MapViewModel by viewModels {
         val app = requireActivity().application as MainApplication
@@ -74,7 +93,7 @@ class MapFragment : Fragment() {
         val granted = result.values.any { it }
         viewModel.setPermission(granted)
         if (granted) {
-            startTrackers()
+            handleLocationAvailability(showDialog = true)
         }
     }
 
@@ -104,13 +123,17 @@ class MapFragment : Fragment() {
         val granted = locationTracker.hasPermission()
         viewModel.setPermission(granted)
         viewModel.bind()
+        startLocationWatcher()
         if (granted) {
-            startTrackers()
+            handleLocationAvailability(showDialog = true)
         }
     }
 
     override fun onStop() {
         super.onStop()
+        locationSettingsDialog?.dismiss()
+        locationSettingsDialog = null
+        stopLocationWatcher()
         stopTrackers()
         viewModel.unbind()
         mapView.onPause()
@@ -119,6 +142,7 @@ class MapFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         infoDialog?.dismiss()
+        locationSettingsDialog?.dismiss()
         memberMap.values.forEach { mapView.overlays.remove(it) }
         favoriteMarkers.forEach { mapView.overlays.remove(it) }
         selfMarker?.let { mapView.overlays.remove(it) }
@@ -193,6 +217,64 @@ class MapFragment : Fragment() {
         netTracker = NetTracker(ctx)
     }
 
+    private fun startLocationWatcher() {
+        if (locationWatcherOn) return
+        val filter = IntentFilter().apply {
+            addAction(LocationManager.PROVIDERS_CHANGED_ACTION)
+            addAction(LocationManager.MODE_CHANGED_ACTION)
+        }
+        ContextCompat.registerReceiver(
+            requireContext(),
+            locationProviderReceiver,
+            filter,
+            RECEIVER_NOT_EXPORTED,
+        )
+        locationWatcherOn = true
+    }
+
+    private fun stopLocationWatcher() {
+        if (!locationWatcherOn) return
+        requireContext().unregisterReceiver(locationProviderReceiver)
+        locationWatcherOn = false
+    }
+
+    private fun handleLocationAvailability(showDialog: Boolean) {
+        if (!locationTracker.hasPermission()) {
+            locationSettingsDialog?.dismiss()
+            locationSettingsDialog = null
+            viewModel.setPermission(false)
+            stopTrackers()
+            return
+        }
+
+        if (!locationTracker.isGpsReady()) {
+            stopTrackers()
+            viewModel.setLocationEnabled(false)
+            if (showDialog) {
+                showLocationSettingsDialog()
+            }
+            return
+        }
+
+        locationSettingsDialog?.dismiss()
+        locationSettingsDialog = null
+        viewModel.setLocationEnabled(true)
+        startTrackers()
+    }
+
+    private fun showLocationSettingsDialog() {
+        if (locationSettingsDialog?.isShowing == true) return
+        locationSettingsDialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.map_location_off_title)
+            .setMessage(R.string.map_location_off_body)
+            .setCancelable(false)
+            .setPositiveButton(R.string.map_open_location_settings) { _, _ ->
+                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }
+            .setNegativeButton(R.string.btn_close, null)
+            .show()
+    }
+
     private fun observeState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -252,8 +334,16 @@ class MapFragment : Fragment() {
     }
 
     private fun renderSelf(state: MapUiState) {
-        val lat = state.self.latitude ?: return
-        val lon = state.self.longitude ?: return
+        val lat = state.self.latitude
+        val lon = state.self.longitude
+        if (lat == null || lon == null) {
+            selfMarker?.let { marker ->
+                mapView.overlays.remove(marker)
+                selfMarker = null
+                mapView.invalidate()
+            }
+            return
+        }
         val point = GeoPoint(lat, lon)
 
         if (selfMarker == null) {
