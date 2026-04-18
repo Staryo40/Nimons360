@@ -61,16 +61,16 @@ fun FamilyListItem(
                 .size(44.dp)
                 .clip(RoundedCornerShape(12.dp))
                 .background(
-                    if (isMine) MaterialTheme.colorScheme.primaryContainer
-                    else MaterialTheme.colorScheme.surfaceVariant,
+                    if (isMine) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.secondaryContainer,
                 ),
             contentAlignment = Alignment.Center,
         ) {
             Text(
                 text       = family.name.first().uppercaseChar().toString(),
                 style      = MaterialTheme.typography.titleSmall,
-                color      = if (isMine) MaterialTheme.colorScheme.onPrimaryContainer
-                else MaterialTheme.colorScheme.onSurfaceVariant,
+                color      = if (isMine) MaterialTheme.colorScheme.onPrimary
+                else MaterialTheme.colorScheme.onSecondaryContainer,
                 fontWeight = FontWeight.Bold,
             )
         }
@@ -93,7 +93,7 @@ fun FamilyListItem(
                 imageVector        = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
                 contentDescription = pinDescription,
                 tint               = if (isPinned) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.onSurfaceVariant,
+                else MaterialTheme.colorScheme.onSurface,
                 modifier           = Modifier.size(20.dp),
             )
         }

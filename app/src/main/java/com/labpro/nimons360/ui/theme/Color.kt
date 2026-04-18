@@ -11,7 +11,7 @@ val OnPrimary          = Color(0xFFFFFFFF)
 // ── Secondary / Accent ────────────────────────────────────────────────────────
 val SecondaryCoral     = Color(0xFFE29578)
 val SecondaryCoralDark = Color(0xFFB96E4E)
-val OnSecondary        = Color(0xFFFFFFFF)
+val OnSecondary        = Color(0xFF1D3557)
 
 // ── Backgrounds & Surfaces ────────────────────────────────────────────────────
 /** Main page background (Home, Families, Profile) */
@@ -23,30 +23,30 @@ val SurfaceWhite       = Color(0xFFFFFFFF)
 /** Headings, family names, primary content */
 val TextPrimary        = Color(0xFF1D3557)
 /** Emails, timestamps, secondary info */
-val TextSecondary      = Color(0xFF6C757D)
+val TextSecondary      = Color(0xFF56616B)
 /** On dark surfaces (inside teal header) */
 val TextOnDark         = Color(0xFFFFFFFF)
 
 // ── Semantic / Status ─────────────────────────────────────────────────────────
 /** High battery, Wi-Fi status, success */
-val SuccessMint        = Color(0xFF2A9D8F)
+val SuccessMint        = Color(0xFF1F7A70)
 /** Sign Out, Leave Family, errors, disconnected */
-val DangerCrimson      = Color(0xFFD62828)
+val DangerCrimson      = Color(0xFFB42318)
 /** Low battery, "Not a member" */
 val CautionSaffron     = Color(0xFFE9C46A)
 /** Mobile data, info dialogues */
 val InfoMutedBlue      = Color(0xFF457B9D)
 
 // ── Utility ───────────────────────────────────────────────────────────────────
-val Divider            = Color(0xFFE0E4E8)
-val DisabledBg         = Color(0xFFC8CDD3)
-val DisabledText       = Color(0xFF9EA6AE)
+val Divider            = Color(0xFFBCC5CC)
+val DisabledBg         = Color(0xFFAAB4BD)
+val DisabledText       = Color(0xFF7C8792)
 
 // ── Map pin avatar palette ────────────────────────────────────────────────────
 val PinColors = listOf(
-    Color(0xFFE63946),  // red
-    Color(0xFF2A9D8F),  // mint
-    Color(0xFF457B9D),  // blue
-    Color(0xFFE29578),  // coral
-    Color(0xFF6C4AB6),  // purple
+    Color(0xFFC62828),  // red
+    Color(0xFF1F7A70),  // mint
+    Color(0xFF356B8C),  // blue
+    Color(0xFFB96E4E),  // coral
+    Color(0xFF5B3FA3),  // purple
 )
