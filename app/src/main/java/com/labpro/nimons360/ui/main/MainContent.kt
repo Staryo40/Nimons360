@@ -73,7 +73,7 @@ fun MainContent(
     val screenTitle = when (currentScreen) {
         MainScreenEnum.HOME   -> "Nimons360"
         MainScreenEnum.MAP    -> context.getString(R.string.map_title)
-        MainScreenEnum.FAMILY -> context.getString(R.string.nav_families)
+        MainScreenEnum.FAMILY -> context.getString(R.string.title_browse_families)
     }
 
     Scaffold(

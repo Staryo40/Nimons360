@@ -18,8 +18,8 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:contentDescription="@string/cd_back"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_back"
             app:navigationIconTint="@color/text_primary"
             app:titleTextColor="@color/text_primary"
@@ -103,7 +103,8 @@
                                 android:id="@+id/tvFamilyMeta"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textColor="#CCFFFFFF"
+                                android:textColor="@color/white"
+                                android:alpha="0.92"
                                 android:textSize="@dimen/text_sm"
                                 tools:text="4 members · Created Mar 2024" />
 
@@ -119,7 +120,7 @@
                                 android:paddingHorizontal="8dp"
                                 android:paddingVertical="3dp"
                                 android:text="@string/not_a_member"
-                                android:textColor="@color/caution_saffron"
+                                android:textColor="@color/text_primary"
                                 android:textSize="@dimen/text_xs"
                                 android:visibility="gone"
                                 tools:visibility="visible" />

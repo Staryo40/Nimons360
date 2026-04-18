@@ -225,15 +225,8 @@ class CreateFamilyFragment : DialogFragment() {
     }
 
     private fun updateIconAccessibility(selectedIndex: Int) {
-        ivSelectedIcon.contentDescription = getString(R.string.cd_selected_family_icon)
-
         iconContainers.forEachIndexed { index, container ->
-            val descriptionRes = if (index == selectedIndex) {
-                R.string.create_family_icon_option_selected
-            } else {
-                R.string.create_family_icon_option
-            }
-            container.contentDescription = getString(descriptionRes, index + 1)
+            container.contentDescription = getString(R.string.create_family_icon_option, index + 1)
             ViewCompat.setAccessibilityDelegate(container, object : AccessibilityDelegateCompat() {
                 override fun onInitializeAccessibilityNodeInfo(
                     host: View,
