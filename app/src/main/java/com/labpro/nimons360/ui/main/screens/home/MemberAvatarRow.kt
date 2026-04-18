@@ -33,10 +33,11 @@ fun MemberAvatarRow(
     } else {
         visibleNames
     }
+    val memberRowDescription = stringResource(R.string.a11y_member_row, summary)
     Row(
         horizontalArrangement = Arrangement.spacedBy((-8).dp),
         modifier = Modifier.semantics(mergeDescendants = true) {
-            contentDescription = stringResource(R.string.a11y_member_row, summary)
+            contentDescription = memberRowDescription
         },
     ) {
         members.take(maxVisible).forEachIndexed { index, member ->
