@@ -9,12 +9,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import com.labpro.nimons360.MainApplication
+import com.labpro.nimons360.R
 import com.labpro.nimons360.ui.features.families.CreateFamilyFragment
 import com.labpro.nimons360.ui.features.families.FamilyDetailFragment
 import com.labpro.nimons360.ui.main.shared.EmptyStateCard
@@ -65,9 +67,9 @@ fun HomeCompose(
     }
 
     LaunchedEffect(Unit) {
-//        if (state.myFamilies.isEmpty() && state.discoverFamilies.isEmpty()) {
+        if (state.myFamilies.isEmpty() && state.discoverFamilies.isEmpty()) {
             vm.refresh()
-//        }
+        }
     }
 
     PullToRefreshBox(
@@ -80,13 +82,13 @@ fun HomeCompose(
                 .background(MaterialTheme.colorScheme.background),
             contentPadding = PaddingValues(bottom = 24.dp),
         ) {
-            item { SectionHeader("MY FAMILIES") }
+            item { SectionHeader(stringResource(R.string.section_my_families)) }
 
             item {
                 when {
                     state.isLoadingMyFamilies -> LoadingSection(Modifier.height(148.dp))
                     state.myFamilies.isEmpty() -> EmptyStateCard(
-                        "You haven't joined any families yet.",
+                        stringResource(R.string.home_empty_my_families),
                         modifier = Modifier.padding(bottom = 8.dp),
                     )
                     else -> LazyRow(
@@ -104,7 +106,7 @@ fun HomeCompose(
                 }
             }
 
-            item { SectionHeader("DISCOVER FAMILIES") }
+            item { SectionHeader(stringResource(R.string.section_discover)) }
 
             item {
                 Card(
@@ -127,7 +129,10 @@ fun HomeCompose(
 
                             state.discoverFamilies.isEmpty() -> {
                                 Box(modifier = Modifier.padding(24.dp).fillMaxWidth(), contentAlignment = Alignment.Center) {
-                                    Text("No new families to discover right now.", style = MaterialTheme.typography.bodyMedium)
+                                    Text(
+                                        stringResource(R.string.home_empty_discover),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                    )
                                 }
                             }
 

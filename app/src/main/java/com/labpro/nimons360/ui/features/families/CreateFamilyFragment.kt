@@ -10,8 +10,10 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -75,7 +77,6 @@ class CreateFamilyFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bindViews(view)
         val appBar = view.findViewById<View>(R.id.appBarLayout)
         ViewCompat.setOnApplyWindowInsetsListener(appBar) { v, insets ->
             val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
@@ -150,6 +151,7 @@ class CreateFamilyFragment : DialogFragment() {
             }
         }
         ivSelectedIcon.load(FAMILY_ICON_URLS[0]) { crossfade(true) }
+        updateIconAccessibility(0)
     }
 
     private fun setupListeners() {
@@ -197,6 +199,7 @@ class CreateFamilyFragment : DialogFragment() {
         if (state.selectedIconIndex in FAMILY_ICON_URLS.indices) {
             ivSelectedIcon.load(FAMILY_ICON_URLS[state.selectedIconIndex]) { crossfade(false) }
             ivSelectedIcon.isSelected = true
+            updateIconAccessibility(state.selectedIconIndex)
         }
 
         if (state.error != null && state.familyName.isBlank()) {
@@ -219,6 +222,28 @@ class CreateFamilyFragment : DialogFragment() {
         FamilyDetailFragment
             .newInstance(familyId)
             .show(parentFragmentManager, FamilyDetailFragment.TAG)
+    }
+
+    private fun updateIconAccessibility(selectedIndex: Int) {
+        ivSelectedIcon.contentDescription = getString(R.string.cd_selected_family_icon)
+
+        iconContainers.forEachIndexed { index, container ->
+            val descriptionRes = if (index == selectedIndex) {
+                R.string.create_family_icon_option_selected
+            } else {
+                R.string.create_family_icon_option
+            }
+            container.contentDescription = getString(descriptionRes, index + 1)
+            ViewCompat.setAccessibilityDelegate(container, object : AccessibilityDelegateCompat() {
+                override fun onInitializeAccessibilityNodeInfo(
+                    host: View,
+                    info: AccessibilityNodeInfoCompat,
+                ) {
+                    super.onInitializeAccessibilityNodeInfo(host, info)
+                    info.isSelected = index == selectedIndex
+                }
+            })
+        }
     }
 
     companion object {

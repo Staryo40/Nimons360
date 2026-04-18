@@ -1,9 +1,35 @@
+import org.gradle.kotlin.dsl.resolver.SourceDistributionResolver.Companion.artifactType
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.ksp)
+    id("com.google.gms.google-services")
+    id("com.google.firebase.appdistribution")
 }
+
+// Properties
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
+
+// Env
+val env = Properties()
+val envFile = rootProject.file(".env")
+
+if (envFile.exists()) {
+    envFile.inputStream().use { stream ->
+        env.load(stream)
+    }
+}
+
+val testersList = env.getProperty("FIREBASE_TESTERS") ?: ""
+val firebaseAppId = env.getProperty("FIREBASE_APP_ID") ?: ""
 
 android {
     namespace = "com.labpro.nimons360"
@@ -18,6 +44,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "BASE_URL", "\"https://mad.labpro.hmif.dev\"")
+        buildConfigField("String", "AGORA_APP_ID", "\"${localProperties.getProperty("AGORA_APP_ID") ?: ""}\"")
     }
 
     buildTypes {
@@ -40,6 +67,13 @@ android {
         compose = true
         buildConfig = true
     }
+
+    configure<com.google.firebase.appdistribution.gradle.AppDistributionExtension> {
+        releaseNotes = "Initial testing build"
+        testers = testersList
+        artifactType = "APK"
+        appId = firebaseAppId
+    }
 }
 
 dependencies {
@@ -59,6 +93,7 @@ dependencies {
     implementation(libs.androidx.junit.ktx)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.google.material)
+    implementation(libs.androidx.drawerlayout)
 
     // Networking
     implementation(libs.retrofit)
@@ -89,6 +124,7 @@ dependencies {
     implementation(libs.google.webrtc)
 
     testImplementation(libs.junit)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -96,4 +132,13 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     testImplementation(kotlin("test"))
+
+    // livestreaming
+    implementation("com.github.AgoraIO-Community:VideoUIKit-Android:4.0.1") {
+        exclude(group = "com.github.AgoraIO-Community.VideoUIKit-Android", module = "final-debug")
+    }
+
+    // firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
+    implementation("com.google.firebase:firebase-analytics")
 }

@@ -3,7 +3,6 @@ package com.labpro.nimons360.ui.features.families
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +16,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -26,7 +24,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import coil.load                              // Requires: implementation("io.coil-kt:coil:2.7.0")
+import coil.load
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -35,13 +33,12 @@ import com.labpro.nimons360.R
 import com.labpro.nimons360.data.model.family.FamilyDetail
 import com.labpro.nimons360.data.model.family.FamilyMember
 import com.labpro.nimons360.data.model.ui_state.FamilyDetailUiState
+import com.labpro.nimons360.ui.features.live.LiveActivity
 import com.labpro.nimons360.viewmodel.FamilyDetailViewModel
 import com.labpro.nimons360.viewmodel.FamilyDetailViewModelFactory
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
-import kotlin.collections.forEachIndexed
-import kotlin.collections.lastIndex
 
 /**
  * Fullscreen DialogFragment showing family detail.
@@ -83,6 +80,8 @@ class FamilyDetailFragment : DialogFragment() {
     private lateinit var pbAction: ProgressBar
     private lateinit var tvActionError: TextView
 
+    private var btnLive: MaterialButton? = null
+
     private val avatarColors: List<Int> by lazy {
         listOf(
             ContextCompat.getColor(requireContext(), R.color.primary_teal),
@@ -121,7 +120,6 @@ class FamilyDetailFragment : DialogFragment() {
             insets
         }
 
-        bindViews(view)
         setupToolbar()
         setupJoinDialogResultListener()
         observeState()
@@ -151,6 +149,7 @@ class FamilyDetailFragment : DialogFragment() {
     }
 
     private fun setupToolbar() {
+        toolbar.navigationContentDescription = getString(R.string.cd_back)
         toolbar.setNavigationOnClickListener { dismiss() }
     }
 
@@ -208,6 +207,7 @@ class FamilyDetailFragment : DialogFragment() {
         toolbar.title = family.name
 
         ivFamilyIcon.load(family.iconUrl) { crossfade(true) }
+        ivFamilyIcon.contentDescription = getString(R.string.cd_discover_family_icon, family.name)
         tvFamilyName.text = family.name
         tvFamilyMeta.text = buildMeta(family)
 
@@ -218,27 +218,61 @@ class FamilyDetailFragment : DialogFragment() {
             tvFamilyCode.text = family.familyCode ?: "------"
             btnCopyCode.setOnClickListener { copyCodeToClipboard(family.familyCode) }
 
+            injectLiveButton(family)
+
             membersCard.isVisible    = true
             joinHintSection.isVisible = false
             buildMemberRows(family.members)
 
-            btnAction.text = "Leave Family"
+            btnAction.text = getString(R.string.leave_family)
             btnAction.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.danger_crimson))
             btnAction.setOnClickListener { confirmLeave(family.name) }
         } else {
             tvNotMemberBadge.isVisible = true
 
             familyCodeSection.isVisible = false
+            btnLive?.isVisible = false
             membersCard.isVisible       = false
             joinHintSection.isVisible   = true
             buildCensoredMemberRows(family.members)
 
-            btnAction.text = "Join Family"
+            btnAction.text = getString(R.string.join_family)
             btnAction.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.primary_teal))
             btnAction.setOnClickListener { showJoinDialog() }
         }
     }
 
+    private fun injectLiveButton(family: FamilyDetail) {
+        if (btnLive == null) {
+            btnLive = MaterialButton(requireContext()).apply {
+                text = getString(R.string.live_room)
+                setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.pin_orange))
+                val params = LinearLayout.LayoutParams(MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                params.setMargins(0, 16, 0, 0)
+                layoutParams = params
+
+                setOnClickListener {
+                    showLiveOptionsDialog(family.id.toString())
+                }
+            }
+            familyCodeSection.addView(btnLive)
+        }
+        btnLive?.isVisible = true
+    }
+
+    private fun showLiveOptionsDialog(roomId: String) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.live_room_title)
+            .setMessage(R.string.live_room_message)
+            .setPositiveButton(R.string.live_room_start) { _, _ ->
+                startActivity(LiveActivity.newIntent(requireContext(), roomId, true))
+            }
+            .setNegativeButton(R.string.live_room_watch) { _, _ ->
+                startActivity(LiveActivity.newIntent(requireContext(), roomId, false))
+            }
+            .setNeutralButton(R.string.btn_cancel, null)
+            .show()
+    }
 
     private fun buildMemberRows(members: List<FamilyMember>) {
         membersContainer.removeAllViews()
@@ -277,6 +311,12 @@ class FamilyDetailFragment : DialogFragment() {
         row.findViewById<TextView>(R.id.tvMemberName).text     = member.fullName
         row.findViewById<TextView>(R.id.tvMemberEmail).text    = member.email
         row.findViewById<TextView>(R.id.tvYouBadge).isVisible  = isCurrentUser
+        row.contentDescription = getString(
+            R.string.member_row_description,
+            member.fullName,
+            member.email,
+            if (isCurrentUser) ", ${getString(R.string.member_you)}" else "",
+        )
     }
 
     private fun makeDivider(): View {
@@ -299,10 +339,10 @@ class FamilyDetailFragment : DialogFragment() {
     private fun confirmLeave(familyName: String) {
         MaterialAlertDialogBuilder(requireContext())
             .setIcon(R.drawable.ic_not_member)
-            .setTitle("Leave Family")
-            .setMessage("Are you sure you want to leave $familyName?")
-            .setPositiveButton("Leave") { _, _ -> viewModel.leaveFamily() }
-            .setNegativeButton("Cancel", null)
+            .setTitle(R.string.leave_family)
+            .setMessage(getString(R.string.leave_confirmation, familyName))
+            .setPositiveButton(R.string.btn_leave) { _, _ -> viewModel.leaveFamily() }
+            .setNegativeButton(R.string.btn_cancel, null)
             .create()
             .apply {
                 setOnShowListener {
@@ -318,14 +358,18 @@ class FamilyDetailFragment : DialogFragment() {
     private fun copyCodeToClipboard(code: String?) {
         if (code == null) return
         val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(ClipData.newPlainText("Family Code", code))
-        Toast.makeText(requireContext(), "Code copied!", Toast.LENGTH_SHORT).show()
+        clipboard.setPrimaryClip(ClipData.newPlainText(getString(R.string.family_code_clipboard_label), code))
+        Toast.makeText(requireContext(), getString(R.string.family_code_copied), Toast.LENGTH_SHORT).show()
     }
 
     private fun buildMeta(family: FamilyDetail): String {
-        val count = "${family.members.size} member${if (family.members.size != 1) "s" else ""}"
+        val pluralSuffix = if (family.members.size != 1) "s" else ""
         val date  = family.createdAt?.let { parseDate(it) } ?: ""
-        return if (date.isNotEmpty()) "$count · Created $date" else count
+        return if (date.isNotEmpty()) {
+            getString(R.string.family_meta_with_date, family.members.size, pluralSuffix, date)
+        } else {
+            getString(R.string.family_meta_without_date, family.members.size, pluralSuffix)
+        }
     }
 
     private fun parseDate(iso: String): String = try {
@@ -333,7 +377,6 @@ class FamilyDetailFragment : DialogFragment() {
         val outFmt = SimpleDateFormat("MMM yyyy", Locale.US)
         outFmt.format(inFmt.parse(iso)!!)
     } catch (_: Exception) { "" }
-
 
     companion object {
         const val TAG                     = "FamilyDetailFragment"

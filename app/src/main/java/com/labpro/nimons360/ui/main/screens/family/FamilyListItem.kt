@@ -21,9 +21,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.labpro.nimons360.R
 import com.labpro.nimons360.data.model.family.Family
 
 
@@ -35,9 +39,17 @@ fun FamilyListItem(
     onClick:     () -> Unit,
     onPinToggle: () -> Unit,
 ) {
+    val openFamilyDescription = stringResource(R.string.cd_open_family, family.name)
+    val pinDescription = stringResource(
+        if (isPinned) R.string.cd_unpin_family_named else R.string.cd_pin_family_named,
+        family.name,
+    )
     Row(
         modifier              = Modifier
             .fillMaxWidth()
+            .semantics {
+                contentDescription = openFamilyDescription
+            }
             .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment     = Alignment.CenterVertically,
@@ -79,7 +91,7 @@ fun FamilyListItem(
         ) {
             Icon(
                 imageVector        = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
-                contentDescription = if (isPinned) "Unpin family" else "Pin family",
+                contentDescription = pinDescription,
                 tint               = if (isPinned) MaterialTheme.colorScheme.primary
                 else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier           = Modifier.size(20.dp),

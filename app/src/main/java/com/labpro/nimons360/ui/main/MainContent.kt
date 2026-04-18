@@ -7,30 +7,27 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
+import com.labpro.nimons360.R
 import com.labpro.nimons360.data.enums.MainScreenEnum
 import com.labpro.nimons360.data.model.user.UserData
 import com.labpro.nimons360.ui.features.families.CreateFamilyFragment
 import com.labpro.nimons360.ui.features.families.FamilyDetailFragment
-import com.labpro.nimons360.ui.features.families.JoinFamilyDialog
+import com.labpro.nimons360.ui.features.profile.ProfileFragment
 import com.labpro.nimons360.ui.main.screens.FamilyCompose
 import com.labpro.nimons360.ui.main.screens.HomeCompose
 import com.labpro.nimons360.ui.main.screens.MapCompose
 import com.labpro.nimons360.ui.main.shared.UserAvatar
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainContent(
-    user: UserData,
-    onProfileClick: () -> Unit = {},
+    user: UserData
 ) {
     var currentScreen by remember { mutableStateOf(MainScreenEnum.HOME) }
 
@@ -38,11 +35,21 @@ fun MainContent(
     val lifecycleOwner = LocalLifecycleOwner.current
     val fm = (context as FragmentActivity).supportFragmentManager
 
+    fun openProfile() {
+        val currentFm = fm ?: return
+
+        if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+            if (!currentFm.isStateSaved && currentFm.findFragmentByTag(ProfileFragment.TAG) == null) {
+                ProfileFragment().show(currentFm, ProfileFragment.TAG)
+            }
+        }
+    }
+
     fun openCreateFamily() {
         val currentFm = fm ?: return
 
         if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-            if (!fm.isStateSaved && fm.findFragmentByTag(CreateFamilyFragment.TAG) == null) {
+            if (!currentFm.isStateSaved && currentFm.findFragmentByTag(CreateFamilyFragment.TAG) == null) {
                 CreateFamilyFragment().show(currentFm, CreateFamilyFragment.TAG)
             }
         }
@@ -58,22 +65,12 @@ fun MainContent(
                     .show(currentFm, FamilyDetailFragment.TAG)
             }
         }
-
-//        lifecycleOwner.lifecycleScope.launchWhenResumed {
-//            if (!fm.isStateSaved &&
-//                fm.findFragmentByTag(FamilyDetailFragment.TAG) == null
-//            ) {
-//                FamilyDetailFragment
-//                    .newInstance(familyId, currentUserEmail = user.email)
-//                    .show(fm, FamilyDetailFragment.TAG)
-//            }
-//        }
     }
 
     val screenTitle = when (currentScreen) {
         MainScreenEnum.HOME   -> "Nimons360"
-        MainScreenEnum.MAP    -> "Map"
-        MainScreenEnum.FAMILY -> "Families"
+        MainScreenEnum.MAP    -> context.getString(R.string.map_title)
+        MainScreenEnum.FAMILY -> context.getString(R.string.nav_families)
     }
 
     Scaffold(
@@ -88,14 +85,16 @@ fun MainContent(
                         )
                     },
                     actions = {
-                        IconButton(
-                            onClick  = onProfileClick,
-                            modifier = Modifier
-                                .padding(end = 8.dp)
-                                .size(48.dp),
-                        ) {
-                            UserAvatar(name = user.fullName, size = 48)
-                        }
+                        UserAvatar(
+                            name = user.fullName,
+                            size = 40,
+                            contentDescription = stringResource(
+                                R.string.cd_profile_avatar,
+                                user.fullName,
+                            ),
+                            modifier = Modifier.padding(end = 8.dp),
+                            onClick = { openProfile() }
+                        )
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor    = MaterialTheme.colorScheme.surface,
@@ -131,7 +130,7 @@ fun MainContent(
                 ) {
                     Icon(
                         Icons.Default.Add,
-                        contentDescription = "Create Family",
+                        contentDescription = stringResource(R.string.cd_create_family),
                         modifier           = Modifier.size(28.dp),
                     )
                 }

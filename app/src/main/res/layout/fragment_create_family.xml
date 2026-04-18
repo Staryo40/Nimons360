@@ -27,7 +27,7 @@
                 android:minWidth="0dp"
                 android:paddingStart="@dimen/spacing_md"
                 android:paddingEnd="@dimen/spacing_sm"
-                android:text="Cancel"
+                android:text="@string/btn_cancel"
                 android:textColor="@color/text_secondary"
                 android:textSize="@dimen/text_body"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -37,8 +37,9 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:accessibilityHeading="true"
                 android:gravity="center"
-                android:text="New Family"
+                android:text="@string/create_family_title"
                 android:textColor="@color/text_primary"
                 android:textSize="@dimen/text_md"
                 android:textStyle="bold"
@@ -55,7 +56,7 @@
                 android:minWidth="0dp"
                 android:paddingStart="@dimen/spacing_sm"
                 android:paddingEnd="@dimen/spacing_md"
-                android:text="Create"
+                android:text="@string/btn_create"
                 android:textColor="@color/primary_teal"
                 android:textSize="@dimen/text_body"
                 android:textStyle="bold"
@@ -105,7 +106,7 @@
                         android:layout_height="@dimen/family_icon_lg"
                         android:layout_gravity="center_horizontal"
                         android:background="@drawable/bg_icon_item"
-                        android:contentDescription="@string/cd_family_icon"
+                        android:contentDescription="@string/cd_selected_family_icon"
                         android:padding="@dimen/spacing_sm"
                         android:scaleType="fitCenter"
                         tools:src="@mipmap/ic_launcher" />
@@ -117,7 +118,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/page_horizontal_padding"
                     android:layout_marginBottom="@dimen/spacing_xs"
-                    android:text="FAMILY NAME"
+                    android:accessibilityHeading="true"
+                    android:text="@string/family_name_label"
                     android:textColor="@color/text_secondary"
                     android:textSize="@dimen/text_xs"
                     android:letterSpacing="0.08" />
@@ -165,7 +167,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="After creating the family, an auto-generated family code will be produced. Members will need to enter this code to join."
+                        android:text="@string/auto_code_info"
                         android:textColor="@color/text_secondary"
                         android:textSize="@dimen/text_sm" />
 
@@ -176,7 +178,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/page_horizontal_padding"
                     android:layout_marginBottom="@dimen/spacing_sm"
-                    android:text="CHOOSE AN ICON"
+                    android:accessibilityHeading="true"
+                    android:text="@string/choose_icon_label"
                     android:textColor="@color/text_secondary"
                     android:textSize="@dimen/text_xs"
                     android:letterSpacing="0.08" />
@@ -203,7 +206,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:adjustViewBounds="true"
-                            android:contentDescription="@string/cd_family_icon"
+                            android:contentDescription="@null"
+                            android:importantForAccessibility="no"
                             android:scaleType="fitCenter" />
                     </FrameLayout>
 
@@ -224,7 +228,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:adjustViewBounds="true"
-                            android:contentDescription="@string/cd_family_icon"
+                            android:contentDescription="@null"
+                            android:importantForAccessibility="no"
                             android:scaleType="fitCenter" />
                     </FrameLayout>
 
@@ -245,7 +250,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:adjustViewBounds="true"
-                            android:contentDescription="@string/cd_family_icon"
+                            android:contentDescription="@null"
+                            android:importantForAccessibility="no"
                             android:scaleType="fitCenter" />
                     </FrameLayout>
 
@@ -266,7 +272,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:adjustViewBounds="true"
-                            android:contentDescription="@string/cd_family_icon"
+                            android:contentDescription="@null"
+                            android:importantForAccessibility="no"
                             android:scaleType="fitCenter" />
                     </FrameLayout>
 
@@ -293,7 +300,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:adjustViewBounds="true"
-                            android:contentDescription="@string/cd_family_icon"
+                            android:contentDescription="@null"
+                            android:importantForAccessibility="no"
                             android:scaleType="fitCenter" />
                     </FrameLayout>
 
@@ -314,7 +322,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:adjustViewBounds="true"
-                            android:contentDescription="@string/cd_family_icon"
+                            android:contentDescription="@null"
+                            android:importantForAccessibility="no"
                             android:scaleType="fitCenter" />
                     </FrameLayout>
 
@@ -335,7 +344,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:adjustViewBounds="true"
-                            android:contentDescription="@string/cd_family_icon"
+                            android:contentDescription="@null"
+                            android:importantForAccessibility="no"
                             android:scaleType="fitCenter" />
                     </FrameLayout>
 
@@ -356,7 +366,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:adjustViewBounds="true"
-                            android:contentDescription="@string/cd_family_icon"
+                            android:contentDescription="@null"
+                            android:importantForAccessibility="no"
                             android:scaleType="fitCenter" />
                     </FrameLayout>
 
@@ -371,6 +382,7 @@
                     android:background="@drawable/bg_error_banner"
                     android:paddingHorizontal="@dimen/spacing_md"
                     android:paddingVertical="@dimen/spacing_sm"
+                    android:accessibilityLiveRegion="polite"
                     android:textColor="@color/danger_crimson"
                     android:textSize="@dimen/text_sm"
                     android:visibility="gone"
@@ -388,6 +400,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#80FFFFFF"
+        android:contentDescription="@string/cd_loading_overlay"
         android:visibility="gone"
         tools:visibility="visible">
 

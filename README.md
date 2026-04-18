@@ -2,6 +2,8 @@
 
 ## List of Content
 
+Debug command to clear tokens
+
 ```bash
 adb shell pm clear com.labpro.nimons360
 ```
@@ -97,3 +99,16 @@ C:.
     ├── values/                # Strings, Colors, Dimens, and Style definitions
     └── xml/                   # Configuration files (e.g., Network Security)
 ```
+
+## Libraries Used
+
+- osmdroid (`org.osmdroid:osmdroid-android`)
+  Used for the XML-based map screen because it is open source, does not need billing, supports pan/zoom well, and fits the milestone requirement.
+- Google Play Services Location (`com.google.android.gms:play-services-location`)
+  Used through `FusedLocationProviderClient` to read the latest user location with better accuracy and lower battery cost than manual provider handling.
+- OkHttp WebSocket (`com.squareup.okhttp3:okhttp`)
+  Used for the live presence socket to send `update_presence`, keep the connection alive with `ping`, and receive realtime member position updates.
+- Android Sensor Framework (`SensorManager`, `TYPE_ROTATION_VECTOR`)
+  Used to derive azimuth/rotation in degrees so the current user marker can reflect phone orientation and include the value in presence payloads.
+- Material Components (`com.google.android.material:material`)
+  Used for cards, dialogs, and the permission/status surfaces on the Map screen so the XML UI stays visually consistent with the rest of the app.

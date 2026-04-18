@@ -19,6 +19,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:contentDescription="@string/cd_back"
             app:navigationIcon="@drawable/ic_back"
             app:navigationIconTint="@color/text_primary"
             app:titleTextColor="@color/text_primary"
@@ -117,7 +118,7 @@
                                 android:drawablePadding="4dp"
                                 android:paddingHorizontal="8dp"
                                 android:paddingVertical="3dp"
-                                android:text="Not a member"
+                                android:text="@string/not_a_member"
                                 android:textColor="@color/caution_saffron"
                                 android:textSize="@dimen/text_xs"
                                 android:visibility="gone"
@@ -143,7 +144,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/spacing_xs"
-                        android:text="FAMILY CODE"
+                        android:accessibilityHeading="true"
+                        android:text="@string/family_code_label"
                         android:textColor="@color/text_secondary"
                         android:textSize="@dimen/text_xs"
                         android:letterSpacing="0.08" />
@@ -183,7 +185,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/spacing_xs"
-                        android:text="Share this code so others can join your family"
+                        android:text="@string/family_code_copy_hint"
                         android:textColor="@color/text_secondary"
                         android:textSize="@dimen/text_sm" />
 
@@ -195,7 +197,8 @@
                     android:layout_marginStart="@dimen/page_horizontal_padding"
                     android:layout_marginTop="@dimen/spacing_md"
                     android:layout_marginBottom="@dimen/spacing_xs"
-                    android:text="MEMBERS"
+                    android:accessibilityHeading="true"
+                    android:text="@string/members_section"
                     android:textColor="@color/text_secondary"
                     android:textSize="@dimen/text_xs"
                     android:letterSpacing="0.08" />
@@ -234,7 +237,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="Join this family to see member details and interact with them on the map."
+                        android:text="@string/family_join_hint"
                         android:textColor="@color/text_secondary"
                         android:textSize="@dimen/text_sm" />
 
@@ -268,6 +271,7 @@
                     android:layout_marginHorizontal="@dimen/page_horizontal_padding"
                     android:layout_marginTop="@dimen/spacing_sm"
                     android:background="@drawable/bg_error_banner"
+                    android:accessibilityLiveRegion="polite"
                     android:paddingHorizontal="@dimen/spacing_md"
                     android:paddingVertical="@dimen/spacing_sm"
                     android:textColor="@color/danger_crimson"
@@ -286,6 +290,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/background_base"
+        android:contentDescription="@string/cd_loading_overlay"
         android:visibility="visible">
 
         <ProgressBar
