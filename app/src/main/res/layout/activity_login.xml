@@ -15,6 +15,7 @@
         android:layout_gravity="top|end"
         android:layout_marginTop="-90dp"
         android:layout_marginEnd="-90dp"
+        android:importantForAccessibility="no"
         android:background="@drawable/bg_circle_deco" />
 
     <View
@@ -23,6 +24,7 @@
         android:layout_gravity="top|start"
         android:layout_marginTop="80dp"
         android:layout_marginStart="-50dp"
+        android:importantForAccessibility="no"
         android:background="@drawable/bg_circle_deco" />
 
     <!-- Branding section -->
@@ -97,7 +99,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/spacing_xs"
-                    android:text="Welcome back"
+                    android:accessibilityHeading="true"
+                    android:text="@string/login_welcome_back"
                     android:textColor="@color/text_primary"
                     android:textSize="@dimen/text_xl"
                     android:textStyle="bold" />
@@ -106,7 +109,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/spacing_lg"
-                    android:text="Sign in to continue"
+                    android:text="@string/login_continue"
                     android:textColor="@color/text_secondary"
                     android:textSize="@dimen/text_sm" />
 
@@ -168,6 +171,7 @@
                     android:drawablePadding="@dimen/spacing_xs"
                     android:paddingHorizontal="@dimen/spacing_md"
                     android:paddingVertical="@dimen/spacing_sm"
+                    android:accessibilityLiveRegion="polite"
                     android:textColor="@color/danger_crimson"
                     android:textSize="@dimen/text_sm"
                     android:visibility="gone"

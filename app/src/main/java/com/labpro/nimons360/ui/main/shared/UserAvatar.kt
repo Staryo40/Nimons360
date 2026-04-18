@@ -12,6 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.labpro.nimons360.ui.theme.PinColors
@@ -24,18 +27,26 @@ fun UserAvatar(
     size: Int = 36,
     colorIndex: Int = -1,           // -1 = primary teal (current user)
     textColor: Color = TextOnDark,
-    onClick: () -> Unit = {},
+    contentDescription: String? = null,
+    onClick: (() -> Unit)? = null,
 ) {
     val bg = if (colorIndex < 0) MaterialTheme.colorScheme.primary
     else PinColors[colorIndex % PinColors.size]
     val initial = name.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+    val semanticsModifier = when {
+        contentDescription != null -> Modifier.semantics(mergeDescendants = true) {
+            this.contentDescription = contentDescription
+        }
+        else -> Modifier.clearAndSetSemantics { }
+    }
 
     Box(
         modifier = modifier
             .size(size.dp)
             .clip(CircleShape)
             .background(bg)
-            .clickable(onClick = onClick),
+            .then(semanticsModifier)
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
         contentAlignment = Alignment.Center,
     ) {
         Text(

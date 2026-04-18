@@ -8,6 +8,8 @@
     <string name="sign_in">Sign In</string>
     <string name="sign_out">Sign Out</string>
     <string name="loading">Loading…</string>
+    <string name="login_welcome_back">Welcome back</string>
+    <string name="login_continue">Sign in to continue</string>
 
     <!-- Error messages -->
     <string name="error_empty_fields">Please enter your email and password.</string>
@@ -26,6 +28,9 @@
     <string name="section_discover">DISCOVER FAMILIES</string>
     <string name="btn_join">Join</string>
     <string name="label_members">%d members</string>
+    <string name="home_empty_my_families">You haven\'t joined any families yet.</string>
+    <string name="home_empty_discover">No new families to discover right now.</string>
+    <string name="home_family_members_count">%1$d member%2$s</string>
 
     <!-- Families screen -->
     <string name="all_families">All</string>
@@ -33,22 +38,37 @@
     <string name="section_pinned">PINNED</string>
     <string name="section_all_families">ALL FAMILIES</string>
     <string name="search_families_hint">Search families…</string>
+    <string name="search_families_label">Search families</string>
+    <string name="families_empty_search">No families match your search.</string>
 
     <!-- Family detail -->
     <string name="family_code_label">FAMILY CODE</string>
     <string name="family_code_copy_hint">Share this code so others can join your family</string>
     <string name="not_a_member">Not a member</string>
     <string name="members_section">MEMBERS</string>
+    <string name="member_you">You</string>
+    <string name="member_row_description">%1$s, %2$s%3$s</string>
     <string name="leave_family">Leave Family</string>
     <string name="join_family">Join Family</string>
     <string name="join_family_hint">You\'ll need the family code to join</string>
     <string name="join_prompt">Enter the family code shared by a member of the family to join.</string>
     <string name="family_code_hint">Family Code</string>
     <string name="family_code_sub_hint">Ask a member of the family for the code</string>
+    <string name="family_code_error">Please enter the 6-character code.</string>
+    <string name="family_join_hint">Join this family to see member details and interact with them on the map.</string>
     <string name="leave_confirmation">Are you sure you want to leave %s?</string>
     <string name="btn_leave">Leave</string>
     <string name="btn_cancel">Cancel</string>
     <string name="btn_join_confirm">Join</string>
+    <string name="family_code_clipboard_label">Family Code</string>
+    <string name="family_code_copied">Code copied!</string>
+    <string name="family_meta_with_date">%1$d member%2$s · Created %3$s</string>
+    <string name="family_meta_without_date">%1$d member%2$s</string>
+    <string name="live_room">Live Room</string>
+    <string name="live_room_title">Family Live Room</string>
+    <string name="live_room_message">Do you want to start a live broadcast or just watch?</string>
+    <string name="live_room_start">Start Live</string>
+    <string name="live_room_watch">Watch</string>
 
     <!-- Create family -->
     <string name="create_family_title">New Family</string>
@@ -57,6 +77,9 @@
     <string name="choose_icon_label">CHOOSE AN ICON</string>
     <string name="auto_code_info">After creating the family, an auto-generated family code will be produced. Members will need to enter this code to join.</string>
     <string name="btn_create">Create</string>
+    <string name="create_family_icon_option">Choose family icon %1$d</string>
+    <string name="create_family_icon_option_selected">Choose family icon %1$d, selected</string>
+    <string name="cd_selected_family_icon">Selected family icon</string>
 
     <!-- Profile -->
     <string name="profile_title">Profile</string>
@@ -96,10 +119,22 @@
     <string name="disconnected_body">Please check your internet connection!</string>
 
     <!-- Accessibility -->
-    <string name="cd_avatar">User avatar</string>
+    <string name="cd_avatar">Avatar for %s</string>
     <string name="cd_pin_family">Pin family</string>
     <string name="cd_copy_code">Copy family code</string>
     <string name="cd_edit_profile">Edit profile</string>
     <string name="cd_family_icon">Family icon</string>
     <string name="cd_map_pin">Location pin for %s</string>
+    <string name="cd_profile_avatar">Open profile for %s</string>
+    <string name="cd_create_family">Create family</string>
+    <string name="cd_open_family">Open family %s</string>
+    <string name="cd_pin_family_named">Pin family %s</string>
+    <string name="cd_unpin_family_named">Unpin family %s</string>
+    <string name="cd_discover_family_icon">Icon for %s family</string>
+    <string name="cd_nav_home">Home</string>
+    <string name="cd_nav_map">Map</string>
+    <string name="cd_nav_families">Families</string>
+    <string name="cd_back">Navigate up</string>
+    <string name="cd_loading_overlay">Loading</string>
+    <string name="a11y_more_members">Plus %d more members</string>
 </resources>
