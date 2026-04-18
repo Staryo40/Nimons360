@@ -52,7 +52,7 @@ class MapFragment : Fragment() {
     private lateinit var batteryTracker: BatteryTracker
     private lateinit var netTracker: NetTracker
 
-    private val selfMarker by lazy { Marker(mapView) }
+    private var selfMarker: Marker? = null
     private val memberMap = linkedMapOf<Int, Marker>()
     private val favoriteMarkers = mutableListOf<Marker>()
     private var infoDialog: AlertDialog? = null
@@ -121,7 +121,8 @@ class MapFragment : Fragment() {
         infoDialog?.dismiss()
         memberMap.values.forEach { mapView.overlays.remove(it) }
         favoriteMarkers.forEach { mapView.overlays.remove(it) }
-        mapView.overlays.remove(selfMarker)
+        selfMarker?.let { mapView.overlays.remove(it) }
+        selfMarker = null
         memberMap.clear()
         favoriteMarkers.clear()
     }
@@ -255,19 +256,23 @@ class MapFragment : Fragment() {
         val lon = state.self.longitude ?: return
         val point = GeoPoint(lat, lon)
 
-        if (!mapView.overlays.contains(selfMarker)) {
-            selfMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
-            selfMarker.title = state.self.fullName
+        if (selfMarker == null) {
+            selfMarker = Marker(mapView).apply {
+                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+                title = state.self.fullName
+            }
             mapView.overlays.add(selfMarker)
         }
 
-        selfMarker.position = point
-        selfMarker.icon = MapPinMaker.self(
-            requireContext(),
-            state.self.fullName.firstOrNull()?.uppercase() ?: "Y",
-            state.self.rotation,
-        )
-        selfMarker.setInfoWindow(null)
+        selfMarker?.apply {
+            position = point
+            icon = MapPinMaker.self(
+                requireContext(),
+                state.self.fullName.firstOrNull()?.uppercase() ?: "Y",
+                state.self.rotation,
+            )
+            setInfoWindow(null)
+        }
 
         if (!hasMoved) {
             mapView.controller.animateTo(point)
