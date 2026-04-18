@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -17,10 +18,11 @@ fun SectionHeader(
 ) {
     Text(
         text  = title,
-        style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.2.sp),
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        style = MaterialTheme.typography.labelMedium.copy(letterSpacing = 1.0.sp),
+        color = MaterialTheme.colorScheme.onSurface,
         modifier = modifier
             .semantics { heading() }
             .padding(horizontal = 16.dp, vertical = 10.dp),
+        fontWeight = FontWeight.SemiBold,
     )
 }
