@@ -22,6 +22,7 @@
     <string name="nav_home">Home</string>
     <string name="nav_map">Map</string>
     <string name="nav_families">Families</string>
+    <string name="title_browse_families">Browse Families</string>
 
     <!-- Home screen -->
     <string name="section_my_families">MY FAMILIES</string>

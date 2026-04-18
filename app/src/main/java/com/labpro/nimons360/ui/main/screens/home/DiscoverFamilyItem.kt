@@ -52,7 +52,7 @@ fun DiscoverFamilyItem(
             modifier = Modifier
                 .size(48.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.24f))
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.85f))
         )
 
         Column(modifier = Modifier.weight(1f)) {

@@ -3,13 +3,13 @@
     <!-- ── Primary Brand ──────────────────────────────────── -->
     <color name="primary_teal">#006D77</color>
     <color name="primary_teal_dark">#004E56</color>
-    <color name="primary_teal_light">#339DA5</color>
+    <color name="primary_teal_light">#2C8B93</color>
     <color name="on_primary">#FFFFFF</color>
 
     <!-- ── Secondary / Accent ─────────────────────────────── -->
-    <color name="secondary_coral">#E29578</color>
-    <color name="secondary_coral_dark">#B96E4E</color>
-    <color name="on_secondary">#1D3557</color>
+    <color name="secondary_coral">#B96E4E</color>
+    <color name="secondary_coral_dark">#8A5038</color>
+    <color name="on_secondary">#FFFFFF</color>
 
     <!-- ── Backgrounds & Surfaces ─────────────────────────── -->
     <!-- Main page background (Home, Families, Profile) -->
@@ -21,17 +21,17 @@
     <!-- Headings, names, primary content -->
     <color name="text_primary">#1D3557</color>
     <!-- Emails, timestamps, secondary info -->
-    <color name="text_secondary">#56616B</color>
+    <color name="text_secondary">#4F5963</color>
     <!-- On-dark surfaces (e.g., inside teal header) -->
     <color name="text_on_dark">#FFFFFF</color>
 
     <!-- ── Semantic / Status ──────────────────────────────── -->
     <!-- High battery, Wi-Fi status, success messages -->
-    <color name="success_mint">#1F7A70</color>
+    <color name="success_mint">#17675F</color>
     <!-- Sign Out, Leave Family, error states, disconnected icon -->
     <color name="danger_crimson">#B42318</color>
     <!-- Low battery, "Not a member" warning -->
-    <color name="caution_saffron">#E9C46A</color>
+    <color name="caution_saffron">#B78316</color>
     <!-- Mobile data status, info dialogues -->
     <color name="info_muted_blue">#457B9D</color>
 
@@ -50,9 +50,9 @@
 
     <!-- ── Pin avatar palette (map markers) ──────────────── -->
     <!-- Cycling colors for other users' map pins -->
-    <color name="pin_red">#C62828</color>
-    <color name="pin_green">#1F7A70</color>
-    <color name="pin_blue">#356B8C</color>
-    <color name="pin_orange">#B96E4E</color>
+    <color name="pin_red">#B42318</color>
+    <color name="pin_green">#17675F</color>
+    <color name="pin_blue">#2F607D</color>
+    <color name="pin_orange">#8A5038</color>
     <color name="pin_purple">#5B3FA3</color>
 </resources>

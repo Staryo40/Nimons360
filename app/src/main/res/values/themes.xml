@@ -45,7 +45,7 @@
     <!-- OutlinedBox TextInputLayout using brand tint -->
     <style name="Widget.Nimons360.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="boxStrokeColor">@color/primary_teal</item>
-        <item name="hintTextColor">@color/primary_teal</item>
+        <item name="hintTextColor">@color/text_secondary</item>
         <item name="android:textColorHint">@color/text_secondary</item>
     </style>
 
