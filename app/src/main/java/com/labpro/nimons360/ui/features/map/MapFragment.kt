@@ -35,6 +35,7 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
+import java.util.Locale
 import kotlin.math.abs
 
 class MapFragment : Fragment() {
@@ -347,33 +348,28 @@ class MapFragment : Fragment() {
 
     private fun showInfo(member: MapMember) {
         val view = layoutInflater.inflate(R.layout.dialog_map_member, null)
+        view.findViewById<TextView>(R.id.tvAvatarInitial).text =
+            member.fullName.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
         view.findViewById<TextView>(R.id.tvName).text = member.fullName
         view.findViewById<TextView>(R.id.tvEmail).text = member.email
-        view.findViewById<TextView>(R.id.tvLoc).text = getString(
-            R.string.map_loc_value,
+        view.findViewById<TextView>(R.id.tvLoc).text = String.format(
+            Locale.US,
+            "%.5f, %.5f",
             member.latitude,
             member.longitude,
         )
-        view.findViewById<TextView>(R.id.tvBattery).text = getString(
-            R.string.map_battery_value,
-            member.batteryLevel?.let { "$it%" } ?: getString(R.string.map_unknown),
-        )
-        view.findViewById<TextView>(R.id.tvCharge).text = getString(
-            R.string.map_charge_value,
-            when (member.isCharging) {
-                true -> getString(R.string.map_charging)
-                false -> getString(R.string.map_not_charging)
-                null -> getString(R.string.map_unknown)
-            }
-        )
-        view.findViewById<TextView>(R.id.tvNet).text = getString(
-            R.string.map_net_value,
-            member.internetStatus?.replaceFirstChar { it.uppercase() } ?: getString(R.string.map_unknown),
-        )
+        view.findViewById<TextView>(R.id.tvBattery).text =
+            member.batteryLevel?.let { "$it%" } ?: getString(R.string.map_unknown)
+        view.findViewById<TextView>(R.id.tvCharge).text = when (member.isCharging) {
+            true -> getString(R.string.map_charging)
+            false -> getString(R.string.map_not_charging)
+            null -> getString(R.string.map_unknown)
+        }
+        view.findViewById<TextView>(R.id.tvNet).text =
+            member.internetStatus?.replaceFirstChar { it.uppercase() } ?: getString(R.string.map_unknown)
 
         infoDialog?.dismiss()
         infoDialog = MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.map_member_title)
             .setView(view)
             .setPositiveButton(R.string.btn_close, null)
             .show()
