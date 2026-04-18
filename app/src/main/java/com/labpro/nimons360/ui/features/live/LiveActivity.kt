@@ -11,6 +11,9 @@ import com.labpro.nimons360.BuildConfig
 import io.agora.agorauikit_android.AgoraConnectionData
 import io.agora.agorauikit_android.AgoraVideoViewer
 import io.agora.rtc2.Constants
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import io.agora.agorauikit_android.AgoraSettings
 
 class LiveActivity : AppCompatActivity() {
 
@@ -24,9 +27,18 @@ class LiveActivity : AppCompatActivity() {
         val roomID = intent.getStringExtra(EXTRA_ROOM_ID) ?: return
         val isHost = intent.getBooleanExtra(EXTRA_IS_HOST, false)
 
+        val settings = AgoraSettings().apply {
+            enabledButtons = mutableSetOf(
+                AgoraSettings.BuiltinButton.CAMERA,
+                AgoraSettings.BuiltinButton.MIC,
+                AgoraSettings.BuiltinButton.FLIP
+            )
+        }
+
         agView = AgoraVideoViewer(
             this,
-            AgoraConnectionData(appId = appID)
+            connectionData = AgoraConnectionData(appId = appID),
+            agoraSettings = settings
         )
 
         val params = FrameLayout.LayoutParams(
@@ -34,6 +46,14 @@ class LiveActivity : AppCompatActivity() {
             ViewGroup.LayoutParams.MATCH_PARENT
         )
         setContentView(agView, params)
+
+        agView?.let { view ->
+            ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                v.setPadding(0, systemBars.top, 0, systemBars.bottom)
+                insets
+            }
+        }
 
         val role = if (isHost) Constants.CLIENT_ROLE_BROADCASTER else Constants.CLIENT_ROLE_AUDIENCE
         agView?.join(channel = roomID, fetchToken = false, role = role)

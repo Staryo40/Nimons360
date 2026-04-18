@@ -13,6 +13,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
 import com.labpro.nimons360.viewmodel.ProfileViewModel
@@ -51,25 +52,13 @@ class ProfileFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        val appBar = view.findViewById<View>(R.id.appBarLayout)
-//        ViewCompat.setOnApplyWindowInsetsListener(appBar) { v, insets ->
-//            val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-//            v.setPadding(
-//                v.paddingLeft,
-//                statusBarInsets.top,
-//                v.paddingRight,
-//                v.paddingBottom
-//            )
-//            insets
-//        }
-
         tvFullName = view.findViewById(R.id.tvFullName)
         tvEmail = view.findViewById(R.id.tvEmail)
         tvAvatarInitials = view.findViewById(R.id.tvAvatarInitials)
 
-        val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
-        toolbar.navigationContentDescription = getString(R.string.cd_back)
-        toolbar.setNavigationOnClickListener { dismiss() }
+        view.findViewById<View>(R.id.btnClose).setOnClickListener {
+            dismiss()
+        }
 
         setupListeners(view)
         observeState()
@@ -85,7 +74,7 @@ class ProfileFragment : DialogFragment() {
 
     private fun setupListeners(view: View) {
         view.findViewById<View>(R.id.btnSignOut).setOnClickListener {
-            viewModel.logout()
+            showSignOutConfirmation()
         }
 
         view.findViewById<View>(R.id.btnEditName).setOnClickListener {
@@ -108,6 +97,30 @@ class ProfileFragment : DialogFragment() {
                 }
             }
         }
+    }
+
+    private fun showSignOutConfirmation() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setIcon(R.drawable.ic_logout)
+            .setTitle("Sign out?")
+            .setMessage("You'll need to sign in again to access your families and map.")
+            .setPositiveButton("Sign Out") { _, _ ->
+                viewModel.logout()
+            }
+            .setNegativeButton("Cancel", null)
+            .create()
+            .apply {
+                setOnShowListener {
+                    // Colour the destructive button danger red after the dialog shows
+                    getButton(android.app.AlertDialog.BUTTON_POSITIVE)
+                        ?.setTextColor(
+                            androidx.core.content.ContextCompat.getColor(
+                                requireContext(), R.color.danger_crimson
+                            )
+                        )
+                }
+            }
+            .show()
     }
 
     private fun showEditNameBottomSheet() {
