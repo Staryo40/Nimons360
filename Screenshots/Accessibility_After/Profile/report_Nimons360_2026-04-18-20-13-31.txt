@@ -1,0 +1,7 @@
+The following is a list of opportunities to improve the accessibility of Nimons360. Each item corresponds to an outlined area on the attached screenshot.
+
+Text Scaling
+com.labpro.nimons360:id/tvAvatarInitials
+This TextView has a fixed size and scalable text.
+Consider modifying the LayoutParams to allow for text expansion.
+

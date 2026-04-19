@@ -18,7 +18,8 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
             app:title="@string/profile_title"
             app:titleCentered="true"
             app:titleTextAppearance="@style/TextAppearance.Nimons360.Headline"
@@ -91,6 +92,10 @@
                                 android:id="@+id/tvAvatarInitials"
                                 android:layout_width="@dimen/avatar_xxl"
                                 android:layout_height="@dimen/avatar_xxl"
+                                android:autoSizeMaxTextSize="36sp"
+                                android:autoSizeMinTextSize="18sp"
+                                android:autoSizeStepGranularity="1sp"
+                                android:autoSizeTextType="uniform"
                                 android:background="@drawable/bg_circle_primary"
                                 android:gravity="center"
                                 android:textColor="@android:color/white"
@@ -105,7 +110,7 @@
                                 android:layout_gravity="bottom|end"
                                 android:contentDescription="@string/cd_edit_profile"
                                 app:backgroundTint="@color/secondary_coral"
-                                app:tint="@color/on_secondary"
+                                app:tint="@color/white"
                                 app:fabCustomSize="32dp"
                                 app:srcCompat="@drawable/ic_edit" />
 
@@ -129,7 +134,8 @@
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:maxLines="1"
-                            android:textColor="#CCFFFFFF"
+                            android:textColor="@color/white"
+                            android:alpha="0.92"
                             android:textSize="@dimen/text_sm"
                             tools:text="labpro@std.stei.itb.ac.id" />
 
@@ -155,7 +161,8 @@
                             android:id="@+id/btnSignOut"
                             style="@style/Widget.Material3.Button.TextButton"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/touch_target_min"
+                            android:layout_height="wrap_content"
+                            android:minHeight="@dimen/touch_target_min"
                             android:gravity="center_vertical"
                             android:paddingHorizontal="@dimen/spacing_md"
                             android:text="@string/sign_out"

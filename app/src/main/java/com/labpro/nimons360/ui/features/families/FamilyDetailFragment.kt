@@ -246,7 +246,8 @@ class FamilyDetailFragment : DialogFragment() {
         if (btnLive == null) {
             btnLive = MaterialButton(requireContext()).apply {
                 text = getString(R.string.live_room)
-                setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.pin_orange))
+                setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.secondary_coral_dark))
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                 val params = LinearLayout.LayoutParams(MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 params.setMargins(0, 16, 0, 0)
                 layoutParams = params

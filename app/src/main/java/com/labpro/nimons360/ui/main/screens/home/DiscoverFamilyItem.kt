@@ -22,6 +22,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -34,6 +36,7 @@ fun DiscoverFamilyItem(
     family: DiscoverFamily,
     onJoin: () -> Unit,
 ) {
+    val joinDescription = stringResource(R.string.cd_join_family_named, family.name)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -43,13 +46,13 @@ fun DiscoverFamilyItem(
     ) {
         AsyncImage(
             model = family.iconUrl,
-            contentDescription = stringResource(R.string.cd_discover_family_icon, family.name),
+            contentDescription = null,
             contentScale = ContentScale.Crop,
             error = painterResource(id = R.drawable.ic_placeholder_avatar),
             modifier = Modifier
                 .size(48.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.24f))
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.85f))
         )
 
         Column(modifier = Modifier.weight(1f)) {
@@ -72,7 +75,11 @@ fun DiscoverFamilyItem(
             ),
             shape = RoundedCornerShape(20.dp),
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
-            modifier = Modifier.height(40.dp),
+            modifier = Modifier
+                .height(40.dp)
+                .semantics {
+                    contentDescription = joinDescription
+                },
         ) {
             Text(stringResource(R.string.btn_join), style = MaterialTheme.typography.labelMedium)
         }

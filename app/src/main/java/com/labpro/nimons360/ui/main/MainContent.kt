@@ -8,6 +8,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
@@ -70,7 +73,7 @@ fun MainContent(
     val screenTitle = when (currentScreen) {
         MainScreenEnum.HOME   -> "Nimons360"
         MainScreenEnum.MAP    -> context.getString(R.string.map_title)
-        MainScreenEnum.FAMILY -> context.getString(R.string.nav_families)
+        MainScreenEnum.FAMILY -> context.getString(R.string.title_browse_families)
     }
 
     Scaffold(
@@ -82,6 +85,13 @@ fun MainContent(
                             text       = screenTitle,
                             style      = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
+                            modifier = Modifier.semantics {
+                                heading()
+                                contentDescription = context.getString(
+                                    R.string.cd_screen_title,
+                                    screenTitle,
+                                )
+                            },
                         )
                     },
                     actions = {

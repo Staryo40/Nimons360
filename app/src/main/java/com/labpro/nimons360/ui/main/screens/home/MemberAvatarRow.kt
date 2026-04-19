@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -26,35 +27,45 @@ fun MemberAvatarRow(
     total: Int,
     maxVisible: Int = 3,
 ) {
-    Row(horizontalArrangement = Arrangement.spacedBy((-8).dp)) {
+    val visibleNames = members.take(maxVisible).joinToString(", ") { it.fullName }
+    val summary = if (total > maxVisible) {
+        "$visibleNames, ${stringResource(R.string.a11y_more_members, total - maxVisible)}"
+    } else {
+        visibleNames
+    }
+    val memberRowDescription = stringResource(R.string.a11y_member_row, summary)
+    Row(
+        horizontalArrangement = Arrangement.spacedBy((-8).dp),
+        modifier = Modifier.semantics(mergeDescendants = true) {
+            contentDescription = memberRowDescription
+        },
+    ) {
         members.take(maxVisible).forEachIndexed { index, member ->
             UserAvatar(
                 name       = member.fullName,
                 size       = 28,
                 colorIndex = index,
-                contentDescription = stringResource(R.string.cd_avatar, member.fullName),
+                contentDescription = null,
                 modifier   = Modifier
                     .clip(RoundedCornerShape(50))
-                    .background(MaterialTheme.colorScheme.surface),
+                    .background(MaterialTheme.colorScheme.surface)
+                    .clearAndSetSemantics { },
             )
         }
         if (total > maxVisible) {
             val overflowCount = total - maxVisible
-            val overflowDescription = stringResource(R.string.a11y_more_members, overflowCount)
             Box(
                 modifier = Modifier
                     .size(24.dp)
                     .clip(RoundedCornerShape(50))
-                    .background(MaterialTheme.colorScheme.outline)
-                    .semantics {
-                        contentDescription = overflowDescription
-                    },
+                    .background(MaterialTheme.colorScheme.primary)
+                    .clearAndSetSemantics { },
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text  = "+$overflowCount",
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.surface,
+                    color = MaterialTheme.colorScheme.onPrimary,
                 )
             }
         }

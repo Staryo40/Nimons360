@@ -22,6 +22,7 @@
     <string name="nav_home">Home</string>
     <string name="nav_map">Map</string>
     <string name="nav_families">Families</string>
+    <string name="title_browse_families">Browse Families</string>
 
     <!-- Home screen -->
     <string name="section_my_families">MY FAMILIES</string>
@@ -132,14 +133,17 @@
     <string name="cd_map_pin">Location pin for %s</string>
     <string name="cd_profile_avatar">Open profile for %s</string>
     <string name="cd_create_family">Create family</string>
+    <string name="cd_join_family_named">Join family %s</string>
     <string name="cd_open_family">Open family %s</string>
     <string name="cd_pin_family_named">Pin family %s</string>
     <string name="cd_unpin_family_named">Unpin family %s</string>
     <string name="cd_discover_family_icon">Icon for %s family</string>
+    <string name="cd_screen_title">%s screen</string>
     <string name="cd_nav_home">Home</string>
     <string name="cd_nav_map">Map</string>
     <string name="cd_nav_families">Families</string>
     <string name="cd_back">Navigate up</string>
     <string name="cd_loading_overlay">Loading</string>
     <string name="a11y_more_members">Plus %d more members</string>
+    <string name="a11y_member_row">Members: %1$s</string>
 </resources>
