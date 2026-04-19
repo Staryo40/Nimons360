@@ -316,3 +316,11 @@ adb shell pm clear com.labpro.nimons360
 | 18 | Leave Family           | 13523100     |
 | 19 | Family Detail          | 13523100     |
 | 20 | Search Family          | 13523100     |
+
+## Preparation and Working Hours
+
+| NIM      | Name                 | Preparation Hours | Working Hours | Notes                      |
+| -------- | -------------------- | ----------------- | ------------- | -------------------------- |
+| 13523068 | Muh. Rusmin Nurwadin | 6                 | 54            | Kurang lebih 6 jam perhari |
+| 13523100 | Aryo Wisanggeni      | 6                 | 54            | Kurang lebih 6 jam perhari |
+| 13523114 | Guntara Hambali      | 6                 | 54            | Kurang lebih 6 jam perhari |
