@@ -26,7 +26,11 @@
     <img src="public/NimonsIcon432.png" alt="Application Logo" width="500"/>
 </p>
 
-Stay connected with your loved ones to ensure their safety.
+Nimons360 is a mobile safety application designed for your family to ensure no member ever gets lost again. 
+Inspired by the need for real-time connection and collective security, the app allows family members to track each other's live locations, monitor device status, and maintain close communication within private groups.
+
+Nimons360 provides a centralized hub for safety in a fast-paced world. 
+The application is built natively for Android using Kotlin and integrates RESTful APIs with WebSockets for seamless and real-time synchronization.
 
 UI uses this main color palette
 
@@ -50,44 +54,41 @@ https://coolors.co/ffeaee-006d77-e29578-f4f6f8-1d3557-d62828-2a9d8f-e9c46a-457b9
 
 ## Features
 
+1. Authentication & System Logic
+    - Secure Login: JWT-based authentication using POST /api/login. 
+    - Token Security: Best-practice sensitive data storage using Android Keystore and encrypted preferences. 
+    - Auto-Logout: Automatic session termination and redirection upon 409 Unauthorized responses. 
+    - Profile Management: View user data and update display names via PATCH /api/me with a bottom-sheet interface.
+    - Network Sensing: Automated detection of internet loss with a non-intrusive auto-dismissing pop-up.
+    - Accessibility: Fully optimized for contrast and touch targets via Google’s Accessibility Scanner.
+
+2. Family Management 
+    - Group Creation: Create families with custom names and predefined icons assets. 
+    - Membership Logic: Join families via 6-character codes and leave feature. 
+    - Livestreaming: Real-time video sharing between family members.
+    - Search Engine: Name-based filtering for the family list.
+    - Discovery: View random "Discover Families" or track your joined groups in "My Families" which can be refreshed. 
+    - Local Pinning: Mark priority families as "Pinned" using Room Database for persistent local storage.
+
+3. Real-Time Map & Tracking
+    - Live Map: Interactive osmdroid integration with pan and zoom capabilities.
+    - WebSocket Sync: Real-time location broadcasting and dynamic member marker movement. 
+    - Favorite Locations: Local persistence for places saved by user.
+    - Device Awareness: Live monitoring of member battery levels, GPS coordinates, and network types (WiFi/Mobile). 
+    - Compass Orientation: User markers display a directional arrow reflecting the phone's physical heading.
+
 ## Libraries
 
-- Jetpack Compose – Declarative UI framework
-- Material 3 – Modern Material Design components
-- AndroidX Core & Lifecycle – Core utilities and lifecycle-aware components
-- Navigation (Compose + Fragment) – App navigation handling
-- DrawerLayout – Side navigation UI support
-
-- Coil – Image loading for Compose
-
-- Retrofit – REST API client
-- Gson – JSON serialization/deserialization
-- OkHttp (+ Logging Interceptor) – Networking layer
-
-- Room – SQLite database abstraction
-- AndroidX Security Crypto – EncryptedSharedPreferences
-
-- osmdroid – OpenStreetMap-based map rendering
-- Google Play Services Location – Location tracking
-
-- AndroidX Media3 (ExoPlayer) – Media playback
-- WebRTC – Real-time communication
-- Agora VideoUIKit – Live streaming UI components
-
-- Firebase Analytics – User analytics
-- Firebase App Distribution – App distribution for testers
-
-- Kotlin Coroutines – Asynchronous programming
-
-- JUnit – Unit testing
-- AndroidX Test (JUnit, Espresso) – Instrumented testing
-- Compose UI Test – UI testing for Compose
-- Kotlin Coroutines Test – Coroutine testing utilities
-
-- Kotlin (Android + Compose)
-- KSP (Kotlin Symbol Processing) – Used by Room
-- Google Services Plugin – Firebase integration
-- Firebase App Distribution Plugin – CI/CD distribution
+- **UI**: Jetpack Compose, Material 3, Navigation
+- **Networking**: Retrofit, OkHttp, Gson
+- **Database**: Room
+- **Maps & Location**: osmdroid, Google Play Services
+- **Media & Realtime**: Media3 (ExoPlayer), WebRTC, Agora VideoUIKit
+- **Image Loading**: Coil
+- **Firebase**: Analytics, App Distribution
+- **Async**: Kotlin Coroutines
+- **Security**: EncryptedSharedPreferences
+- **Testing**: JUnit, Espresso, Compose UI Test
 
 ## Screenshots and Accessibility Testing
 
@@ -145,9 +146,7 @@ https://coolors.co/ffeaee-006d77-e29578-f4f6f8-1d3557-d62828-2a9d8f-e9c46a-457b9
 | 4   | Create Family Screen     | <img src="Screenshots/Accessibility_Before/Create Family/screenshot_Nimons360_2026-04-18-18-03-30.png" width="140">   |
 | 5   | Family Detail Screen     | <img src="Screenshots/Accessibility_Before/Detail Family/screenshot_Nimons360_2026-04-18-18-04-03.png" width="140">   |
 | 6   | Map Member Detail Dialog | <img src="Screenshots/Accessibility_Before/Map User Detail/screenshot_Nimons360_2026-04-18-18-04-41.png" width="140"> |
-| 7   | Login Screen             | <img src="Screenshots/Accessibility_Before/Login/screenshot_Nimons360_2026-04-18-18-05-49.png" width="140">           |
-
-_Keterangan dapat dilihat pada `Screenshots/Accessibility_Before`._
+| 7   | Login Screen | <img src="Screenshots/Accessibility_Before/Login/screenshot_Nimons360_2026-04-18-18-05-49.png" width="140"> |
 
 ### Improved Interface after Accessibility Testing
 
@@ -295,26 +294,25 @@ adb shell pm clear com.labpro.nimons360
 
 ## Team Roles
 
-| No  | Feature                | Contributors |
-| --- | ---------------------- | ------------ |
-| 1   | Livestreaming          | 13523114     |
-| 2   | Network Sensing        | 13523114     |
-| 3   | OpenAPI                | 13523114     |
-| 4   | Mark Favorite Location | 13523114     |
-| 5   | Map & GPS              | 13523068     |
-| 6   | Websocket              | 13523068     |
-| 7   | User Info              | 13523068     |
-| 8   | Internet Status        | 13523068     |
-| 9   | Accessibility Testing  | 13523068     |
-| 10  | Auth                   | 13523100     |
-| 11  | Header & Bottom Navbar | 13523100     |
-| 12  | Home                   | 13523100     |
-| 13  | Families List          | 13523100     |
-
-## Preparation and Working Hours
-
-| NIM      | Name                 | Preparation Hours | Working Hours | Notes                      |
-| -------- | -------------------- | ----------------- | ------------- | -------------------------- |
-| 13523068 | Muh. Rusmin Nurwadin | 6                 | 54            | Kurang lebih 6 jam perhari |
-| 13523100 | Aryo Wisanggeni      | 6                 | 54            | Kurang lebih 6 jam perhari |
-| 13523114 | Guntara Hambali      | 6                 | 54            | Kurang lebih 6 jam perhari |
+| No | Feature                | Contributors |
+|----|------------------------|--------------|
+| 1  | Livestreaming          | 13523114     |
+| 2  | Network Sensing        | 13523114     |
+| 3  | OpenAPI                | 13523114     |
+| 4  | Mark Favorite Location | 13523114     |
+| 5  | Map & GPS              | 13523068     |
+| 6  | Websocket              | 13523068     |
+| 7  | Map User Info          | 13523068     |
+| 8  | Internet Status        | 13523068     |
+| 9  | Phone orientation      | 13523068     |
+| 10 | Accessibility Testing  | 13523068     |
+| 11 | Auth                   | 13523100     |
+| 12 | Header & Bottom Navbar | 13523100     |
+| 13 | Home                   | 13523100     |
+| 14 | Families List          | 13523100     |
+| 15 | Profile Detail & Edit  | 13523100     |
+| 16 | Create Family          | 13523100     |
+| 17 | Join Family            | 13523100     |
+| 18 | Leave Family           | 13523100     |
+| 19 | Family Detail          | 13523100     |
+| 20 | Search Family          | 13523100     |
