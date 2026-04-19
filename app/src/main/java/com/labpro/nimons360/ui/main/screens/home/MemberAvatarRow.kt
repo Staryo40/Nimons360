@@ -4,7 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -56,16 +60,20 @@ fun MemberAvatarRow(
             val overflowCount = total - maxVisible
             Box(
                 modifier = Modifier
-                    .size(24.dp)
-                    .clip(RoundedCornerShape(50))
+                    .height(28.dp)
+                    .defaultMinSize(minWidth = 28.dp)
+                    .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.primary)
+                    .padding(horizontal = 4.dp)
                     .clearAndSetSemantics { },
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text  = "+$overflowCount",
+                    text = "+$overflowCount",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onPrimary,
+                    maxLines = 1,
+                    softWrap = false
                 )
             }
         }
