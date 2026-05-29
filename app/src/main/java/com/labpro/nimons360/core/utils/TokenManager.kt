@@ -65,11 +65,20 @@ class TokenManager(context: Context) {
         prefs.edit().putBoolean(KEY_SHARE_LOCATION, enabled).apply()
     }
 
+    fun isNotificationsEnabled(): Boolean {
+        return prefs.getBoolean(KEY_NOTIFICATIONS_ENABLED, true)
+    }
+
+    fun setNotificationsEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_NOTIFICATIONS_ENABLED, enabled).apply()
+    }
+
     companion object {
         private const val TAG = "TokenManager"
         private const val FILE_NAME = "nimons360_secure_prefs"
         private const val KEY_TOKEN = "auth_token"
         private const val KEY_EXPIRES_AT = "expires_at"
         private const val KEY_SHARE_LOCATION = "share_location"
+        private const val KEY_NOTIFICATIONS_ENABLED = "notifications_enabled"
     }
 }
