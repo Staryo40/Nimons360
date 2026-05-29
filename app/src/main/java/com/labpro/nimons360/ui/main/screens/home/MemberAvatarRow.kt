@@ -49,6 +49,7 @@ fun MemberAvatarRow(
                 name       = member.fullName,
                 size       = 28,
                 colorIndex = index,
+                profileImageUrl = member.profileImageUrl,
                 contentDescription = null,
                 modifier   = Modifier
                     .clip(RoundedCornerShape(50))

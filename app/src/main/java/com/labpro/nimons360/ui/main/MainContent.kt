@@ -98,6 +98,7 @@ fun MainContent(
                         UserAvatar(
                             name = user.fullName,
                             size = 40,
+                            profileImageUrl = user.profileImageUrl,
                             contentDescription = stringResource(
                                 R.string.cd_profile_avatar,
                                 user.fullName,
