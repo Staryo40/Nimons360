@@ -8,12 +8,13 @@ import com.labpro.nimons360.data.repository.LocationRepository
 class MapViewModelFactory(
     private val user: UserData,
     private val token: () -> String?,
-    private val locationRepository: LocationRepository
+    private val locationRepository: LocationRepository,
+    private val isLocationSharingEnabled: () -> Boolean
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MapViewModel::class.java)) {
-            return MapViewModel(user, token, locationRepository) as T
+            return MapViewModel(user, token, locationRepository, isLocationSharingEnabled) as T
         }
         throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
     }
