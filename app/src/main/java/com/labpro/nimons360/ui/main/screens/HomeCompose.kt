@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
@@ -19,6 +20,7 @@ import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
 import com.labpro.nimons360.ui.features.families.CreateFamilyFragment
 import com.labpro.nimons360.ui.features.families.FamilyDetailFragment
+import com.labpro.nimons360.ui.features.profile.ProfileFragment
 import com.labpro.nimons360.ui.main.shared.EmptyStateCard
 import com.labpro.nimons360.ui.main.shared.LoadingSection
 import com.labpro.nimons360.ui.main.shared.RowDivider
@@ -50,6 +52,8 @@ fun HomeCompose(
 
     val fm = remember { (context as FragmentActivity).supportFragmentManager }
 
+    val lifecycleOwner = LocalLifecycleOwner.current
+
     DisposableEffect(fm) {
         val callback = object : FragmentManager.FragmentLifecycleCallbacks() {
             override fun onFragmentDestroyed(fragmentManager: FragmentManager, fragment: Fragment) {
@@ -61,8 +65,19 @@ fun HomeCompose(
 
         fm.registerFragmentLifecycleCallbacks(callback, false)
 
+        fm.setFragmentResultListener(
+            ProfileFragment.REQUEST_KEY,
+            lifecycleOwner
+        ) { _, bundle ->
+            val ppChanged = bundle.getBoolean(ProfileFragment.KEY_PROFILE_CHANGED, false)
+            if (ppChanged) {
+                vm.refresh()
+            }
+        }
+
         onDispose {
             fm.unregisterFragmentLifecycleCallbacks(callback)
+            fm.clearFragmentResultListener(ProfileFragment.REQUEST_KEY)
         }
     }
 

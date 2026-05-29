@@ -9,4 +9,5 @@ data class UserData(
     @SerializedName("fullName") val fullName: String,
     val createdAt: String? = null,
     val updatedAt: String? = null,
+    val profileImageUrl: String? = null,
 )

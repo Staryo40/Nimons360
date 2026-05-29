@@ -20,6 +20,9 @@ import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Multipart
+import retrofit2.http.Part
+import okhttp3.MultipartBody
 
 /**
  * Retrofit service interface for the Nimons360 REST API.
@@ -48,6 +51,13 @@ interface ApiService {
     @PATCH("/api/me")
     suspend fun updateMe(
         @Body request: UpdateProfileRequest,
+    ): Response<UserResponse>
+
+    /** POST /api/me/photo — uploads a new profile photo. */
+    @Multipart
+    @POST("/api/me/photo")
+    suspend fun uploadProfilePhoto(
+        @Part photo: MultipartBody.Part,
     ): Response<UserResponse>
 
     // === Families ===

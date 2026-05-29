@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -19,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.labpro.nimons360.ui.theme.PinColors
 import com.labpro.nimons360.ui.theme.TextOnDark
+import coil.compose.AsyncImage
 
 @Composable
 fun UserAvatar(
@@ -27,6 +30,7 @@ fun UserAvatar(
     size: Int = 36,
     colorIndex: Int = -1,           // -1 = primary teal (current user)
     textColor: Color = TextOnDark,
+    profileImageUrl: String? = null,
     contentDescription: String? = null,
     onClick: (() -> Unit)? = null,
 ) {
@@ -49,11 +53,25 @@ fun UserAvatar(
             .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text       = initial,
-            color      = textColor,
-            style      = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.Bold,
-        )
+        if (!profileImageUrl.isNullOrBlank()) {
+            val resolvedUrl = if (profileImageUrl.startsWith("/")) {
+                "${com.labpro.nimons360.BuildConfig.BASE_URL}$profileImageUrl"
+            } else {
+                profileImageUrl
+            }
+            AsyncImage(
+                model = resolvedUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            Text(
+                text       = initial,
+                color      = textColor,
+                style      = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold,
+            )
+        }
     }
 }

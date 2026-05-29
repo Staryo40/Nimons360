@@ -5,4 +5,5 @@ data class FamilyMember(
     val fullName: String,
     val email: String,
     val joinedAt: String? = null,
+    val profileImageUrl: String? = null,
 )

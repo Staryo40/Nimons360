@@ -57,10 +57,19 @@ class TokenManager(context: Context) {
             .apply()
     }
 
+    fun isLocationSharingEnabled(): Boolean {
+        return prefs.getBoolean(KEY_SHARE_LOCATION, true)
+    }
+
+    fun setLocationSharingEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_SHARE_LOCATION, enabled).apply()
+    }
+
     companion object {
         private const val TAG = "TokenManager"
         private const val FILE_NAME = "nimons360_secure_prefs"
         private const val KEY_TOKEN = "auth_token"
         private const val KEY_EXPIRES_AT = "expires_at"
+        private const val KEY_SHARE_LOCATION = "share_location"
     }
 }

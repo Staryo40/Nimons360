@@ -28,7 +28,8 @@ import java.time.Instant
 class MapViewModel(
     user: UserData,
     token: () -> String?,
-    private val locationRepository: LocationRepository
+    private val locationRepository: LocationRepository,
+    private val isLocationSharingEnabled: () -> Boolean
 ) : ViewModel() {
     private val selfId = user.id
 
@@ -208,6 +209,10 @@ class MapViewModel(
         sendJob = viewModelScope.launch {
             while (true) {
                 delay(SEND_MS)
+                // skip jika emang gk dibolehin wok
+                if (!isLocationSharingEnabled()) {
+                    continue
+                }
                 val state = _uiState.value
                 val lat = state.self.latitude
                 val lon = state.self.longitude

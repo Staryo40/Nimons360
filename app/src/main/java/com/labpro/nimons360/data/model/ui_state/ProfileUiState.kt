@@ -5,5 +5,6 @@ data class ProfileUiState(
     val name: String = "",
     val email: String = "",
     val error: String? = null,
-    val isLoggedOut: Boolean = false
+    val isLoggedOut: Boolean = false,
+    val profileImageUrl: String? = null
 )

@@ -83,7 +83,8 @@ class MapFragment : Fragment() {
         MapViewModelFactory(
             user = readUser(),
             token = { app.tokenManager.getToken() },
-            locationRepository = app.locationRepository
+            locationRepository = app.locationRepository,
+            isLocationSharingEnabled = { app.tokenManager.isLocationSharingEnabled() }
         )
     }
 
