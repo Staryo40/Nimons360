@@ -103,8 +103,17 @@
                                 android:textStyle="bold"
                                 tools:text="L" />
 
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:id="@+id/ivProfilePhoto"
+                                android:layout_width="@dimen/avatar_xxl"
+                                android:layout_height="@dimen/avatar_xxl"
+                                android:scaleType="centerCrop"
+                                android:visibility="gone"
+                                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Nimons360.Circle"
+                                tools:visibility="visible" />
+
                             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                                android:id="@+id/btnEditName"
+                                android:id="@+id/btnEditPhoto"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="bottom|end"
@@ -112,21 +121,38 @@
                                 app:backgroundTint="@color/secondary_coral"
                                 app:tint="@color/white"
                                 app:fabCustomSize="32dp"
-                                app:srcCompat="@drawable/ic_edit" />
+                                app:srcCompat="@drawable/ic_camera" />
 
                         </FrameLayout>
 
-                        <TextView
-                            android:id="@+id/tvFullName"
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/spacing_xs"
-                            android:ellipsize="end"
-                            android:maxLines="1"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/text_lg"
-                            android:textStyle="bold"
-                            tools:text="Labpro ITB" />
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="@dimen/spacing_xs">
+
+                            <TextView
+                                android:id="@+id/tvFullName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:ellipsize="end"
+                                android:maxLines="1"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/text_lg"
+                                android:textStyle="bold"
+                                tools:text="Labpro ITB" />
+
+                            <ImageButton
+                                android:id="@+id/btnEditName"
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:layout_marginStart="8dp"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:src="@drawable/ic_edit"
+                                app:tint="@color/white"
+                                android:contentDescription="@string/cd_edit_profile" />
+                        </LinearLayout>
 
                         <TextView
                             android:id="@+id/tvEmail"
@@ -143,6 +169,126 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- Location Privacy Sharing Section -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/page_horizontal_padding"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    app:cardBackgroundColor="@color/surface_white"
+                    app:cardCornerRadius="@dimen/radius_card"
+                    app:cardElevation="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:id="@+id/ivLocPrivacyIcon"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerVertical="true"
+                                android:src="@drawable/ic_info"
+                                app:tint="@color/primary_teal" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_toEndOf="@id/ivLocPrivacyIcon"
+                                android:layout_toStartOf="@id/switchShareLocation"
+                                android:layout_marginStart="@dimen/spacing_md"
+                                android:layout_centerVertical="true"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Share Location"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="@dimen/text_sm"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Allow family members to track your coordinates"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="@dimen/text_xs" />
+                            </LinearLayout>
+
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/switchShareLocation"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:minHeight="48dp" />
+                        </RelativeLayout>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Actions Section (Bonus Placeholders) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/page_horizontal_padding"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    app:cardBackgroundColor="@color/surface_white"
+                    app:cardCornerRadius="@dimen/radius_card"
+                    app:cardElevation="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnCustomizePin"
+                            style="@style/Widget.Material3.Button.TextButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="@dimen/touch_target_min"
+                            android:gravity="center_vertical"
+                            android:paddingHorizontal="@dimen/spacing_md"
+                            android:text="Customize Pin"
+                            android:textColor="@color/primary_teal"
+                            app:icon="@drawable/ic_pin"
+                            app:iconGravity="textStart"
+                            app:iconPadding="@dimen/spacing_sm"
+                            app:iconTint="@color/primary_teal" />
+
+                        <com.google.android.material.divider.MaterialDivider
+                            android:layout_width="match_parent"
+                            android:layout_height="0.5dp"
+                            app:dividerColor="@color/divider" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAnalytics"
+                            style="@style/Widget.Material3.Button.TextButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="@dimen/touch_target_min"
+                            android:gravity="center_vertical"
+                            android:paddingHorizontal="@dimen/spacing_md"
+                            android:text="Analytics"
+                            android:textColor="@color/primary_teal"
+                            app:icon="@drawable/ic_analytics"
+                            app:iconGravity="textStart"
+                            app:iconPadding="@dimen/spacing_sm"
+                            app:iconTint="@color/primary_teal" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Sign Out Section -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
