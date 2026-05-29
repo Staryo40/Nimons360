@@ -312,6 +312,22 @@ class FamilyDetailFragment : DialogFragment() {
         row.findViewById<TextView>(R.id.tvMemberName).text     = member.fullName
         row.findViewById<TextView>(R.id.tvMemberEmail).text    = member.email
         row.findViewById<TextView>(R.id.tvYouBadge).isVisible  = isCurrentUser
+
+        val ivMemberAvatar = row.findViewById<com.google.android.material.imageview.ShapeableImageView>(R.id.ivMemberAvatar)
+        if (!member.profileImageUrl.isNullOrBlank()) {
+            ivMemberAvatar.visibility = View.VISIBLE
+            val resolvedUrl = if (member.profileImageUrl.startsWith("/")) {
+                "${com.labpro.nimons360.BuildConfig.BASE_URL}${member.profileImageUrl}"
+            } else {
+                member.profileImageUrl
+            }
+            ivMemberAvatar.load(resolvedUrl) {
+                crossfade(true)
+            }
+        } else {
+            ivMemberAvatar.visibility = View.GONE
+        }
+
         row.contentDescription = getString(
             R.string.member_row_description,
             member.fullName,
