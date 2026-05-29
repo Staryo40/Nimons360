@@ -3,6 +3,7 @@ package com.labpro.nimons360.ui.features.families
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -79,6 +80,10 @@ class FamilyDetailFragment : DialogFragment() {
     private lateinit var btnAction: MaterialButton
     private lateinit var pbAction: ProgressBar
     private lateinit var tvActionError: TextView
+    private lateinit var tvActionsHeader: TextView
+    private lateinit var actionsCard: MaterialCardView
+    private lateinit var rowSendMessage: LinearLayout
+    private lateinit var rowShareLink: LinearLayout
 
     private var btnLive: MaterialButton? = null
 
@@ -146,6 +151,10 @@ class FamilyDetailFragment : DialogFragment() {
         btnAction         = root.findViewById(R.id.btnAction)
         pbAction          = root.findViewById(R.id.pbAction)
         tvActionError     = root.findViewById(R.id.tvActionError)
+        tvActionsHeader   = root.findViewById(R.id.tvActionsHeader)
+        actionsCard       = root.findViewById(R.id.actionsCard)
+        rowSendMessage    = root.findViewById(R.id.rowSendMessage)
+        rowShareLink      = root.findViewById(R.id.rowShareLink)
     }
 
     private fun setupToolbar() {
@@ -224,6 +233,11 @@ class FamilyDetailFragment : DialogFragment() {
             joinHintSection.isVisible = false
             buildMemberRows(family.members)
 
+            tvActionsHeader.isVisible = true
+            actionsCard.isVisible = true
+            rowSendMessage.setOnClickListener { openSendMessageBottomSheet(family) }
+            rowShareLink.setOnClickListener { shareFamilyLink(family) }
+
             btnAction.text = getString(R.string.leave_family)
             btnAction.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.danger_crimson))
             btnAction.setOnClickListener { confirmLeave(family.name) }
@@ -235,6 +249,9 @@ class FamilyDetailFragment : DialogFragment() {
             membersCard.isVisible       = false
             joinHintSection.isVisible   = true
             buildCensoredMemberRows(family.members)
+
+            tvActionsHeader.isVisible = false
+            actionsCard.isVisible = false
 
             btnAction.text = getString(R.string.join_family)
             btnAction.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.primary_teal))
@@ -370,6 +387,19 @@ class FamilyDetailFragment : DialogFragment() {
                 }
             }
             .show()
+    }
+
+    private fun openSendMessageBottomSheet(family: FamilyDetail) {
+        SendMessageBottomSheet.newInstance(family.id)
+            .show(childFragmentManager, SendMessageBottomSheet.TAG)
+    }
+
+    private fun shareFamilyLink(family: FamilyDetail) {
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, "Join my family group on Nimons360 using code: ${family.familyCode ?: ""}")
+        }
+        startActivity(Intent.createChooser(shareIntent, "Share Family Code"))
     }
 
     private fun copyCodeToClipboard(code: String?) {

@@ -443,32 +443,16 @@ class MapFragment : Fragment() {
     }
 
     private fun showInfo(member: MapMember) {
-        val view = layoutInflater.inflate(R.layout.dialog_map_member, null)
-        view.findViewById<TextView>(R.id.tvAvatarInitial).text =
-            member.fullName.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
-        view.findViewById<TextView>(R.id.tvName).text = member.fullName
-        view.findViewById<TextView>(R.id.tvEmail).text = member.email
-        view.findViewById<TextView>(R.id.tvLoc).text = String.format(
-            Locale.US,
-            "%.5f, %.5f",
-            member.latitude,
-            member.longitude,
-        )
-        view.findViewById<TextView>(R.id.tvBattery).text =
-            member.batteryLevel?.let { "$it%" } ?: getString(R.string.map_unknown)
-        view.findViewById<TextView>(R.id.tvCharge).text = when (member.isCharging) {
-            true -> getString(R.string.map_charging)
-            false -> getString(R.string.map_not_charging)
-            null -> getString(R.string.map_unknown)
-        }
-        view.findViewById<TextView>(R.id.tvNet).text =
-            member.internetStatus?.replaceFirstChar { it.uppercase() } ?: getString(R.string.map_unknown)
-
-        infoDialog?.dismiss()
-        infoDialog = MaterialAlertDialogBuilder(requireContext())
-            .setView(view)
-            .setPositiveButton(R.string.btn_close, null)
-            .show()
+        MemberDetailBottomSheet.newInstance(
+            userId = member.userId,
+            name = member.fullName,
+            email = member.email,
+            lat = member.latitude,
+            lon = member.longitude,
+            battery = member.batteryLevel,
+            charging = member.isCharging,
+            net = member.internetStatus
+        ).show(childFragmentManager, MemberDetailBottomSheet.TAG)
     }
 
     private fun buildStatus(state: MapUiState): String = when {
