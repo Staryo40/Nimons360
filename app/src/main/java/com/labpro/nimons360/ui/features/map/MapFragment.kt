@@ -472,11 +472,11 @@ class MapFragment : Fragment() {
             false -> getString(R.string.map_not_charging)
             null -> getString(R.string.map_unknown)
         }
-        view.findViewById<TextView>(R.id.tvNet).text =
-            member.internetStatus?.replaceFirstChar { it.uppercase() } ?: getString(R.string.map_unknown)
+        view.findViewById<TextView>(R.id.tvNet).text = formatNet(member.internetStatus)
 
         infoDialog?.dismiss()
         infoDialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.map_member_title)
             .setView(view)
             .setPositiveButton(R.string.btn_close, null)
             .show()
@@ -485,9 +485,16 @@ class MapFragment : Fragment() {
     private fun buildStatus(state: MapUiState): String = when {
         state.showGrant -> getString(R.string.map_permission_waiting)
         state.isLocating -> getString(R.string.map_waiting_location)
-        state.socket is MapSocket.Connected -> getString(R.string.map_live_ready)
         state.socket is MapSocket.Connecting -> getString(R.string.map_connecting)
+        state.socket is MapSocket.Connected && state.members.isEmpty() -> getString(R.string.map_live_ready_empty)
+        state.socket is MapSocket.Connected -> getString(R.string.map_live_ready_members, state.members.size)
         else -> getString(R.string.map_idle_status, state.members.size)
+    }
+
+    private fun formatNet(status: String?): String = when (status?.lowercase(Locale.US)) {
+        "wifi" -> getString(R.string.map_internet_wifi)
+        "mobile" -> getString(R.string.map_internet_mobile)
+        else -> getString(R.string.map_unknown)
     }
 
     private val pinColors by lazy {

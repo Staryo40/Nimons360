@@ -109,16 +109,20 @@
     <string name="map_waiting_location">Waiting for your location…</string>
     <string name="map_permission_waiting">Location permission is not granted yet.</string>
     <string name="map_live_ready">Live location is active.</string>
+    <string name="map_live_ready_empty">Live location is active. No other members online.</string>
+    <string name="map_live_ready_members">%1$d members active on the map.</string>
     <string name="map_connecting">Connecting to live map…</string>
     <string name="map_idle_status">%1$d members active on the map.</string>
     <string name="map_member_title">Member Info</string>
-    <string name="map_loc_value">Location: %.5f, %.5f</string>
+    <string name="map_loc_value">Location: %1$.5f, %2$.5f</string>
     <string name="map_battery_value">Battery: %1$s</string>
     <string name="map_charge_value">Charging: %1$s</string>
     <string name="map_net_value">Internet: %1$s</string>
     <string name="map_unknown">Unknown</string>
     <string name="map_charging">Charging</string>
     <string name="map_not_charging">Not charging</string>
+    <string name="map_internet_wifi">WiFi</string>
+    <string name="map_internet_mobile">Mobile Data</string>
 
     <!-- Network sensing -->
     <string name="disconnected_title">Disconnected</string>
