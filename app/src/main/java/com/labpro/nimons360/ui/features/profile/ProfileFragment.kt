@@ -19,6 +19,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import coil.load
 import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
+import com.labpro.nimons360.core.utils.TokenManager
 import com.labpro.nimons360.viewmodel.ProfileViewModel
 import com.labpro.nimons360.viewmodel.ProfileViewModelFactory
 import kotlinx.coroutines.launch
@@ -144,12 +145,35 @@ class ProfileFragment : DialogFragment() {
         }
 
         view.findViewById<View>(R.id.btnCustomizePin).setOnClickListener {
-            Toast.makeText(requireContext(), "Customize Pin: Feature Coming Soon", Toast.LENGTH_SHORT).show()
+            showPinDialog()
         }
 
         view.findViewById<View>(R.id.btnAnalytics).setOnClickListener {
             Toast.makeText(requireContext(), "Analytics: Feature Coming Soon", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun showPinDialog() {
+        val app = requireActivity().application as MainApplication
+        val styles = arrayOf(
+            TokenManager.PIN_TEAL,
+            TokenManager.PIN_CORAL,
+            TokenManager.PIN_BLUE,
+            TokenManager.PIN_PURPLE,
+            TokenManager.PIN_ORANGE,
+        )
+        val labels = arrayOf("Teal", "Coral", "Blue", "Purple", "Orange")
+        val current = styles.indexOf(app.tokenManager.getPinStyle()).coerceAtLeast(0)
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Customize Pin")
+            .setSingleChoiceItems(labels, current) { dialog, which ->
+                app.tokenManager.setPinStyle(styles[which])
+                Toast.makeText(requireContext(), "Pin style updated", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun observeState() {

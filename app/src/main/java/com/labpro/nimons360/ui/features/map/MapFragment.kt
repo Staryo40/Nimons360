@@ -28,6 +28,7 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
+import com.labpro.nimons360.core.utils.TokenManager
 import com.labpro.nimons360.data.model.map.FavoriteLocationEntity
 import com.labpro.nimons360.data.model.map.MapMember
 import com.labpro.nimons360.data.model.map.MapSocket
@@ -370,6 +371,7 @@ class MapFragment : Fragment() {
                 requireContext(),
                 state.self.fullName.firstOrNull()?.uppercase() ?: "Y",
                 state.self.rotation,
+                getSelfPinColor(),
             )
             setInfoWindow(null)
         }
@@ -496,6 +498,18 @@ class MapFragment : Fragment() {
             ContextCompat.getColor(requireContext(), R.color.pin_orange),
             ContextCompat.getColor(requireContext(), R.color.pin_purple),
         )
+    }
+
+    private fun getSelfPinColor(): Int {
+        val app = requireActivity().application as MainApplication
+        val color = when (app.tokenManager.getPinStyle()) {
+            TokenManager.PIN_CORAL -> R.color.secondary_coral
+            TokenManager.PIN_BLUE -> R.color.pin_blue
+            TokenManager.PIN_PURPLE -> R.color.pin_purple
+            TokenManager.PIN_ORANGE -> R.color.pin_orange
+            else -> R.color.primary_teal
+        }
+        return ContextCompat.getColor(requireContext(), color)
     }
 
     companion object {
