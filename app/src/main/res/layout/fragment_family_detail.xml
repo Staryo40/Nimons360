@@ -58,11 +58,9 @@
                     android:id="@+id/heroCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/page_horizontal_padding"
-                    android:layout_marginTop="@dimen/spacing_md"
                     app:cardBackgroundColor="@color/primary_teal"
-                    app:cardCornerRadius="@dimen/radius_card"
-                    app:cardElevation="2dp">
+                    app:cardCornerRadius="0dp"
+                    app:cardElevation="0dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -74,12 +72,12 @@
                         <!-- Family icon -->
                         <ImageView
                             android:id="@+id/ivFamilyIcon"
-                            android:layout_width="56dp"
-                            android:layout_height="56dp"
-                            android:layout_marginEnd="@dimen/spacing_md"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_marginEnd="@dimen/spacing_lg"
                             android:background="@drawable/bg_icon_item_hero"
                             android:contentDescription="@string/cd_family_icon"
-                            android:padding="6dp"
+                            android:padding="10dp"
                             android:scaleType="fitCenter"
                             tools:src="@mipmap/ic_launcher" />
 
@@ -95,7 +93,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/white"
-                                android:textSize="@dimen/text_lg"
+                                android:textSize="@dimen/text_headline"
                                 android:textStyle="bold"
                                 tools:text="Maulana Family" />
 
@@ -157,38 +155,56 @@
                         android:background="@drawable/bg_family_code"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:paddingHorizontal="@dimen/spacing_md"
-                        android:paddingVertical="@dimen/spacing_sm">
+                        android:padding="@dimen/spacing_md">
 
-                        <TextView
-                            android:id="@+id/tvFamilyCode"
+                        <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:fontFamily="monospace"
-                            android:textColor="@color/secondary_coral_dark"
-                            android:textSize="@dimen/text_xl"
-                            android:textStyle="bold"
-                            android:letterSpacing="0.15"
-                            tools:text="MFA287" />
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:letterSpacing="0.08"
+                                android:text="@string/invite_code_label"
+                                android:textColor="#1E6BC5"
+                                android:textSize="@dimen/text_sm"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvFamilyCode"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/spacing_sm"
+                                android:fontFamily="monospace"
+                                android:letterSpacing="0.12"
+                                android:textColor="#1E6BC5"
+                                android:textSize="34sp"
+                                android:textStyle="bold"
+                                tools:text="MFA-2847" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/spacing_sm"
+                                android:text="@string/family_code_copy_hint"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="@dimen/text_sm" />
+
+                        </LinearLayout>
 
                         <ImageButton
                             android:id="@+id/btnCopyCode"
                             android:layout_width="@dimen/touch_target_min"
                             android:layout_height="@dimen/touch_target_min"
-                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:layout_marginStart="@dimen/spacing_md"
+                            android:background="@drawable/bg_copy_button"
                             android:contentDescription="@string/cd_copy_code"
+                            android:padding="12dp"
                             android:src="@drawable/ic_copy" />
 
                     </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/spacing_xs"
-                        android:text="@string/family_code_copy_hint"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="@dimen/text_sm" />
 
                 </LinearLayout>
 
@@ -241,6 +257,137 @@
                         android:text="@string/family_join_hint"
                         android:textColor="@color/text_secondary"
                         android:textSize="@dimen/text_sm" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/actionsSection"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/page_horizontal_padding"
+                        android:layout_marginBottom="@dimen/spacing_xs"
+                        android:accessibilityHeading="true"
+                        android:letterSpacing="0.08"
+                        android:text="@string/actions_section"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="@dimen/text_xs"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/page_horizontal_padding"
+                        app:cardBackgroundColor="@color/surface_white"
+                        app:cardCornerRadius="@dimen/radius_card"
+                        app:cardElevation="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:id="@+id/btnSendMessage"
+                                android:layout_width="match_parent"
+                                android:layout_height="72dp"
+                                android:background="?attr/selectableItemBackground"
+                                android:clickable="true"
+                                android:contentDescription="@string/cd_send_message"
+                                android:focusable="true"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:paddingHorizontal="@dimen/spacing_md">
+
+                                <FrameLayout
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="@dimen/spacing_md"
+                                    android:background="@drawable/bg_action_icon_blue">
+
+                                    <ImageView
+                                        android:layout_width="22dp"
+                                        android:layout_height="22dp"
+                                        android:layout_gravity="center"
+                                        android:contentDescription="@null"
+                                        android:src="@drawable/ic_message" />
+
+                                </FrameLayout>
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/send_message"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/text_xl" />
+
+                                <ImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:contentDescription="@null"
+                                    android:src="@drawable/ic_chevron_right" />
+
+                            </LinearLayout>
+
+                            <com.google.android.material.divider.MaterialDivider
+                                android:layout_width="match_parent"
+                                android:layout_height="0.5dp"
+                                app:dividerColor="@color/divider" />
+
+                            <LinearLayout
+                                android:id="@+id/btnShareFamily"
+                                android:layout_width="match_parent"
+                                android:layout_height="72dp"
+                                android:background="?attr/selectableItemBackground"
+                                android:clickable="true"
+                                android:contentDescription="@string/cd_share_family"
+                                android:focusable="true"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:paddingHorizontal="@dimen/spacing_md">
+
+                                <FrameLayout
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="@dimen/spacing_md"
+                                    android:background="@drawable/bg_action_icon_green">
+
+                                    <ImageView
+                                        android:layout_width="22dp"
+                                        android:layout_height="22dp"
+                                        android:layout_gravity="center"
+                                        android:contentDescription="@null"
+                                        android:src="@drawable/ic_link" />
+
+                                </FrameLayout>
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/share_family"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/text_xl" />
+
+                                <ImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:contentDescription="@null"
+                                    android:src="@drawable/ic_chevron_right" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
 
                 </LinearLayout>
 

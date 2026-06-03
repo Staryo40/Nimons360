@@ -44,6 +44,7 @@
 
     <!-- Family detail -->
     <string name="family_code_label">FAMILY CODE</string>
+    <string name="invite_code_label">INVITE CODE</string>
     <string name="family_code_copy_hint">Share this code so others can join your family</string>
     <string name="not_a_member">Not a member</string>
     <string name="members_section">MEMBERS</string>
@@ -63,6 +64,12 @@
     <string name="btn_join_confirm">Join</string>
     <string name="family_code_clipboard_label">Family Code</string>
     <string name="family_code_copied">Code copied!</string>
+    <string name="share_family">Share Family Link</string>
+    <string name="share_family_message">Join %1$s on Nimons360: %2$s</string>
+    <string name="share_family_chooser">Share family link</string>
+    <string name="actions_section">ACTIONS</string>
+    <string name="send_message">Send Message</string>
+    <string name="send_message_unavailable">Send Message is not available yet.</string>
     <string name="family_meta_with_date">%1$d member%2$s · Created %3$s</string>
     <string name="family_meta_without_date">%1$d member%2$s</string>
     <string name="live_room">Live Room</string>
@@ -128,6 +135,8 @@
     <string name="cd_avatar">Avatar for %s</string>
     <string name="cd_pin_family">Pin family</string>
     <string name="cd_copy_code">Copy family code</string>
+    <string name="cd_share_family">Share family link</string>
+    <string name="cd_send_message">Send message</string>
     <string name="cd_edit_profile">Edit profile</string>
     <string name="cd_family_icon">Family icon</string>
     <string name="cd_map_pin">Location pin for %s</string>
