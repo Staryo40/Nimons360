@@ -57,14 +57,20 @@ class MapViewModel(
     val favoriteLocations: StateFlow<List<FavoriteLocationEntity>> = locationRepository.observeFavoriteLocations()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    fun toggleFavoriteLocation(latitude: Double, longitude: Double, title: String) {
+    fun addFavoriteLocation(latitude: Double, longitude: Double, title: String) {
         viewModelScope.launch {
-            val isFavorite = favoriteLocations.value.any { it.latitude == latitude && it.longitude == longitude }
-            if (isFavorite) {
-                locationRepository.removeFavoriteLocation(latitude, longitude)
-            } else {
+            val exists = favoriteLocations.value.any {
+                it.latitude == latitude && it.longitude == longitude
+            }
+            if (!exists) {
                 locationRepository.addFavoriteLocation(latitude, longitude, title)
             }
+        }
+    }
+
+    fun removeFavoriteLocation(id: Int) {
+        viewModelScope.launch {
+            locationRepository.removeFavoriteLocation(id)
         }
     }
 

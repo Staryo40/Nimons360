@@ -203,8 +203,8 @@ class MapFragment : Fragment() {
             .setMessage("Enter a name for this location:")
             .setView(container)
             .setPositiveButton("Save") { _, _ ->
-                val title = input.text.toString().takeIf { it.isNotBlank() } ?: "Favorite Location"
-                viewModel.toggleFavoriteLocation(p.latitude, p.longitude, title)
+                val title = input.text.toString().trim().ifEmpty { "Favorite Location" }
+                viewModel.addFavoriteLocation(p.latitude, p.longitude, title)
             }
             .setNegativeButton("Cancel", null)
             .show()
@@ -305,22 +305,31 @@ class MapFragment : Fragment() {
         favoriteMarkers.forEach { mapView.overlays.remove(it) }
         favoriteMarkers.clear()
 
-        val defaultIcon = ContextCompat.getDrawable(requireContext(), org.osmdroid.library.R.drawable.marker_default)?.mutate()
-        defaultIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.pin_orange))
-
         favorites.forEach { fav ->
+            val markerIcon = ContextCompat
+                .getDrawable(requireContext(), org.osmdroid.library.R.drawable.marker_default)
+                ?.mutate()
+            markerIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.pin_orange))
+
             val marker = Marker(mapView).apply {
                 position = GeoPoint(fav.latitude, fav.longitude)
                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                icon = defaultIcon
+                icon = markerIcon
             }
 
             marker.setOnMarkerClickListener { _, _ ->
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(fav.title)
-                    .setMessage("Coordinates:\nLat: ${fav.latitude}\nLon: ${fav.longitude}")
+                    .setMessage(
+                        String.format(
+                            Locale.US,
+                            "Coordinates:\nLat: %.5f\nLon: %.5f",
+                            fav.latitude,
+                            fav.longitude,
+                        )
+                    )
                     .setPositiveButton("Remove") { _, _ ->
-                        viewModel.toggleFavoriteLocation(fav.latitude, fav.longitude, "")
+                        viewModel.removeFavoriteLocation(fav.id)
                     }
                     .setNegativeButton("Close", null)
                     .show()
