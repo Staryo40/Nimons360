@@ -82,6 +82,8 @@ class FamilyDetailFragment : DialogFragment() {
     private lateinit var actionsSection: LinearLayout
     private lateinit var btnSendMessage: LinearLayout
     private lateinit var btnShareFamily: LinearLayout
+    private lateinit var btnShareFamilyQr: LinearLayout
+    private lateinit var dividerShareFamilyQr: View
     private lateinit var membersCard: MaterialCardView
     private lateinit var membersContainer: LinearLayout
     private lateinit var joinHintSection: LinearLayout
@@ -152,6 +154,8 @@ class FamilyDetailFragment : DialogFragment() {
         actionsSection    = root.findViewById(R.id.actionsSection)
         btnSendMessage    = root.findViewById(R.id.btnSendMessage)
         btnShareFamily    = root.findViewById(R.id.btnShareFamily)
+        btnShareFamilyQr  = root.findViewById(R.id.btnShareFamilyQr)
+        dividerShareFamilyQr = root.findViewById(R.id.dividerShareFamilyQr)
         membersCard       = root.findViewById(R.id.membersCard)
         membersContainer  = root.findViewById(R.id.membersContainer)
         joinHintSection   = root.findViewById(R.id.joinHintSection)
@@ -267,6 +271,11 @@ class FamilyDetailFragment : DialogFragment() {
         btnShareFamily.alpha = if (canShare) 1f else 0.5f
         btnShareFamily.setOnClickListener {
             if (canShare) shareFamilyLink(family)
+        }
+        btnShareFamilyQr.isVisible = canShare
+        dividerShareFamilyQr.isVisible = canShare
+        btnShareFamilyQr.setOnClickListener {
+            if (canShare) showFamilyQrDialog(family)
         }
 
         toolbar.menu.clear()
@@ -403,6 +412,19 @@ class FamilyDetailFragment : DialogFragment() {
         }
 
         startActivity(Intent.createChooser(sendIntent, getString(R.string.share_family_chooser)))
+    }
+
+    private fun showFamilyQrDialog(family: FamilyDetail) {
+        val code = family.familyCode ?: return
+        if (childFragmentManager.findFragmentByTag(FamilyQrDialogFragment.TAG) != null) return
+
+        FamilyQrDialogFragment
+            .newInstance(
+                familyId = family.id,
+                familyName = family.name,
+                familyCode = code,
+            )
+            .show(childFragmentManager, FamilyQrDialogFragment.TAG)
     }
 
     private fun confirmLeave(familyName: String) {
