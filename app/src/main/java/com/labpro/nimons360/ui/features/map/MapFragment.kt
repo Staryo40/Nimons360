@@ -125,6 +125,7 @@ class MapFragment : Fragment() {
         val granted = locationTracker.hasPermission()
         viewModel.setPermission(granted)
         viewModel.bind()
+        app().analytics.mapOpened()
         startLocationWatcher()
         if (granted) {
             handleLocationAvailability(showDialog = true)
@@ -206,6 +207,7 @@ class MapFragment : Fragment() {
             .setPositiveButton("Save") { _, _ ->
                 val title = input.text.toString().trim().ifEmpty { "Favorite Location" }
                 viewModel.addFavoriteLocation(p.latitude, p.longitude, title)
+                app().analytics.favoriteAdded()
             }
             .setNegativeButton("Cancel", null)
             .show()
@@ -331,6 +333,7 @@ class MapFragment : Fragment() {
                     )
                     .setPositiveButton("Remove") { _, _ ->
                         viewModel.removeFavoriteLocation(fav.id)
+                        app().analytics.favoriteRemoved()
                     }
                     .setNegativeButton("Close", null)
                     .show()
@@ -454,6 +457,7 @@ class MapFragment : Fragment() {
     }
 
     private fun showInfo(member: MapMember) {
+        app().analytics.memberPopupOpened()
         val view = layoutInflater.inflate(R.layout.dialog_map_member, null)
         view.findViewById<TextView>(R.id.tvAvatarInitial).text =
             member.fullName.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
@@ -508,8 +512,7 @@ class MapFragment : Fragment() {
     }
 
     private fun getSelfPinColor(): Int {
-        val app = requireActivity().application as MainApplication
-        val color = when (app.tokenManager.getPinStyle()) {
+        val color = when (app().tokenManager.getPinStyle()) {
             TokenManager.PIN_CORAL -> R.color.secondary_coral
             TokenManager.PIN_BLUE -> R.color.pin_blue
             TokenManager.PIN_PURPLE -> R.color.pin_purple
@@ -517,6 +520,10 @@ class MapFragment : Fragment() {
             else -> R.color.primary_teal
         }
         return ContextCompat.getColor(requireContext(), color)
+    }
+
+    private fun app(): MainApplication {
+        return requireActivity().application as MainApplication
     }
 
     companion object {

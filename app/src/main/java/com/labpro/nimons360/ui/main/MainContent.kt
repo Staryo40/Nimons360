@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
 import com.labpro.nimons360.data.enums.MainScreenEnum
 import com.labpro.nimons360.data.model.user.UserData
@@ -37,12 +38,20 @@ fun MainContent(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val fm = (context as FragmentActivity).supportFragmentManager
+    val app = context.applicationContext as MainApplication
+
+    LaunchedEffect(currentScreen) {
+        if (currentScreen == MainScreenEnum.FAMILY) {
+            app.analytics.familyOpened()
+        }
+    }
 
     fun openProfile() {
         val currentFm = fm ?: return
 
         if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
             if (!currentFm.isStateSaved && currentFm.findFragmentByTag(ProfileFragment.TAG) == null) {
+                app.analytics.profileOpened()
                 ProfileFragment().show(currentFm, ProfileFragment.TAG)
             }
         }

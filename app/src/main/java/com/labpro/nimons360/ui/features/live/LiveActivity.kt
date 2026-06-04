@@ -13,6 +13,7 @@ import io.agora.agorauikit_android.AgoraVideoViewer
 import io.agora.rtc2.Constants
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.labpro.nimons360.MainApplication
 import io.agora.agorauikit_android.AgoraSettings
 
 class LiveActivity : AppCompatActivity() {
@@ -26,6 +27,7 @@ class LiveActivity : AppCompatActivity() {
 
         val roomID = intent.getStringExtra(EXTRA_ROOM_ID) ?: return
         val isHost = intent.getBooleanExtra(EXTRA_IS_HOST, false)
+        (application as MainApplication).analytics.liveOpened(isHost)
 
         val settings = AgoraSettings().apply {
             enabledButtons = mutableSetOf(

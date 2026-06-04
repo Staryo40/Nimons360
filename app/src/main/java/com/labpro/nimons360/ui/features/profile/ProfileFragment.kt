@@ -142,6 +142,7 @@ class ProfileFragment : DialogFragment() {
             // Update location privacy setting in secure preferences
             // If checked is false, location broadcasts are intercepted.
             app.tokenManager.setLocationSharingEnabled(isChecked)
+            app.analytics.locationShared(isChecked)
         }
 
         view.findViewById<View>(R.id.btnCustomizePin).setOnClickListener {
@@ -149,6 +150,7 @@ class ProfileFragment : DialogFragment() {
         }
 
         view.findViewById<View>(R.id.btnAnalytics).setOnClickListener {
+            app.analytics.analyticsOpened()
             Toast.makeText(requireContext(), "Analytics: Feature Coming Soon", Toast.LENGTH_SHORT).show()
         }
     }
@@ -169,6 +171,7 @@ class ProfileFragment : DialogFragment() {
             .setTitle("Customize Pin")
             .setSingleChoiceItems(labels, current) { dialog, which ->
                 app.tokenManager.setPinStyle(styles[which])
+                app.analytics.pinCustomized(styles[which])
                 Toast.makeText(requireContext(), "Pin style updated", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             }
