@@ -42,6 +42,7 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
     private val internetStatus: String by lazy { requireArguments().getString(ARG_NET, "Unknown") }
 
     private var resolvedFamilyId: Int? = null
+    private var senderName: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -102,6 +103,15 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
 
         btnCloseSheet.setOnClickListener { dismiss() }
 
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.apiService.getMe()
+                if (response.isSuccessful) {
+                    senderName = response.body()?.data?.fullName
+                }
+            } catch (_: Exception) {}
+        }
+
         // Dynamically fetch user's families to find the shared family ID and name
         val app = requireActivity().application as MainApplication
         val familyRepo = app.familyRepository
@@ -148,8 +158,11 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
             btnSendGreeting.isEnabled = false
             lifecycleScope.launch {
                 try {
+                    val currentSender = senderName ?: "Someone"
+                    val formattedMessage = "$currentSender: ${greetingData.title}"
+
                     val response = RetrofitClient.apiService.sendGreetingToMember(
-                        SendGreetingRequest(familyId, targetUserId, greetingData.title)
+                        SendGreetingRequest(familyId, targetUserId, formattedMessage)
                     )
 
                     if (response.isSuccessful) {
@@ -184,8 +197,11 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
             btnSendCustomMessage.isEnabled = false
             lifecycleScope.launch {
                 try {
+                    val currentSender = senderName ?: "Someone"
+                    val formattedMessage = "$currentSender: $messageText"
+
                     val response = RetrofitClient.apiService.sendGreetingToMember(
-                        SendGreetingRequest(familyId, targetUserId, messageText)
+                        SendGreetingRequest(familyId, targetUserId, formattedMessage)
                     )
 
                     if (response.isSuccessful) {
