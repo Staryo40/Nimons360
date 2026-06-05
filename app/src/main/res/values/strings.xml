@@ -44,6 +44,7 @@
 
     <!-- Family detail -->
     <string name="family_code_label">FAMILY CODE</string>
+    <string name="invite_code_label">INVITE CODE</string>
     <string name="family_code_copy_hint">Share this code so others can join your family</string>
     <string name="not_a_member">Not a member</string>
     <string name="members_section">MEMBERS</string>
@@ -63,6 +64,17 @@
     <string name="btn_join_confirm">Join</string>
     <string name="family_code_clipboard_label">Family Code</string>
     <string name="family_code_copied">Code copied!</string>
+    <string name="share_family">Share Family Link</string>
+    <string name="share_family_qr">Share Family QR Code</string>
+    <string name="share_family_qr_code">Family QR Code</string>
+    <string name="share_family_message">Join %1$s on Nimons360: %2$s</string>
+    <string name="share_family_chooser">Share family link</string>
+    <string name="qr_share_chooser">Share family QR code</string>
+    <string name="qr_share_error">Failed to share QR code.</string>
+    <string name="qr_preview_hint">Scan this QR code to open the family invite.</string>
+    <string name="actions_section">ACTIONS</string>
+    <string name="send_message">Send Message</string>
+    <string name="send_message_unavailable">Send Message is not available yet.</string>
     <string name="family_meta_with_date">%1$d member%2$s · Created %3$s</string>
     <string name="family_meta_without_date">%1$d member%2$s</string>
     <string name="live_room">Live Room</string>
@@ -123,6 +135,9 @@
     <string name="map_not_charging">Not charging</string>
     <string name="map_internet_wifi">WiFi</string>
     <string name="map_internet_mobile">Mobile Data</string>
+    <string name="share_instagram_story">Story</string>
+    <string name="instagram_not_installed">Instagram is not installed.</string>
+    <string name="instagram_story_share_error">Failed to share Instagram story.</string>
 
     <!-- Network sensing -->
     <string name="disconnected_title">Disconnected</string>
@@ -132,9 +147,13 @@
     <string name="cd_avatar">Avatar for %s</string>
     <string name="cd_pin_family">Pin family</string>
     <string name="cd_copy_code">Copy family code</string>
+    <string name="cd_share_family">Share family link</string>
+    <string name="cd_share_family_qr">Share family QR code</string>
+    <string name="cd_send_message">Send message</string>
     <string name="cd_edit_profile">Edit profile</string>
     <string name="cd_family_icon">Family icon</string>
     <string name="cd_map_pin">Location pin for %s</string>
+    <string name="cd_share_instagram_story">Share map to Instagram story</string>
     <string name="cd_profile_avatar">Open profile for %s</string>
     <string name="cd_create_family">Create family</string>
     <string name="cd_join_family_named">Join family %s</string>

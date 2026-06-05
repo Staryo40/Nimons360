@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -26,8 +27,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.labpro.nimons360.BuildConfig
 import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
+import com.labpro.nimons360.core.utils.InstagramStoryShareHelper
 import com.labpro.nimons360.core.utils.TokenManager
 import com.labpro.nimons360.data.model.map.FavoriteLocationEntity
 import com.labpro.nimons360.data.model.map.MapMember
@@ -47,10 +50,12 @@ import java.util.Locale
 import kotlin.math.abs
 
 class MapFragment : Fragment() {
+    private lateinit var mapRoot: View
     private lateinit var mapView: MapView
     private lateinit var bannerCard: MaterialCardView
     private lateinit var grantCard: MaterialCardView
     private lateinit var btnGrant: MaterialButton
+    private lateinit var btnShareStory: MaterialButton
     private lateinit var tvBanner: TextView
     private lateinit var tvStatus: TextView
     private lateinit var pbLocate: ProgressBar
@@ -117,6 +122,7 @@ class MapFragment : Fragment() {
         setupTrackers()
         observeState()
         btnGrant.setOnClickListener { askPermission() }
+        btnShareStory.setOnClickListener { shareMapStory() }
     }
 
     override fun onStart() {
@@ -155,13 +161,46 @@ class MapFragment : Fragment() {
     }
 
     private fun bind(root: View) {
+        mapRoot = root.findViewById(R.id.mapRoot)
         mapView = root.findViewById(R.id.mapView)
         bannerCard = root.findViewById(R.id.bannerCard)
         grantCard = root.findViewById(R.id.grantCard)
         btnGrant = root.findViewById(R.id.btnGrant)
+        btnShareStory = root.findViewById(R.id.btnShareStory)
         tvBanner = root.findViewById(R.id.tvBanner)
         tvStatus = root.findViewById(R.id.tvStatus)
         pbLocate = root.findViewById(R.id.pbLocate)
+    }
+
+    private fun shareMapStory() {
+        if (mapRoot.width <= 0 || mapRoot.height <= 0) {
+            Toast.makeText(requireContext(), R.string.instagram_story_share_error, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        btnShareStory.isEnabled = false
+        btnShareStory.visibility = View.INVISIBLE
+
+        mapRoot.post {
+            try {
+                val bitmap = InstagramStoryShareHelper.captureView(mapRoot)
+                val file = InstagramStoryShareHelper.writeStoryImage(requireContext(), bitmap)
+                val opened = InstagramStoryShareHelper.shareToInstagramStory(
+                    activity = requireActivity(),
+                    imageFile = file,
+                    facebookAppId = BuildConfig.FACEBOOK_APP_ID,
+                )
+
+                if (!opened) {
+                    Toast.makeText(requireContext(), R.string.instagram_not_installed, Toast.LENGTH_SHORT).show()
+                }
+            } catch (_: Exception) {
+                Toast.makeText(requireContext(), R.string.instagram_story_share_error, Toast.LENGTH_SHORT).show()
+            } finally {
+                btnShareStory.visibility = View.VISIBLE
+                btnShareStory.isEnabled = true
+            }
+        }
     }
 
     private fun setupMap() {

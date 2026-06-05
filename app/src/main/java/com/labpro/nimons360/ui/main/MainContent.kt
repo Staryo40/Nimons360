@@ -19,6 +19,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
 import com.labpro.nimons360.data.enums.MainScreenEnum
+import com.labpro.nimons360.core.navigation.FamilyDeepLink
 import com.labpro.nimons360.data.model.user.UserData
 import com.labpro.nimons360.ui.features.families.CreateFamilyFragment
 import com.labpro.nimons360.ui.features.families.FamilyDetailFragment
@@ -33,7 +34,9 @@ import com.labpro.nimons360.ui.main.shared.UserAvatar
 fun MainContent(
     user: UserData,
     currentScreen: MainScreenEnum,
-    onScreenChange: (MainScreenEnum) -> Unit
+    onScreenChange: (MainScreenEnum) -> Unit,
+    pendingFamilyDeepLink: FamilyDeepLink? = null,
+    onFamilyDeepLinkHandled: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -47,34 +50,43 @@ fun MainContent(
     }
 
     fun openProfile() {
-        val currentFm = fm ?: return
-
         if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-            if (!currentFm.isStateSaved && currentFm.findFragmentByTag(ProfileFragment.TAG) == null) {
+            if (!fm.isStateSaved && fm.findFragmentByTag(ProfileFragment.TAG) == null) {
                 app.analytics.profileOpened()
-                ProfileFragment().show(currentFm, ProfileFragment.TAG)
+                ProfileFragment().show(fm, ProfileFragment.TAG)
             }
         }
     }
 
     fun openCreateFamily() {
-        val currentFm = fm ?: return
-
         if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-            if (!currentFm.isStateSaved && currentFm.findFragmentByTag(CreateFamilyFragment.TAG) == null) {
-                CreateFamilyFragment().show(currentFm, CreateFamilyFragment.TAG)
+            if (!fm.isStateSaved && fm.findFragmentByTag(CreateFamilyFragment.TAG) == null) {
+                CreateFamilyFragment().show(fm, CreateFamilyFragment.TAG)
             }
         }
     }
 
-    fun openFamilyDetail(familyId: Int) {
-        val currentFm = fm ?: return
-
+    fun openFamilyDetail(familyId: Int, prefillCode: String? = null): Boolean {
         if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-            if (!currentFm.isStateSaved && currentFm.findFragmentByTag(FamilyDetailFragment.TAG) == null) {
+            if (!fm.isStateSaved && fm.findFragmentByTag(FamilyDetailFragment.TAG) == null) {
+                app.analytics.familyOpened()
                 FamilyDetailFragment
-                    .newInstance(familyId, currentUserEmail = user.email)
-                    .show(currentFm, FamilyDetailFragment.TAG)
+                    .newInstance(
+                        familyId = familyId,
+                        currentUserEmail = user.email,
+                        prefillCode = prefillCode,
+                    )
+                    .show(fm, FamilyDetailFragment.TAG)
+                return true
+            }
+        }
+        return false
+    }
+
+    LaunchedEffect(pendingFamilyDeepLink) {
+        pendingFamilyDeepLink?.let { link ->
+            if (openFamilyDetail(link.familyId, link.code)) {
+                onFamilyDeepLinkHandled()
             }
         }
     }
