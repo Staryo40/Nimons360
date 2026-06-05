@@ -129,6 +129,24 @@
     <string name="analytics_minutes_ago">%1$d min ago</string>
     <string name="analytics_hours_minutes_ago">%1$dh %2$02dm ago</string>
     <string name="analytics_chart_description">Daily distance graph, total %1$.1f kilometers this month.</string>
+    <string name="pin_customize_title">Customize Pin</string>
+    <string name="pin_back">Back</string>
+    <string name="pin_current">Your current pin</string>
+    <string name="pin_local_only">Visible only on your map</string>
+    <string name="pin_choose_skin">Choose a Skin</string>
+    <string name="pin_color_menu">Color Pins</string>
+    <string name="pin_color_selected">Selected: %1$s</string>
+    <string name="pin_choose_color">Choose a pin color</string>
+    <string name="pin_selected">Pin selected</string>
+    <string name="pin_download_channel">Custom pin downloads</string>
+    <string name="pin_downloading_title">Downloading %1$s</string>
+    <string name="pin_downloading_body">Download in progress</string>
+    <string name="pin_download_complete">%1$s is ready</string>
+    <string name="pin_download_select_hint">Open Customize Pin to select it.</string>
+    <string name="pin_download_failed">Could not download %1$s</string>
+    <string name="pin_download_ready">Pin downloaded and ready to select</string>
+    <string name="pin_download_error">Pin download failed</string>
+    <string name="pin_notification_required">Notification permission is required to show pin download progress.</string>
 
     <!-- Map -->
     <string name="map_title">Map</string>

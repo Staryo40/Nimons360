@@ -73,7 +73,18 @@ class TokenManager(context: Context) {
     }
 
     fun setPinStyle(style: String) {
-        prefs.edit().putString(KEY_PIN_STYLE, style).apply()
+        prefs.edit()
+            .putString(KEY_PIN_STYLE, style)
+            .putString(KEY_PIN_SKIN, PIN_SKIN_COLOR)
+            .apply()
+    }
+
+    fun getPinSkin(): String {
+        return prefs.getString(KEY_PIN_SKIN, PIN_SKIN_COLOR) ?: PIN_SKIN_COLOR
+    }
+
+    fun setPinSkin(skin: String) {
+        prefs.edit().putString(KEY_PIN_SKIN, skin).apply()
     }
 
     fun setPresenceName(name: String) {
@@ -92,6 +103,7 @@ class TokenManager(context: Context) {
         private const val KEY_SHARE_LOCATION = "share_location"
         private const val KEY_NOTIFICATIONS_ENABLED = "notifications_enabled"
         private const val KEY_PIN_STYLE = "pin_style"
+        private const val KEY_PIN_SKIN = "pin_skin"
         private const val KEY_PRESENCE_NAME = "presence_name"
 
         const val PIN_TEAL = "teal"
@@ -99,5 +111,6 @@ class TokenManager(context: Context) {
         const val PIN_BLUE = "blue"
         const val PIN_PURPLE = "purple"
         const val PIN_ORANGE = "orange"
+        const val PIN_SKIN_COLOR = "color"
     }
 }

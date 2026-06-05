@@ -33,9 +33,11 @@ import com.labpro.nimons360.R
 import com.labpro.nimons360.core.utils.InstagramStoryShareHelper
 import com.labpro.nimons360.core.utils.TokenManager
 import com.labpro.nimons360.data.model.map.FavoriteLocationEntity
+import com.labpro.nimons360.data.model.map.CustomPin
 import com.labpro.nimons360.data.model.map.MapMember
 import com.labpro.nimons360.data.model.map.MapSocket
 import com.labpro.nimons360.data.model.ui_state.MapUiState
+import com.labpro.nimons360.data.repository.CustomPinRepository
 import com.labpro.nimons360.viewmodel.MapViewModel
 import com.labpro.nimons360.viewmodel.MapViewModelFactory
 import kotlinx.coroutines.launch
@@ -68,6 +70,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
     private var selfMarker: Marker? = null
     private var lastSelfPosition: GeoPoint? = null
     private var lastSelfRotation: Float? = null
+    private var lastSelfPinKey: String? = null
     private val memberMap = linkedMapOf<Int, Marker>()
     private val favoriteMarkers = mutableListOf<Marker>()
     private var locationSettingsDialog: AlertDialog? = null
@@ -166,6 +169,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         selfMarker = null
         lastSelfPosition = null
         lastSelfRotation = null
+        lastSelfPinKey = null
         memberMap.clear()
         favoriteMarkers.clear()
         super.onDestroyView()
@@ -407,15 +411,27 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
             invalidated = true
         }
 
+        val selectedSkin = app().tokenManager.getPinSkin()
+        val customPin = CustomPin.find(selectedSkin)
+        val customFile = customPin
+            ?.let { pin -> CustomPinRepository(requireContext()).takeIf { it.isDownloaded(pin) }?.file(pin) }
+        val pinKey = customFile?.absolutePath ?: "color:${app().tokenManager.getPinStyle()}"
         val rotDiff = if (lastSelfRotation != null) abs(lastSelfRotation!! - rotation) else Float.MAX_VALUE
-        if (selfMarker?.icon == null || rotDiff >= 3f) {
-            selfMarker?.icon = MapPinMaker.self(
-                requireContext(),
-                state.self.fullName.firstOrNull()?.uppercase() ?: "Y",
-                state.self.rotation,
-                getSelfPinColor(),
+        val needsRotationUpdate = customFile == null && rotDiff >= 3f
+        if (selfMarker?.icon == null || lastSelfPinKey != pinKey || needsRotationUpdate) {
+            selfMarker?.icon = customFile?.let { MapPinMaker.custom(requireContext(), it) }
+                ?: MapPinMaker.self(
+                    requireContext(),
+                    state.self.fullName.firstOrNull()?.uppercase() ?: "Y",
+                    state.self.rotation,
+                    getSelfPinColor(),
+                )
+            selfMarker?.setAnchor(
+                Marker.ANCHOR_CENTER,
+                if (customFile == null) Marker.ANCHOR_CENTER else Marker.ANCHOR_BOTTOM,
             )
             lastSelfRotation = rotation
+            lastSelfPinKey = pinKey
             invalidated = true
         }
         selfMarker?.setInfoWindow(null)
