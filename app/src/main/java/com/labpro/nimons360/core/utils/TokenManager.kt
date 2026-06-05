@@ -65,6 +65,12 @@ class TokenManager(context: Context) {
         prefs.edit().putBoolean(KEY_SHARE_LOCATION, enabled).apply()
     }
 
+    fun isNotificationsEnabled(): Boolean {
+        return prefs.getBoolean(KEY_NOTIFICATIONS_ENABLED, true)
+    }
+
+    fun setNotificationsEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_NOTIFICATIONS_ENABLED, enabled).apply()
     fun getPinStyle(): String {
         return prefs.getString(KEY_PIN_STYLE, PIN_TEAL) ?: PIN_TEAL
     }
@@ -79,6 +85,7 @@ class TokenManager(context: Context) {
         private const val KEY_TOKEN = "auth_token"
         private const val KEY_EXPIRES_AT = "expires_at"
         private const val KEY_SHARE_LOCATION = "share_location"
+        private const val KEY_NOTIFICATIONS_ENABLED = "notifications_enabled"
         private const val KEY_PIN_STYLE = "pin_style"
 
         const val PIN_TEAL = "teal"

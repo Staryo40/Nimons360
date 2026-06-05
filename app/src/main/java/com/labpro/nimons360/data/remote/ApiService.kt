@@ -88,4 +88,24 @@ interface ApiService {
     /** POST /api/families/leave */
     @POST("/api/families/leave")
     suspend fun leaveFamily(@Body request: LeaveFamilyRequest): Response<LeaveFamilyResponse>
+
+    // === Notifications ===
+
+    @POST("/api/notifications/subscribe")
+    suspend fun subscribeDeviceToken(
+        @Body request: com.labpro.nimons360.data.model.notification.SubscribeTokenRequest
+    ): Response<com.labpro.nimons360.data.model.notification.SubscribeTokenResponse>
+
+    @POST("/api/notifications/unsubscribe")
+    suspend fun unsubscribeDeviceToken(): Response<com.labpro.nimons360.data.model.notification.UnsubscribeTokenResponse>
+
+    @POST("/api/notifications/send")
+    suspend fun sendBroadcastNotification(
+        @Body request: com.labpro.nimons360.data.model.notification.BroadcastNotificationRequest
+    ): Response<com.labpro.nimons360.data.model.notification.BroadcastNotificationResponse>
+
+    @POST("/api/notifications/greeting")
+    suspend fun sendGreetingToMember(
+        @Body request: com.labpro.nimons360.data.model.notification.SendGreetingRequest
+    ): Response<com.labpro.nimons360.data.model.notification.SendGreetingResponse>
 }

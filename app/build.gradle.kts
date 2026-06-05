@@ -36,7 +36,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.labpro.nimons360"
+        applicationId = "com.labpro.mad"
         minSdk = 30
         targetSdk = 36
         versionCode = 1
@@ -142,6 +142,7 @@ dependencies {
     // firebase
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-messaging")
 
     // QR Code
     implementation("com.google.zxing:core:3.5.3")

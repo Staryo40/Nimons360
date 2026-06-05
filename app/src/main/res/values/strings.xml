@@ -176,4 +176,8 @@
     <string name="cd_loading_overlay">Loading</string>
     <string name="a11y_more_members">Plus %d more members</string>
     <string name="a11y_member_row">Members: %1$s</string>
+
+    <!-- Notifications -->
+    <string name="default_notification_channel_id">family_notifications</string>
+    <string name="default_notification_channel_name">Family Notifications</string>
 </resources>

@@ -66,6 +66,8 @@ class MapFragment : Fragment() {
     private lateinit var netTracker: NetTracker
 
     private var selfMarker: Marker? = null
+    private var lastSelfPosition: GeoPoint? = null
+    private var lastSelfRotation: Float? = null
     private val memberMap = linkedMapOf<Int, Marker>()
     private val favoriteMarkers = mutableListOf<Marker>()
     private var infoDialog: AlertDialog? = null
@@ -156,6 +158,8 @@ class MapFragment : Fragment() {
         favoriteMarkers.forEach { mapView.overlays.remove(it) }
         selfMarker?.let { mapView.overlays.remove(it) }
         selfMarker = null
+        lastSelfPosition = null
+        lastSelfRotation = null
         memberMap.clear()
         favoriteMarkers.clear()
     }
@@ -393,11 +397,15 @@ class MapFragment : Fragment() {
             selfMarker?.let { marker ->
                 mapView.overlays.remove(marker)
                 selfMarker = null
+                lastSelfPosition = null
+                lastSelfRotation = null
                 mapView.invalidate()
             }
             return
         }
         val point = GeoPoint(lat, lon)
+        val rotation = state.self.rotation
+        var invalidated = false
 
         if (selfMarker == null) {
             selfMarker = Marker(mapView).apply {
@@ -405,64 +413,95 @@ class MapFragment : Fragment() {
                 title = state.self.fullName
             }
             mapView.overlays.add(selfMarker)
+            lastSelfPosition = null
+            lastSelfRotation = null
+            invalidated = true
         }
 
-        selfMarker?.apply {
-            position = point
-            icon = MapPinMaker.self(
+        if (lastSelfPosition != point) {
+            selfMarker?.position = point
+            lastSelfPosition = point
+            invalidated = true
+        }
+
+        val rotDiff = if (lastSelfRotation != null) abs(lastSelfRotation!! - rotation) else Float.MAX_VALUE
+        if (selfMarker?.icon == null || rotDiff >= 3f) {
+            selfMarker?.icon = MapPinMaker.self(
                 requireContext(),
                 state.self.fullName.firstOrNull()?.uppercase() ?: "Y",
                 state.self.rotation,
                 getSelfPinColor(),
             )
-            setInfoWindow(null)
+            lastSelfRotation = rotation
+            invalidated = true
         }
+        selfMarker?.setInfoWindow(null)
 
         if (!hasMoved) {
             mapView.controller.animateTo(point)
             hasMoved = true
         }
 
-        mapView.invalidate()
+        if (invalidated) {
+            mapView.invalidate()
+        }
     }
 
     private fun renderMembers(state: MapUiState) {
         val keep = state.members.map { it.userId }.toSet()
+        var invalidated = false
 
         memberMap.keys.toList()
             .filterNot(keep::contains)
             .forEach { key ->
                 memberMap.remove(key)?.let { marker ->
                     mapView.overlays.remove(marker)
+                    invalidated = true
                 }
             }
 
         state.members.forEachIndexed { index, member ->
+            var isNewMarker = false
             val marker = memberMap[member.userId] ?: Marker(mapView).also {
                 it.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
-                it.setOnMarkerClickListener { _, _ ->
-                    viewModel.showMember(member)
-                    true
-                }
                 memberMap[member.userId] = it
                 mapView.overlays.add(it)
+                isNewMarker = true
+                invalidated = true
             }
 
-            marker.position = GeoPoint(member.latitude, member.longitude)
-            marker.title = member.fullName
-            marker.snippet = member.email
-            marker.icon = MapPinMaker.member(
-                requireContext(),
-                member.fullName.firstOrNull()?.uppercase() ?: "?",
-                pinColors[index % pinColors.size],
-            )
+            val newPosition = GeoPoint(member.latitude, member.longitude)
+            if (marker.position != newPosition) {
+                marker.position = newPosition
+                invalidated = true
+            }
+            if (marker.title != member.fullName) {
+                marker.title = member.fullName
+                invalidated = true
+            }
+            if (marker.snippet != member.email) {
+                marker.snippet = member.email
+                invalidated = true
+            }
+            
+            if (isNewMarker || marker.icon == null) {
+                marker.icon = MapPinMaker.member(
+                    requireContext(),
+                    member.fullName.firstOrNull()?.uppercase() ?: "?",
+                    pinColors[index % pinColors.size],
+                )
+                invalidated = true
+            }
+            
             marker.setOnMarkerClickListener { _, _ ->
                 viewModel.showMember(member)
                 true
             }
         }
 
-        mapView.invalidate()
+        if (invalidated) {
+            mapView.invalidate()
+        }
     }
 
     private fun startTrackers() {
@@ -496,6 +535,16 @@ class MapFragment : Fragment() {
     }
 
     private fun showInfo(member: MapMember) {
+        MemberDetailBottomSheet.newInstance(
+            userId = member.userId,
+            name = member.fullName,
+            email = member.email,
+            lat = member.latitude,
+            lon = member.longitude,
+            battery = member.batteryLevel,
+            charging = member.isCharging,
+            net = member.internetStatus
+        ).show(childFragmentManager, MemberDetailBottomSheet.TAG)
         app().analytics.memberPopupOpened()
         val view = layoutInflater.inflate(R.layout.dialog_map_member, null)
         view.findViewById<TextView>(R.id.tvAvatarInitial).text =

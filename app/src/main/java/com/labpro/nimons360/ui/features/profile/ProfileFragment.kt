@@ -78,6 +78,63 @@ class ProfileFragment : DialogFragment() {
         }
     }
 
+    private val requestNotificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        val app = requireActivity().application as MainApplication
+        val switchNotif = view?.findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchEnableNotifications)
+        if (isGranted) {
+            switchNotif?.isChecked = true
+            app.tokenManager.setNotificationsEnabled(true)
+            subscribeToFcm()
+        } else {
+            switchNotif?.isChecked = false
+            app.tokenManager.setNotificationsEnabled(false)
+            Toast.makeText(requireContext(), "Notification permission is required to receive push alerts", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun subscribeToFcm() {
+        com.google.firebase.messaging.FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful && task.result != null) {
+                val token = task.result
+                android.util.Log.d("ProfileFragment", "FCM Token: $token")
+                val app = requireActivity().application as MainApplication
+                lifecycleScope.launch {
+                    try {
+                        val response = com.labpro.nimons360.data.remote.RetrofitClient.apiService.subscribeDeviceToken(
+                            com.labpro.nimons360.data.model.notification.SubscribeTokenRequest(token)
+                        )
+                        if (response.isSuccessful && response.body()?.data?.subscribed == true) {
+                            android.util.Log.d("ProfileFragment", "Subscribed FCM token successfully")
+                        } else {
+                            android.util.Log.e("ProfileFragment", "Failed to subscribe FCM token: ${response.code()}")
+                        }
+                    } catch (e: Exception) {
+                        android.util.Log.e("ProfileFragment", "Error subscribing FCM token: ${e.message}")
+                    }
+                }
+            } else {
+                android.util.Log.e("ProfileFragment", "Fetching FCM registration token failed", task.exception)
+            }
+        }
+    }
+
+    private fun unsubscribeFromFcm() {
+        lifecycleScope.launch {
+            try {
+                val response = com.labpro.nimons360.data.remote.RetrofitClient.apiService.unsubscribeDeviceToken()
+                if (response.isSuccessful && response.body()?.data?.unsubscribed == true) {
+                    android.util.Log.d("ProfileFragment", "Unsubscribed FCM token successfully")
+                } else {
+                    android.util.Log.e("ProfileFragment", "Failed to unsubscribe FCM token: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("ProfileFragment", "Error unsubscribing FCM token: ${e.message}")
+            }
+        }
+    }
+
     private fun startCameraIntent() {
         try {
             tempImageUri = createTempImageUri()
@@ -143,6 +200,44 @@ class ProfileFragment : DialogFragment() {
             // If checked is false, location broadcasts are intercepted.
             app.tokenManager.setLocationSharingEnabled(isChecked)
             app.analytics.locationShared(isChecked)
+        }
+
+        // Push Notifications Preferences switch
+        val switchNotif = view.findViewById<SwitchMaterial>(R.id.switchEnableNotifications)
+        val hasSystemPermission = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            androidx.core.content.ContextCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.POST_NOTIFICATIONS
+            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+        val isLocallyEnabled = app.tokenManager.isNotificationsEnabled()
+        switchNotif?.isChecked = isLocallyEnabled && hasSystemPermission
+        
+        switchNotif?.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    val systemPerm = android.Manifest.permission.POST_NOTIFICATIONS
+                    val isGranted = androidx.core.content.ContextCompat.checkSelfPermission(
+                        requireContext(),
+                        systemPerm
+                    ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+                    
+                    if (isGranted) {
+                        app.tokenManager.setNotificationsEnabled(true)
+                        subscribeToFcm()
+                    } else {
+                        requestNotificationPermissionLauncher.launch(systemPerm)
+                    }
+                } else {
+                    app.tokenManager.setNotificationsEnabled(true)
+                    subscribeToFcm()
+                }
+            } else {
+                app.tokenManager.setNotificationsEnabled(false)
+                unsubscribeFromFcm()
+            }
         }
 
         view.findViewById<View>(R.id.btnCustomizePin).setOnClickListener {
@@ -330,7 +425,7 @@ class ProfileFragment : DialogFragment() {
         val file = File.createTempFile("camera_image_", ".jpg", directory)
         return FileProvider.getUriForFile(
             requireContext(),
-            "com.labpro.nimons360.fileprovider",
+            "${requireContext().packageName}.fileprovider",
             file
         )
     }
