@@ -86,7 +86,7 @@
             android:theme="@style/Theme.Nimons360" />
 
         <service
-            android:name=".core.notifications.MyFirebaseMessagingService"
+            android:name=".core.notifications.NimonsFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
