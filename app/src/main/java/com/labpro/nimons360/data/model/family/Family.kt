@@ -4,4 +4,5 @@ data class Family(
     val id: Int,
     val name: String,
     val iconUrl: String,
+    val members: List<FamilyMember>? = emptyList(),
 )

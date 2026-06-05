@@ -220,6 +220,33 @@
                     android:textSize="@dimen/text_xs"
                     android:letterSpacing="0.08" />
 
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilMemberSearch"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/page_horizontal_padding"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:layout_marginBottom="@dimen/spacing_sm"
+                    android:hint="Search members"
+                    app:endIconMode="clear_text"
+                    app:startIconDrawable="@drawable/ic_search"
+                    app:startIconTint="@color/text_secondary"
+                    app:boxStrokeColor="@color/primary_teal"
+                    app:hintTextColor="@color/primary_teal"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etMemberSearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:textColor="@color/text_primary"
+                        android:textSize="@dimen/text_md" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/membersCard"
                     android:layout_width="match_parent"
@@ -229,126 +256,22 @@
                     app:cardCornerRadius="@dimen/radius_card"
                     app:cardElevation="1dp">
 
-                    <LinearLayout
-                        android:id="@+id/membersContainer"
+                    <androidx.core.widget.NestedScrollView
+                        android:id="@+id/membersScrollView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical" />
+                        android:overScrollMode="never">
 
-                </com.google.android.material.card.MaterialCardView>
-
-                <TextView
-                    android:id="@+id/tvActionsHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/page_horizontal_padding"
-                    android:layout_marginTop="@dimen/spacing_md"
-                    android:layout_marginBottom="@dimen/spacing_xs"
-                    android:accessibilityHeading="true"
-                    android:text="ACTIONS"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="@dimen/text_xs"
-                    android:letterSpacing="0.08"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
-
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/actionsCard"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/page_horizontal_padding"
-                    app:cardBackgroundColor="@color/surface_white"
-                    app:cardCornerRadius="@dimen/radius_card"
-                    app:cardElevation="1dp"
-                    android:visibility="gone"
-                    tools:visibility="visible">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <!-- Send Message Action Row -->
                         <LinearLayout
-                            android:id="@+id/rowSendMessage"
+                            android:id="@+id/membersContainer"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:background="?attr/selectableItemBackground"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:padding="@dimen/spacing_md">
+                            android:orientation="vertical" />
 
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginEnd="@dimen/spacing_md"
-                                android:src="@drawable/ic_chat_bubble"
-                                app:tint="@color/text_secondary" />
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Send Message"
-                                android:textColor="@color/text_primary"
-                                android:textSize="@dimen/text_md" />
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@drawable/ic_chevron_right"
-                                app:tint="@color/text_secondary" />
-
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginStart="@dimen/spacing_xl"
-                            android:background="@color/divider" />
-
-                        <!-- Share Family Link Row -->
-                        <LinearLayout
-                            android:id="@+id/rowShareLink"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:background="?attr/selectableItemBackground"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:padding="@dimen/spacing_md">
-
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginEnd="@dimen/spacing_md"
-                                android:src="@drawable/ic_link"
-                                app:tint="@color/text_secondary" />
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Share Family Link"
-                                android:textColor="@color/text_primary"
-                                android:textSize="@dimen/text_md" />
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@drawable/ic_chevron_right"
-                                app:tint="@color/text_secondary" />
-
-                        </LinearLayout>
-
-                    </LinearLayout>
+                    </androidx.core.widget.NestedScrollView>
 
                 </com.google.android.material.card.MaterialCardView>
-
-                <LinearLayout
+                <LinearLayout
                     android:id="@+id/joinHintSection"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -438,7 +361,7 @@
                                     android:layout_weight="1"
                                     android:text="@string/send_message"
                                     android:textColor="@color/black"
-                                    android:textSize="@dimen/text_xl" />
+                                    android:textSize="@dimen/text_md" />
 
                                 <ImageView
                                     android:layout_width="24dp"
@@ -486,7 +409,7 @@
                                     android:layout_weight="1"
                                     android:text="@string/share_family"
                                     android:textColor="@color/black"
-                                    android:textSize="@dimen/text_xl" />
+                                    android:textSize="@dimen/text_md" />
 
                                 <ImageView
                                     android:layout_width="24dp"
@@ -535,7 +458,7 @@
                                     android:layout_weight="1"
                                     android:text="@string/share_family_qr"
                                     android:textColor="@color/black"
-                                    android:textSize="@dimen/text_xl" />
+                                    android:textSize="@dimen/text_md" />
 
                                 <ImageView
                                     android:layout_width="24dp"

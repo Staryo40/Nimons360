@@ -31,6 +31,12 @@ import com.labpro.nimons360.R
 import com.labpro.nimons360.data.model.family.Family
 
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import coil.compose.AsyncImage
+import com.labpro.nimons360.ui.main.screens.home.MemberAvatarRow
+
 @Composable
 fun FamilyListItem(
     family:      Family,
@@ -44,6 +50,17 @@ fun FamilyListItem(
         if (isPinned) R.string.cd_unpin_family_named else R.string.cd_pin_family_named,
         family.name,
     )
+    
+    val resolvedIconUrl = if (!family.iconUrl.isNullOrBlank()) {
+        if (family.iconUrl.startsWith("/")) {
+            "${com.labpro.nimons360.BuildConfig.BASE_URL}${family.iconUrl}"
+        } else {
+            family.iconUrl
+        }
+    } else {
+        null
+    }
+
     Row(
         modifier              = Modifier
             .fillMaxWidth()
@@ -55,34 +72,59 @@ fun FamilyListItem(
         verticalAlignment     = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        // Icon placeholder — real image via Coil in a later iteration
-        Box(
-            modifier         = Modifier
-                .size(44.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(
-                    if (isMine) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.secondaryContainer,
-                ),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text       = family.name.first().uppercaseChar().toString(),
-                style      = MaterialTheme.typography.titleSmall,
-                color      = if (isMine) MaterialTheme.colorScheme.onPrimary
-                else MaterialTheme.colorScheme.onSecondaryContainer,
-                fontWeight = FontWeight.Bold,
+        if (resolvedIconUrl != null) {
+            AsyncImage(
+                model = resolvedIconUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                error = painterResource(id = R.drawable.ic_placeholder_avatar),
+                modifier = Modifier
+                    .size(44.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.85f))
             )
+        } else {
+            Box(
+                modifier         = Modifier
+                    .size(44.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(
+                        if (isMine) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.secondaryContainer,
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text       = family.name.first().uppercaseChar().toString(),
+                    style      = MaterialTheme.typography.titleSmall,
+                    color      = if (isMine) MaterialTheme.colorScheme.onPrimary
+                    else MaterialTheme.colorScheme.onSecondaryContainer,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
         }
 
-        Text(
-            text       = family.name,
-            style      = MaterialTheme.typography.bodyLarge,
-            fontWeight = if (isMine) FontWeight.SemiBold else FontWeight.Normal,
-            maxLines   = 1,
-            overflow   = TextOverflow.Ellipsis,
-            modifier   = Modifier.weight(1f),
-        )
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                text       = family.name,
+                style      = MaterialTheme.typography.bodyLarge,
+                fontWeight = if (isMine) FontWeight.SemiBold else FontWeight.Normal,
+                maxLines   = 1,
+                overflow   = TextOverflow.Ellipsis,
+            )
+            
+            val members = family.members
+            if (!members.isNullOrEmpty()) {
+                MemberAvatarRow(
+                    members = members,
+                    total = members.size,
+                    maxVisible = 4
+                )
+            }
+        }
 
         // Pin toggle
         IconButton(

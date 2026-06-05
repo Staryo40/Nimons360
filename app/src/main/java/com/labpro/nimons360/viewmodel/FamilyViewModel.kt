@@ -39,14 +39,26 @@ class FamilyViewModel(private val repository: FamilyRepository) : ViewModel() {
             val myResult  = myJob.await()
 
             _uiState.update { state ->
-                val allFamilies = when (allResult) {
-                    is NetworkResult.Success -> allResult.data.data
-                    is NetworkResult.Error   -> state.allFamilies
+                val myFamilies = when (myResult) {
+                    is NetworkResult.Success -> myResult.data.data
+                    is NetworkResult.Error   -> emptyList()
                 }
 
-                val myFamilyIds = when (myResult) {
-                    is NetworkResult.Success -> myResult.data.data.map { it.id }.toSet()
-                    is NetworkResult.Error   -> state.myFamilyIds
+                val myFamilyIds = myFamilies.map { it.id }.toSet()
+                val myFamiliesMap = myFamilies.associateBy { it.id }
+
+                val allFamilies = when (allResult) {
+                    is NetworkResult.Success -> {
+                        allResult.data.data.map { family ->
+                            val joinedFamily = myFamiliesMap[family.id]
+                            if (joinedFamily != null) {
+                                family.copy(members = joinedFamily.members)
+                            } else {
+                                family
+                            }
+                        }
+                    }
+                    is NetworkResult.Error -> state.allFamilies
                 }
 
                 val error = (allResult as? NetworkResult.Error)?.message

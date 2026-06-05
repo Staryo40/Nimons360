@@ -90,10 +90,13 @@ class FamilyDetailFragment : DialogFragment() {
     private lateinit var btnAction: MaterialButton
     private lateinit var pbAction: ProgressBar
     private lateinit var tvActionError: TextView
-    private lateinit var tvActionsHeader: TextView
-    private lateinit var actionsCard: MaterialCardView
-    private lateinit var rowSendMessage: LinearLayout
-    private lateinit var rowShareLink: LinearLayout
+    private lateinit var tilMemberSearch: com.google.android.material.textfield.TextInputLayout
+    private lateinit var etMemberSearch: com.google.android.material.textfield.TextInputEditText
+    private lateinit var membersScrollView: androidx.core.widget.NestedScrollView
+
+    private var allMembers: List<FamilyMember> = emptyList()
+    private var isCensored: Boolean = false
+    private var currentSearchQuery: String = ""
 
     private var btnLive: MaterialButton? = null
 
@@ -137,6 +140,7 @@ class FamilyDetailFragment : DialogFragment() {
 
         setupToolbar()
         setupJoinDialogResultListener()
+        setupSearchInput()
         observeState()
     }
 
@@ -166,10 +170,9 @@ class FamilyDetailFragment : DialogFragment() {
         btnAction         = root.findViewById(R.id.btnAction)
         pbAction          = root.findViewById(R.id.pbAction)
         tvActionError     = root.findViewById(R.id.tvActionError)
-        tvActionsHeader   = root.findViewById(R.id.tvActionsHeader)
-        actionsCard       = root.findViewById(R.id.actionsCard)
-        rowSendMessage    = root.findViewById(R.id.rowSendMessage)
-        rowShareLink      = root.findViewById(R.id.rowShareLink)
+        tilMemberSearch   = root.findViewById(R.id.tilMemberSearch)
+        etMemberSearch    = root.findViewById(R.id.etMemberSearch)
+        membersScrollView = root.findViewById(R.id.membersScrollView)
     }
 
     private fun setupToolbar() {
@@ -247,12 +250,11 @@ class FamilyDetailFragment : DialogFragment() {
 
             membersCard.isVisible    = true
             joinHintSection.isVisible = false
-            buildMemberRows(family.members)
 
-            tvActionsHeader.isVisible = true
-            actionsCard.isVisible = true
-            rowSendMessage.setOnClickListener { openSendMessageBottomSheet(family) }
-            rowShareLink.setOnClickListener { shareFamilyLink(family) }
+            tilMemberSearch.isVisible = true
+            allMembers = family.members
+            isCensored = false
+            filterAndRebuildMembers()
 
             btnAction.text = getString(R.string.leave_family)
             btnAction.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.danger_crimson))
@@ -266,10 +268,11 @@ class FamilyDetailFragment : DialogFragment() {
             btnLive?.isVisible = false
             membersCard.isVisible       = false
             joinHintSection.isVisible   = true
-            buildCensoredMemberRows(family.members)
 
-            tvActionsHeader.isVisible = false
-            actionsCard.isVisible = false
+            tilMemberSearch.isVisible = false
+            allMembers = family.members
+            isCensored = true
+            filterAndRebuildMembers()
 
             btnAction.text = getString(R.string.join_family)
             btnAction.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.primary_teal))
@@ -281,7 +284,7 @@ class FamilyDetailFragment : DialogFragment() {
         val canShare = family.familyCode != null
         actionsSection.isVisible = true
         btnSendMessage.setOnClickListener {
-            Toast.makeText(requireContext(), R.string.send_message_unavailable, Toast.LENGTH_SHORT).show()
+            openSendMessageBottomSheet(family)
         }
         btnShareFamily.isEnabled = canShare
         btnShareFamily.alpha = if (canShare) 1f else 0.5f
@@ -354,10 +357,60 @@ class FamilyDetailFragment : DialogFragment() {
                 membersContainer.addView(makeDivider())
             }
         }
+        adjustMembersCardHeight()
     }
 
     private fun buildCensoredMemberRows(members: List<FamilyMember>) {
         membersContainer.removeAllViews()
+        adjustMembersCardHeight()
+    }
+
+    private fun setupSearchInput() {
+        etMemberSearch.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                currentSearchQuery = s?.toString() ?: ""
+                filterAndRebuildMembers()
+            }
+            override fun afterTextChanged(s: android.text.Editable?) {}
+        })
+
+        membersScrollView.setOnTouchListener { v, _ ->
+            v.parent.requestDisallowInterceptTouchEvent(true)
+            false
+        }
+    }
+
+    private fun filterAndRebuildMembers() {
+        val query = currentSearchQuery.trim()
+        val filtered = if (query.isEmpty()) {
+            allMembers
+        } else {
+            allMembers.filter { member ->
+                member.fullName.contains(query, ignoreCase = true) ||
+                        member.email.contains(query, ignoreCase = true)
+            }
+        }
+
+        if (isCensored) {
+            buildCensoredMemberRows(filtered)
+        } else {
+            buildMemberRows(filtered)
+        }
+    }
+
+    private fun adjustMembersCardHeight() {
+        membersContainer.post {
+            if (!isAdded) return@post
+            val maxPx = (240 * resources.displayMetrics.density).toInt()
+            val params = membersScrollView.layoutParams
+            if (membersContainer.measuredHeight > maxPx) {
+                params.height = maxPx
+            } else {
+                params.height = ViewGroup.LayoutParams.WRAP_CONTENT
+            }
+            membersScrollView.layoutParams = params
+        }
     }
 
     private fun bindMemberRow(
