@@ -101,6 +101,13 @@
     <string name="display_name_visible">This name is visible to your family members</string>
     <string name="btn_save">Save</string>
     <string name="app_version">© Nimons360</string>
+    <string name="analytics_title">Analytics</string>
+    <string name="analytics_empty_summary">No local activity has been recorded yet.\n\nLocation sharing: %1$s</string>
+    <string name="analytics_summary">Map opened: %1$d\nFavorite added: %2$d\nFavorite removed: %3$d\nPin customized: %4$d\nMember popup opened: %5$d\nLocation sharing: %6$s</string>
+    <string name="analytics_enabled">Enabled</string>
+    <string name="analytics_disabled">Disabled</string>
+    <string name="analytics_reset">Reset</string>
+    <string name="analytics_reset_done">Analytics summary reset</string>
 
     <!-- Map -->
     <string name="map_title">Map</string>
