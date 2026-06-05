@@ -2,6 +2,7 @@ package com.labpro.nimons360
 
 import android.app.Application
 import androidx.room.Room
+import com.labpro.nimons360.core.analytics.AppAnalytics
 import com.labpro.nimons360.core.utils.TokenManager
 import com.labpro.nimons360.data.local.AppDatabase
 import com.labpro.nimons360.data.remote.RetrofitClient
@@ -16,6 +17,9 @@ class MainApplication : Application() {
         private set
 
     lateinit var tokenManager: TokenManager
+        private set
+
+    lateinit var analytics: AppAnalytics
         private set
 
     val authRepository: AuthRepository by lazy {
@@ -37,6 +41,7 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         tokenManager = TokenManager(applicationContext)
+        analytics = AppAnalytics(applicationContext)
         RetrofitClient.initialize(tokenManager)
 
         database = Room.databaseBuilder(

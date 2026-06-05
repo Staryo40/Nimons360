@@ -101,6 +101,13 @@
     <string name="display_name_visible">This name is visible to your family members</string>
     <string name="btn_save">Save</string>
     <string name="app_version">© Nimons360</string>
+    <string name="analytics_title">Analytics</string>
+    <string name="analytics_empty_summary">No local activity has been recorded yet.\n\nLocation sharing: %1$s</string>
+    <string name="analytics_summary">Map opened: %1$d\nFavorite added: %2$d\nFavorite removed: %3$d\nPin customized: %4$d\nMember popup opened: %5$d\nLocation sharing: %6$s</string>
+    <string name="analytics_enabled">Enabled</string>
+    <string name="analytics_disabled">Disabled</string>
+    <string name="analytics_reset">Reset</string>
+    <string name="analytics_reset_done">Analytics summary reset</string>
 
     <!-- Map -->
     <string name="map_title">Map</string>
@@ -121,16 +128,20 @@
     <string name="map_waiting_location">Waiting for your location…</string>
     <string name="map_permission_waiting">Location permission is not granted yet.</string>
     <string name="map_live_ready">Live location is active.</string>
+    <string name="map_live_ready_empty">Live location is active. No other members online.</string>
+    <string name="map_live_ready_members">%1$d members active on the map.</string>
     <string name="map_connecting">Connecting to live map…</string>
     <string name="map_idle_status">%1$d members active on the map.</string>
     <string name="map_member_title">Member Info</string>
-    <string name="map_loc_value">Location: %.5f, %.5f</string>
+    <string name="map_loc_value">Location: %1$.5f, %2$.5f</string>
     <string name="map_battery_value">Battery: %1$s</string>
     <string name="map_charge_value">Charging: %1$s</string>
     <string name="map_net_value">Internet: %1$s</string>
     <string name="map_unknown">Unknown</string>
     <string name="map_charging">Charging</string>
     <string name="map_not_charging">Not charging</string>
+    <string name="map_internet_wifi">WiFi</string>
+    <string name="map_internet_mobile">Mobile Data</string>
     <string name="share_instagram_story">Story</string>
     <string name="instagram_not_installed">Instagram is not installed.</string>
     <string name="instagram_story_share_error">Failed to share Instagram story.</string>

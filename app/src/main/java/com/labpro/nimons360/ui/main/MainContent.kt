@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
 import com.labpro.nimons360.data.enums.MainScreenEnum
 import com.labpro.nimons360.core.navigation.FamilyDeepLink
@@ -40,10 +41,18 @@ fun MainContent(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val fm = (context as FragmentActivity).supportFragmentManager
+    val app = context.applicationContext as MainApplication
+
+    LaunchedEffect(currentScreen) {
+        if (currentScreen == MainScreenEnum.FAMILY) {
+            app.analytics.familyOpened()
+        }
+    }
 
     fun openProfile() {
         if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
             if (!fm.isStateSaved && fm.findFragmentByTag(ProfileFragment.TAG) == null) {
+                app.analytics.profileOpened()
                 ProfileFragment().show(fm, ProfileFragment.TAG)
             }
         }
@@ -60,6 +69,7 @@ fun MainContent(
     fun openFamilyDetail(familyId: Int, prefillCode: String? = null): Boolean {
         if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
             if (!fm.isStateSaved && fm.findFragmentByTag(FamilyDetailFragment.TAG) == null) {
+                app.analytics.familyOpened()
                 FamilyDetailFragment
                     .newInstance(
                         familyId = familyId,

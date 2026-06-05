@@ -31,6 +31,7 @@ import com.labpro.nimons360.BuildConfig
 import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
 import com.labpro.nimons360.core.utils.InstagramStoryShareHelper
+import com.labpro.nimons360.core.utils.TokenManager
 import com.labpro.nimons360.data.model.map.FavoriteLocationEntity
 import com.labpro.nimons360.data.model.map.MapMember
 import com.labpro.nimons360.data.model.map.MapSocket
@@ -132,6 +133,7 @@ class MapFragment : Fragment() {
         val granted = locationTracker.hasPermission()
         viewModel.setPermission(granted)
         viewModel.bind()
+        app().analytics.mapOpened()
         startLocationWatcher()
         if (granted) {
             handleLocationAvailability(showDialog = true)
@@ -246,8 +248,9 @@ class MapFragment : Fragment() {
             .setMessage("Enter a name for this location:")
             .setView(container)
             .setPositiveButton("Save") { _, _ ->
-                val title = input.text.toString().takeIf { it.isNotBlank() } ?: "Favorite Location"
-                viewModel.toggleFavoriteLocation(p.latitude, p.longitude, title)
+                val title = input.text.toString().trim().ifEmpty { "Favorite Location" }
+                viewModel.addFavoriteLocation(p.latitude, p.longitude, title)
+                app().analytics.favoriteAdded()
             }
             .setNegativeButton("Cancel", null)
             .show()
@@ -348,22 +351,32 @@ class MapFragment : Fragment() {
         favoriteMarkers.forEach { mapView.overlays.remove(it) }
         favoriteMarkers.clear()
 
-        val defaultIcon = ContextCompat.getDrawable(requireContext(), org.osmdroid.library.R.drawable.marker_default)?.mutate()
-        defaultIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.pin_orange))
-
         favorites.forEach { fav ->
+            val markerIcon = ContextCompat
+                .getDrawable(requireContext(), org.osmdroid.library.R.drawable.marker_default)
+                ?.mutate()
+            markerIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.pin_orange))
+
             val marker = Marker(mapView).apply {
                 position = GeoPoint(fav.latitude, fav.longitude)
                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                icon = defaultIcon
+                icon = markerIcon
             }
 
             marker.setOnMarkerClickListener { _, _ ->
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(fav.title)
-                    .setMessage("Coordinates:\nLat: ${fav.latitude}\nLon: ${fav.longitude}")
+                    .setMessage(
+                        String.format(
+                            Locale.US,
+                            "Coordinates:\nLat: %.5f\nLon: %.5f",
+                            fav.latitude,
+                            fav.longitude,
+                        )
+                    )
                     .setPositiveButton("Remove") { _, _ ->
-                        viewModel.toggleFavoriteLocation(fav.latitude, fav.longitude, "")
+                        viewModel.removeFavoriteLocation(fav.id)
+                        app().analytics.favoriteRemoved()
                     }
                     .setNegativeButton("Close", null)
                     .show()
@@ -416,7 +429,8 @@ class MapFragment : Fragment() {
             selfMarker?.icon = MapPinMaker.self(
                 requireContext(),
                 state.self.fullName.firstOrNull()?.uppercase() ?: "Y",
-                rotation,
+                state.self.rotation,
+                getSelfPinColor(),
             )
             lastSelfRotation = rotation
             invalidated = true
@@ -531,14 +545,48 @@ class MapFragment : Fragment() {
             charging = member.isCharging,
             net = member.internetStatus
         ).show(childFragmentManager, MemberDetailBottomSheet.TAG)
+        app().analytics.memberPopupOpened()
+        val view = layoutInflater.inflate(R.layout.dialog_map_member, null)
+        view.findViewById<TextView>(R.id.tvAvatarInitial).text =
+            member.fullName.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+        view.findViewById<TextView>(R.id.tvName).text = member.fullName
+        view.findViewById<TextView>(R.id.tvEmail).text = member.email
+        view.findViewById<TextView>(R.id.tvLoc).text = String.format(
+            Locale.US,
+            "%.5f, %.5f",
+            member.latitude,
+            member.longitude,
+        )
+        view.findViewById<TextView>(R.id.tvBattery).text =
+            member.batteryLevel?.let { "$it%" } ?: getString(R.string.map_unknown)
+        view.findViewById<TextView>(R.id.tvCharge).text = when (member.isCharging) {
+            true -> getString(R.string.map_charging)
+            false -> getString(R.string.map_not_charging)
+            null -> getString(R.string.map_unknown)
+        }
+        view.findViewById<TextView>(R.id.tvNet).text = formatNet(member.internetStatus)
+
+        infoDialog?.dismiss()
+        infoDialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.map_member_title)
+            .setView(view)
+            .setPositiveButton(R.string.btn_close, null)
+            .show()
     }
 
     private fun buildStatus(state: MapUiState): String = when {
         state.showGrant -> getString(R.string.map_permission_waiting)
         state.isLocating -> getString(R.string.map_waiting_location)
-        state.socket is MapSocket.Connected -> getString(R.string.map_live_ready)
         state.socket is MapSocket.Connecting -> getString(R.string.map_connecting)
+        state.socket is MapSocket.Connected && state.members.isEmpty() -> getString(R.string.map_live_ready_empty)
+        state.socket is MapSocket.Connected -> getString(R.string.map_live_ready_members, state.members.size)
         else -> getString(R.string.map_idle_status, state.members.size)
+    }
+
+    private fun formatNet(status: String?): String = when (status?.lowercase(Locale.US)) {
+        "wifi" -> getString(R.string.map_internet_wifi)
+        "mobile" -> getString(R.string.map_internet_mobile)
+        else -> getString(R.string.map_unknown)
     }
 
     private val pinColors by lazy {
@@ -549,6 +597,21 @@ class MapFragment : Fragment() {
             ContextCompat.getColor(requireContext(), R.color.pin_orange),
             ContextCompat.getColor(requireContext(), R.color.pin_purple),
         )
+    }
+
+    private fun getSelfPinColor(): Int {
+        val color = when (app().tokenManager.getPinStyle()) {
+            TokenManager.PIN_CORAL -> R.color.secondary_coral
+            TokenManager.PIN_BLUE -> R.color.pin_blue
+            TokenManager.PIN_PURPLE -> R.color.pin_purple
+            TokenManager.PIN_ORANGE -> R.color.pin_orange
+            else -> R.color.primary_teal
+        }
+        return ContextCompat.getColor(requireContext(), color)
+    }
+
+    private fun app(): MainApplication {
+        return requireActivity().application as MainApplication
     }
 
     companion object {

@@ -71,6 +71,12 @@ class TokenManager(context: Context) {
 
     fun setNotificationsEnabled(enabled: Boolean) {
         prefs.edit().putBoolean(KEY_NOTIFICATIONS_ENABLED, enabled).apply()
+    fun getPinStyle(): String {
+        return prefs.getString(KEY_PIN_STYLE, PIN_TEAL) ?: PIN_TEAL
+    }
+
+    fun setPinStyle(style: String) {
+        prefs.edit().putString(KEY_PIN_STYLE, style).apply()
     }
 
     companion object {
@@ -80,5 +86,12 @@ class TokenManager(context: Context) {
         private const val KEY_EXPIRES_AT = "expires_at"
         private const val KEY_SHARE_LOCATION = "share_location"
         private const val KEY_NOTIFICATIONS_ENABLED = "notifications_enabled"
+        private const val KEY_PIN_STYLE = "pin_style"
+
+        const val PIN_TEAL = "teal"
+        const val PIN_CORAL = "coral"
+        const val PIN_BLUE = "blue"
+        const val PIN_PURPLE = "purple"
+        const val PIN_ORANGE = "orange"
     }
 }
