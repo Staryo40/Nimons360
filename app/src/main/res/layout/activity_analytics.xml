@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_base"
+    android:orientation="vertical"
+    tools:context=".ui.features.analytics.AnalyticsActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_bar_height"
+        android:background="@color/surface_white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/spacing_sm">
+
+        <ImageButton
+            android:id="@+id/btnAnalyticsBack"
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/analytics_back"
+            android:padding="12dp"
+            android:src="@drawable/ic_back"
+            app:tint="@color/text_primary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:text="@string/analytics_title"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_xl"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/page_horizontal_padding">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_analytics_hero"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/analytics_monthly_average"
+                    android:textAllCaps="true"
+                    android:textColor="#CDE5FF"
+                    android:textSize="@dimen/text_sm"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvMonthlyAverage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:textColor="@color/white"
+                    android:textSize="38sp"
+                    android:textStyle="bold"
+                    tools:text="42.8 km" />
+
+                <TextView
+                    android:id="@+id/tvMonthlyDescription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:textColor="#EAF4FF"
+                    android:textSize="@dimen/text_body"
+                    tools:text="You've traveled 42.8 km this month" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Nimons360.Card"
+                    android:layout_width="0dp"
+                    android:layout_height="132dp"
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="bottom"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/analytics_total_icon"
+                            android:textSize="@dimen/text_lg" />
+
+                        <TextView
+                            android:id="@+id/tvTotalDistance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_sm"
+                            android:textColor="@color/text_primary"
+                            android:textSize="@dimen/text_xl"
+                            android:textStyle="bold"
+                            tools:text="42.8" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/analytics_total_km"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="@dimen/text_sm" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <Space
+                    android:layout_width="@dimen/spacing_sm"
+                    android:layout_height="1dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Nimons360.Card"
+                    android:layout_width="0dp"
+                    android:layout_height="132dp"
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="bottom"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/analytics_daily_icon"
+                            android:textSize="@dimen/text_lg" />
+
+                        <TextView
+                            android:id="@+id/tvDailyAverage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_sm"
+                            android:textColor="@color/text_primary"
+                            android:textSize="@dimen/text_xl"
+                            android:textStyle="bold"
+                            tools:text="1.4" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/analytics_avg_day_km"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="@dimen/text_sm" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <Space
+                    android:layout_width="@dimen/spacing_sm"
+                    android:layout_height="1dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Nimons360.Card"
+                    android:layout_width="0dp"
+                    android:layout_height="132dp"
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="bottom"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/analytics_active_icon"
+                            android:textSize="@dimen/text_lg" />
+
+                        <TextView
+                            android:id="@+id/tvActiveDays"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_sm"
+                            android:textColor="@color/text_primary"
+                            android:textSize="@dimen/text_xl"
+                            android:textStyle="bold"
+                            tools:text="28" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/analytics_active_days"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="@dimen/text_sm" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Nimons360.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/analytics_daily_distance"
+                            android:textColor="@color/text_primary"
+                            android:textSize="@dimen/text_md"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvAnalyticsMonth"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/analytics_blue"
+                            android:textSize="@dimen/text_sm"
+                            tools:text="March 2026" />
+
+                    </LinearLayout>
+
+                    <com.labpro.nimons360.ui.features.analytics.DailyDistanceChartView
+                        android:id="@+id/dailyDistanceChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="190dp"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:paddingTop="@dimen/spacing_sm"
+                        android:paddingBottom="@dimen/spacing_sm" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:text="@string/analytics_recent_locations"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_lg"
+                android:textStyle="bold" />
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Nimons360.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/recentLocationContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+
+                    <TextView
+                        android:id="@+id/tvRecentEmpty"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="@dimen/spacing_lg"
+                        android:text="@string/analytics_no_locations"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="@dimen/text_body" />
+
+                </FrameLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnExportAnalytics"
+                style="@style/Widget.Nimons360.Button.Outline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:layout_marginBottom="@dimen/spacing_md"
+                android:minHeight="@dimen/touch_target_min"
+                android:text="@string/analytics_export_csv"
+                app:icon="@drawable/ic_download"
+                app:iconGravity="textStart"
+                app:iconTint="@color/analytics_blue"
+                app:strokeColor="@color/analytics_blue" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

@@ -33,9 +33,11 @@ import com.labpro.nimons360.R
 import com.labpro.nimons360.core.utils.InstagramStoryShareHelper
 import com.labpro.nimons360.core.utils.TokenManager
 import com.labpro.nimons360.data.model.map.FavoriteLocationEntity
+import com.labpro.nimons360.data.model.map.CustomPin
 import com.labpro.nimons360.data.model.map.MapMember
 import com.labpro.nimons360.data.model.map.MapSocket
 import com.labpro.nimons360.data.model.ui_state.MapUiState
+import com.labpro.nimons360.data.repository.CustomPinRepository
 import com.labpro.nimons360.viewmodel.MapViewModel
 import com.labpro.nimons360.viewmodel.MapViewModelFactory
 import kotlinx.coroutines.launch
@@ -46,16 +48,16 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
-import java.util.Locale
 import kotlin.math.abs
 
-class MapFragment : Fragment() {
+class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
     private lateinit var mapRoot: View
     private lateinit var mapView: MapView
     private lateinit var bannerCard: MaterialCardView
     private lateinit var grantCard: MaterialCardView
     private lateinit var btnGrant: MaterialButton
     private lateinit var btnShareStory: MaterialButton
+    private lateinit var btnRecenter: MaterialButton
     private lateinit var tvBanner: TextView
     private lateinit var tvStatus: TextView
     private lateinit var pbLocate: ProgressBar
@@ -68,6 +70,7 @@ class MapFragment : Fragment() {
     private var selfMarker: Marker? = null
     private var lastSelfPosition: GeoPoint? = null
     private var lastSelfRotation: Float? = null
+    private var lastSelfPinKey: String? = null
     private val memberMap = linkedMapOf<Int, Marker>()
     private val favoriteMarkers = mutableListOf<Marker>()
     private var locationSettingsDialog: AlertDialog? = null
@@ -92,7 +95,6 @@ class MapFragment : Fragment() {
             user = readUser(),
             token = { app.tokenManager.getToken() },
             locationRepository = app.locationRepository,
-            isLocationSharingEnabled = { app.tokenManager.isLocationSharingEnabled() }
         )
     }
 
@@ -102,6 +104,9 @@ class MapFragment : Fragment() {
         val granted = result.values.any { it }
         viewModel.setPermission(granted)
         if (granted) {
+            if (app().tokenManager.isLocationSharingEnabled()) {
+                PresenceServiceController.start(requireContext(), readUser().fullName)
+            }
             handleLocationAvailability(showDialog = true)
         }
     }
@@ -126,6 +131,7 @@ class MapFragment : Fragment() {
         observeState()
         btnGrant.setOnClickListener { askPermission() }
         btnShareStory.setOnClickListener { shareMapStory() }
+        btnRecenter.setOnClickListener { recenterMap() }
     }
 
     override fun onStart() {
@@ -137,6 +143,9 @@ class MapFragment : Fragment() {
         app().analytics.mapOpened()
         startLocationWatcher()
         if (granted) {
+            if (app().tokenManager.isLocationSharingEnabled()) {
+                PresenceServiceController.start(requireContext(), readUser().fullName)
+            }
             handleLocationAvailability(showDialog = true)
         }
     }
@@ -160,6 +169,7 @@ class MapFragment : Fragment() {
         selfMarker = null
         lastSelfPosition = null
         lastSelfRotation = null
+        lastSelfPinKey = null
         memberMap.clear()
         favoriteMarkers.clear()
         super.onDestroyView()
@@ -172,6 +182,7 @@ class MapFragment : Fragment() {
         grantCard = root.findViewById(R.id.grantCard)
         btnGrant = root.findViewById(R.id.btnGrant)
         btnShareStory = root.findViewById(R.id.btnShareStory)
+        btnRecenter = root.findViewById(R.id.btnRecenter)
         tvBanner = root.findViewById(R.id.tvBanner)
         tvStatus = root.findViewById(R.id.tvStatus)
         pbLocate = root.findViewById(R.id.pbLocate)
@@ -219,7 +230,7 @@ class MapFragment : Fragment() {
             override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean = false
             override fun longPressHelper(p: GeoPoint?): Boolean {
                 if (p != null) {
-                    showAddFavoriteDialog(p)
+                    showMarkedLocationEditor(p)
                 }
                 return true
             }
@@ -227,34 +238,14 @@ class MapFragment : Fragment() {
         mapView.overlays.add(MapEventsOverlay(mapEventsReceiver))
     }
 
-    private fun showAddFavoriteDialog(p: GeoPoint) {
-        val input = android.widget.EditText(requireContext()).apply {
-            hint = "e.g., Home, Basecamp"
-            setSingleLine()
-        }
-
-        val container = android.widget.FrameLayout(requireContext()).apply {
-            val params = android.widget.FrameLayout.LayoutParams(
-                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-                android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                setMargins(64, 16, 64, 0)
-            }
-            input.layoutParams = params
-            addView(input)
-        }
-
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Add Favorite Location")
-            .setMessage("Enter a name for this location:")
-            .setView(container)
-            .setPositiveButton("Save") { _, _ ->
-                val title = input.text.toString().trim().ifEmpty { "Favorite Location" }
-                viewModel.addFavoriteLocation(p.latitude, p.longitude, title)
-                app().analytics.favoriteAdded()
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
+    private fun showMarkedLocationEditor(point: GeoPoint) {
+        if (childFragmentManager.findFragmentByTag(MarkedLocationBottomSheet.TAG) != null) return
+        MarkedLocationBottomSheet.newLocation(
+            latitude = point.latitude,
+            longitude = point.longitude,
+            currentLatitude = viewModel.uiState.value.self.latitude,
+            currentLongitude = viewModel.uiState.value.self.longitude,
+        ).show(childFragmentManager, MarkedLocationBottomSheet.TAG)
     }
 
     private fun setupTrackers() {
@@ -369,22 +360,13 @@ class MapFragment : Fragment() {
             }
 
             marker.setOnMarkerClickListener { _, _ ->
-                MaterialAlertDialogBuilder(requireContext())
-                    .setTitle(fav.title)
-                    .setMessage(
-                        String.format(
-                            Locale.US,
-                            "Coordinates:\nLat: %.5f\nLon: %.5f",
-                            fav.latitude,
-                            fav.longitude,
-                        )
-                    )
-                    .setPositiveButton("Remove") { _, _ ->
-                        viewModel.removeFavoriteLocation(fav.id)
-                        app().analytics.favoriteRemoved()
-                    }
-                    .setNegativeButton("Close", null)
-                    .show()
+                if (childFragmentManager.findFragmentByTag(MarkedLocationBottomSheet.TAG) == null) {
+                    MarkedLocationBottomSheet.existingLocation(
+                        location = fav,
+                        currentLatitude = viewModel.uiState.value.self.latitude,
+                        currentLongitude = viewModel.uiState.value.self.longitude,
+                    ).show(childFragmentManager, MarkedLocationBottomSheet.TAG)
+                }
                 true
             }
 
@@ -429,15 +411,27 @@ class MapFragment : Fragment() {
             invalidated = true
         }
 
+        val selectedSkin = app().tokenManager.getPinSkin()
+        val customPin = CustomPin.find(selectedSkin)
+        val customFile = customPin
+            ?.let { pin -> CustomPinRepository(requireContext()).takeIf { it.isDownloaded(pin) }?.file(pin) }
+        val pinKey = customFile?.absolutePath ?: "color:${app().tokenManager.getPinStyle()}"
         val rotDiff = if (lastSelfRotation != null) abs(lastSelfRotation!! - rotation) else Float.MAX_VALUE
-        if (selfMarker?.icon == null || rotDiff >= 3f) {
-            selfMarker?.icon = MapPinMaker.self(
-                requireContext(),
-                state.self.fullName.firstOrNull()?.uppercase() ?: "Y",
-                state.self.rotation,
-                getSelfPinColor(),
+        val needsRotationUpdate = customFile == null && rotDiff >= 3f
+        if (selfMarker?.icon == null || lastSelfPinKey != pinKey || needsRotationUpdate) {
+            selfMarker?.icon = customFile?.let { MapPinMaker.custom(requireContext(), it) }
+                ?: MapPinMaker.self(
+                    requireContext(),
+                    state.self.fullName.firstOrNull()?.uppercase() ?: "Y",
+                    state.self.rotation,
+                    getSelfPinColor(),
+                )
+            selfMarker?.setAnchor(
+                Marker.ANCHOR_CENTER,
+                if (customFile == null) Marker.ANCHOR_CENTER else Marker.ANCHOR_BOTTOM,
             )
             lastSelfRotation = rotation
+            lastSelfPinKey = pinKey
             invalidated = true
         }
         selfMarker?.setInfoWindow(null)
@@ -537,6 +531,37 @@ class MapFragment : Fragment() {
                 Manifest.permission.ACCESS_COARSE_LOCATION,
             )
         )
+    }
+
+    private fun recenterMap() {
+        val state = viewModel.uiState.value.self
+        val lat = state.latitude
+        val lon = state.longitude
+        if (lat == null || lon == null) {
+            Toast.makeText(requireContext(), R.string.marked_location_current_unavailable, Toast.LENGTH_SHORT).show()
+            return
+        }
+        mapView.controller.animateTo(GeoPoint(lat, lon))
+    }
+
+    override fun onSaveMarkedLocation(location: FavoriteLocationEntity) {
+        if (location.id == 0) {
+            viewModel.addFavoriteLocation(
+                latitude = location.latitude,
+                longitude = location.longitude,
+                title = location.title,
+                description = location.description,
+                photoPaths = location.photoPaths,
+            )
+            app().analytics.favoriteAdded()
+        } else {
+            viewModel.updateFavoriteLocation(location)
+        }
+    }
+
+    override fun onDeleteMarkedLocation(location: FavoriteLocationEntity) {
+        viewModel.removeFavoriteLocation(location.id)
+        app().analytics.favoriteRemoved()
     }
 
     private fun showInfo(member: MapMember) {

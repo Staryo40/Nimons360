@@ -1,6 +1,7 @@
 package com.labpro.nimons360.ui.features.profile
 
 import android.graphics.drawable.ColorDrawable
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -19,7 +20,8 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import coil.load
 import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
-import com.labpro.nimons360.core.utils.TokenManager
+import com.labpro.nimons360.ui.features.map.PresenceServiceController
+import com.labpro.nimons360.ui.features.analytics.AnalyticsActivity
 import com.labpro.nimons360.viewmodel.ProfileViewModel
 import com.labpro.nimons360.viewmodel.ProfileViewModelFactory
 import kotlinx.coroutines.launch
@@ -200,6 +202,11 @@ class ProfileFragment : DialogFragment() {
             // If checked is false, location broadcasts are intercepted.
             app.tokenManager.setLocationSharingEnabled(isChecked)
             app.analytics.locationShared(isChecked)
+            if (isChecked) {
+                PresenceServiceController.start(requireContext(), app.tokenManager.getPresenceName())
+            } else {
+                PresenceServiceController.stop(requireContext())
+            }
         }
 
         // Push Notifications Preferences switch
@@ -241,70 +248,13 @@ class ProfileFragment : DialogFragment() {
         }
 
         view.findViewById<View>(R.id.btnCustomizePin).setOnClickListener {
-            showPinDialog()
+            startActivity(Intent(requireContext(), CustomizePinActivity::class.java))
         }
 
         view.findViewById<View>(R.id.btnAnalytics).setOnClickListener {
             app.analytics.analyticsOpened()
-            showAnalyticsDialog()
+            startActivity(Intent(requireContext(), AnalyticsActivity::class.java))
         }
-    }
-
-    private fun showAnalyticsDialog() {
-        val app = requireActivity().application as MainApplication
-        val summary = app.analytics.summary()
-        val sharing = if (app.tokenManager.isLocationSharingEnabled()) {
-            getString(R.string.analytics_enabled)
-        } else {
-            getString(R.string.analytics_disabled)
-        }
-        val message = if (summary.isEmpty) {
-            getString(R.string.analytics_empty_summary, sharing)
-        } else {
-            getString(
-                R.string.analytics_summary,
-                summary.mapOpened,
-                summary.favoriteAdded,
-                summary.favoriteRemoved,
-                summary.pinCustomized,
-                summary.memberPopupOpened,
-                sharing,
-            )
-        }
-
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.analytics_title)
-            .setMessage(message)
-            .setPositiveButton(R.string.analytics_reset) { _, _ ->
-                app.analytics.resetSummary()
-                Toast.makeText(requireContext(), R.string.analytics_reset_done, Toast.LENGTH_SHORT).show()
-            }
-            .setNegativeButton(R.string.btn_close, null)
-            .show()
-    }
-
-    private fun showPinDialog() {
-        val app = requireActivity().application as MainApplication
-        val styles = arrayOf(
-            TokenManager.PIN_TEAL,
-            TokenManager.PIN_CORAL,
-            TokenManager.PIN_BLUE,
-            TokenManager.PIN_PURPLE,
-            TokenManager.PIN_ORANGE,
-        )
-        val labels = arrayOf("Teal", "Coral", "Blue", "Purple", "Orange")
-        val current = styles.indexOf(app.tokenManager.getPinStyle()).coerceAtLeast(0)
-
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Customize Pin")
-            .setSingleChoiceItems(labels, current) { dialog, which ->
-                app.tokenManager.setPinStyle(styles[which])
-                app.analytics.pinCustomized(styles[which])
-                Toast.makeText(requireContext(), "Pin style updated", Toast.LENGTH_SHORT).show()
-                dialog.dismiss()
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
     }
 
     private fun observeState() {

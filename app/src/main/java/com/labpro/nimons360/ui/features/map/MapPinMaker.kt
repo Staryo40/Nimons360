@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import com.labpro.nimons360.R
+import java.io.File
 
 object MapPinMaker {
     fun self(context: Context, letter: String, rotation: Float, color: Int): Drawable {
@@ -75,6 +76,17 @@ object MapPinMaker {
         canvas.drawText(letter, center, center + bounds.height() / 2f, text)
 
         return BitmapDrawable(context.resources, bitmap)
+    }
+
+    fun custom(context: Context, file: File): Drawable? {
+        val source = android.graphics.BitmapFactory.decodeFile(file.absolutePath) ?: return null
+        val width = dp(context, 54)
+        val height = (source.height * (width.toFloat() / source.width))
+            .toInt()
+            .coerceIn(dp(context, 40), dp(context, 72))
+        val scaled = Bitmap.createScaledBitmap(source, width, height, true)
+        if (scaled !== source) source.recycle()
+        return BitmapDrawable(context.resources, scaled)
     }
 
     private fun dp(context: Context, value: Int): Int {

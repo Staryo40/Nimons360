@@ -8,7 +8,6 @@ import com.labpro.nimons360.data.model.map.MapPoint
 import com.labpro.nimons360.data.model.map.MapSelf
 import com.labpro.nimons360.data.model.map.MapSocket
 import com.labpro.nimons360.data.model.map.PresenceEvent
-import com.labpro.nimons360.data.model.map.PresenceSend
 import com.labpro.nimons360.data.model.ui_state.MapUiState
 import com.labpro.nimons360.data.model.user.UserData
 import com.labpro.nimons360.ui.features.map.MapNetMapper
@@ -17,19 +16,16 @@ import com.labpro.nimons360.data.model.map.FavoriteLocationEntity
 import com.labpro.nimons360.data.repository.LocationRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.time.Instant
 
 class MapViewModel(
     user: UserData,
     token: () -> String?,
     private val locationRepository: LocationRepository,
-    private val isLocationSharingEnabled: () -> Boolean
 ) : ViewModel() {
     private val selfId = user.id
 
@@ -51,20 +47,32 @@ class MapViewModel(
         onEvent = ::applyEvent,
     )
 
-    private var sendJob: Job? = null
-    private var trimJob: Job? = null
+    private var trimJob: kotlinx.coroutines.Job? = null
 
     val favoriteLocations: StateFlow<List<FavoriteLocationEntity>> = locationRepository.observeFavoriteLocations()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    fun addFavoriteLocation(latitude: Double, longitude: Double, title: String) {
+    fun addFavoriteLocation(
+        latitude: Double,
+        longitude: Double,
+        title: String,
+        description: String = "",
+        photoPaths: List<String> = emptyList(),
+    ) {
         viewModelScope.launch {
-            val exists = favoriteLocations.value.any {
-                it.latitude == latitude && it.longitude == longitude
-            }
-            if (!exists) {
-                locationRepository.addFavoriteLocation(latitude, longitude, title)
-            }
+            locationRepository.addFavoriteLocation(
+                latitude = latitude,
+                longitude = longitude,
+                title = title,
+                description = description,
+                photoPaths = photoPaths,
+            )
+        }
+    }
+
+    fun updateFavoriteLocation(entity: FavoriteLocationEntity) {
+        viewModelScope.launch {
+            locationRepository.updateFavoriteLocation(entity)
         }
     }
 
@@ -77,12 +85,10 @@ class MapViewModel(
     fun bind() {
         socket.resume()
         socket.connect()
-        startSend()
         startTrim()
     }
 
     fun unbind() {
-        sendJob?.cancel()
         trimJob?.cancel()
         socket.close()
     }
@@ -210,39 +216,6 @@ class MapViewModel(
         _uiState.value = _uiState.value.copy(members = next)
     }
 
-    private fun startSend() {
-        if (sendJob?.isActive == true) return
-        sendJob = viewModelScope.launch {
-            while (true) {
-                delay(SEND_MS)
-                // skip jika emang gk dibolehin wok
-                if (!isLocationSharingEnabled()) {
-                    continue
-                }
-                val state = _uiState.value
-                val lat = state.self.latitude
-                val lon = state.self.longitude
-                val net = state.self.internetStatus
-                if (lat == null || lon == null || net == null) continue
-
-                socket.sendPresence(
-                    PresenceSend(
-                        payload = PresenceSend.Payload(
-                            name = state.self.fullName,
-                            latitude = lat,
-                            longitude = lon,
-                            rotation = state.self.rotation,
-                            batteryLevel = state.self.batteryLevel,
-                            isCharging = state.self.isCharging,
-                            internetStatus = net,
-                        ),
-                        timestamp = Instant.now().toString(),
-                    )
-                )
-            }
-        }
-    }
-
     private fun startTrim() {
         if (trimJob?.isActive == true) return
         trimJob = viewModelScope.launch {
@@ -268,7 +241,6 @@ class MapViewModel(
     }
 
     companion object {
-        private const val SEND_MS = 1_000L
         private const val TRIM_MS = 1_000L
         private const val TIMEOUT_MS = 5_000L
     }
