@@ -70,11 +70,11 @@ class MapFragment : Fragment() {
     private var lastSelfRotation: Float? = null
     private val memberMap = linkedMapOf<Int, Marker>()
     private val favoriteMarkers = mutableListOf<Marker>()
-    private var infoDialog: AlertDialog? = null
     private var locationSettingsDialog: AlertDialog? = null
     private var hasMoved = false
     private var trackersOn = false
     private var locationWatcherOn = false
+    private var viewActive = false
 
     private val locationProviderReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -120,6 +120,7 @@ class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bind(view)
+        viewActive = true
         setupMap()
         setupTrackers()
         observeState()
@@ -151,8 +152,7 @@ class MapFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
-        infoDialog?.dismiss()
+        viewActive = false
         locationSettingsDialog?.dismiss()
         memberMap.values.forEach { mapView.overlays.remove(it) }
         favoriteMarkers.forEach { mapView.overlays.remove(it) }
@@ -162,6 +162,7 @@ class MapFragment : Fragment() {
         lastSelfRotation = null
         memberMap.clear()
         favoriteMarkers.clear()
+        super.onDestroyView()
     }
 
     private fun bind(root: View) {
@@ -332,6 +333,8 @@ class MapFragment : Fragment() {
     }
 
     private fun render(state: MapUiState) {
+        if (!viewActive) return
+
         grantCard.isVisible = state.showGrant
         bannerCard.isVisible = !state.banner.isNullOrBlank()
         tvBanner.text = state.banner
@@ -348,6 +351,8 @@ class MapFragment : Fragment() {
     }
 
     private fun renderFavorites(favorites: List<FavoriteLocationEntity>) {
+        if (!viewActive) return
+
         favoriteMarkers.forEach { mapView.overlays.remove(it) }
         favoriteMarkers.clear()
 
@@ -483,7 +488,7 @@ class MapFragment : Fragment() {
                 marker.snippet = member.email
                 invalidated = true
             }
-            
+
             if (isNewMarker || marker.icon == null) {
                 marker.icon = MapPinMaker.member(
                     requireContext(),
@@ -492,7 +497,7 @@ class MapFragment : Fragment() {
                 )
                 invalidated = true
             }
-            
+
             marker.setOnMarkerClickListener { _, _ ->
                 viewModel.showMember(member)
                 true
@@ -535,6 +540,9 @@ class MapFragment : Fragment() {
     }
 
     private fun showInfo(member: MapMember) {
+        if (!viewActive || childFragmentManager.isStateSaved) return
+        if (childFragmentManager.findFragmentByTag(MemberDetailBottomSheet.TAG) != null) return
+
         MemberDetailBottomSheet.newInstance(
             userId = member.userId,
             name = member.fullName,
@@ -546,32 +554,6 @@ class MapFragment : Fragment() {
             net = member.internetStatus
         ).show(childFragmentManager, MemberDetailBottomSheet.TAG)
         app().analytics.memberPopupOpened()
-        val view = layoutInflater.inflate(R.layout.dialog_map_member, null)
-        view.findViewById<TextView>(R.id.tvAvatarInitial).text =
-            member.fullName.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
-        view.findViewById<TextView>(R.id.tvName).text = member.fullName
-        view.findViewById<TextView>(R.id.tvEmail).text = member.email
-        view.findViewById<TextView>(R.id.tvLoc).text = String.format(
-            Locale.US,
-            "%.5f, %.5f",
-            member.latitude,
-            member.longitude,
-        )
-        view.findViewById<TextView>(R.id.tvBattery).text =
-            member.batteryLevel?.let { "$it%" } ?: getString(R.string.map_unknown)
-        view.findViewById<TextView>(R.id.tvCharge).text = when (member.isCharging) {
-            true -> getString(R.string.map_charging)
-            false -> getString(R.string.map_not_charging)
-            null -> getString(R.string.map_unknown)
-        }
-        view.findViewById<TextView>(R.id.tvNet).text = formatNet(member.internetStatus)
-
-        infoDialog?.dismiss()
-        infoDialog = MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.map_member_title)
-            .setView(view)
-            .setPositiveButton(R.string.btn_close, null)
-            .show()
     }
 
     private fun buildStatus(state: MapUiState): String = when {
@@ -581,12 +563,6 @@ class MapFragment : Fragment() {
         state.socket is MapSocket.Connected && state.members.isEmpty() -> getString(R.string.map_live_ready_empty)
         state.socket is MapSocket.Connected -> getString(R.string.map_live_ready_members, state.members.size)
         else -> getString(R.string.map_idle_status, state.members.size)
-    }
-
-    private fun formatNet(status: String?): String = when (status?.lowercase(Locale.US)) {
-        "wifi" -> getString(R.string.map_internet_wifi)
-        "mobile" -> getString(R.string.map_internet_mobile)
-        else -> getString(R.string.map_unknown)
     }
 
     private val pinColors by lazy {

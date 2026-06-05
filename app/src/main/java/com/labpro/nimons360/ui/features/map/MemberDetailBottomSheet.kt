@@ -2,7 +2,6 @@ package com.labpro.nimons360.ui.features.map
 
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -67,9 +66,20 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
         val tvLoc = view.findViewById<TextView>(R.id.tvLoc)
         val tvNet = view.findViewById<TextView>(R.id.tvNet)
 
-        tvBattery.text = if (batteryLevel >= 0) "$batteryLevel% Battery" else "Unknown Battery"
-        tvLoc.text = String.format(Locale.US, "%.5f, %.5f Location", latitude, longitude)
-        tvNet.text = internetStatus.replaceFirstChar { it.uppercase() }
+        val batteryStr = if (batteryLevel >= 0) "$batteryLevel%" else getString(R.string.map_unknown)
+        val chargeStatus = when (isCharging) {
+            true -> getString(R.string.map_charging)
+            false -> getString(R.string.map_not_charging)
+            null -> getString(R.string.map_unknown)
+        }
+        tvBattery.text = if (batteryLevel >= 0) "$batteryStr ($chargeStatus)" else batteryStr
+
+        tvLoc.text = String.format(Locale.US, "%.5f, %.5f", latitude, longitude)
+        tvNet.text = when (internetStatus.lowercase(Locale.US)) {
+            "wifi" -> getString(R.string.map_internet_wifi)
+            "mobile" -> getString(R.string.map_internet_mobile)
+            else -> getString(R.string.map_unknown)
+        }
 
         // Dynamic Time-Based Weather Greeting Setup
         val greetingData = getGreetingData()
@@ -103,7 +113,7 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
                     if (sharedFamily != null) {
                         tvActiveFamilyBadge.text = sharedFamily.name
                         resolvedFamilyId = sharedFamily.id
-                        
+
                         // Dynamically try loading custom profile avatar if member info has it
                         val targetMember = sharedFamily.members.firstOrNull { it.email.lowercase() == memberEmail.lowercase() }
                         if (targetMember != null && !targetMember.profileImageUrl.isNullOrBlank()) {
@@ -140,8 +150,6 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
                         SendGreetingRequest(familyId, targetUserId, greetingData.title)
                     )
 
-//                    Log.d("Send Greetings", "resposeIsSuccessful: ${response.isSuccessful}")
-//                    Log.d("Send Greetings", "responseBody: ${response.body()?.data?.sent}")
                     if (response.isSuccessful && response.body()?.data?.sent == true) {
                         Toast.makeText(requireContext(), "Greeting Sent!", Toast.LENGTH_SHORT).show()
                         dismiss()
