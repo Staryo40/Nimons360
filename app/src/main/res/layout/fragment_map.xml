@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mapRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_base"
@@ -130,5 +131,21 @@
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnShareStory"
+        style="@style/Widget.Nimons360.Button.Primary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/page_horizontal_padding"
+        android:contentDescription="@string/cd_share_instagram_story"
+        android:minHeight="@dimen/touch_target_min"
+        android:text="@string/share_instagram_story"
+        app:backgroundTint="@color/secondary_coral"
+        app:icon="@drawable/ic_instagram_story"
+        app:iconGravity="textStart"
+        app:iconPadding="@dimen/spacing_sm"
+        app:iconTint="@color/white" />
 
 </FrameLayout>

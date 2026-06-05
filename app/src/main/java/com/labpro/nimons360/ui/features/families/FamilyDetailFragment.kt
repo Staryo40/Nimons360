@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -31,6 +32,7 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
+import com.labpro.nimons360.core.navigation.FamilyDeepLink
 import com.labpro.nimons360.data.model.family.FamilyDetail
 import com.labpro.nimons360.data.model.family.FamilyMember
 import com.labpro.nimons360.data.model.ui_state.FamilyDetailUiState
@@ -57,6 +59,9 @@ class FamilyDetailFragment : DialogFragment() {
     private val currentUserEmail: String by lazy {
         requireArguments().getString(ARG_CURRENT_USER_EMAIL, "")
     }
+    private val prefillCode: String? by lazy {
+        requireArguments().getString(ARG_PREFILL_CODE)
+    }
 
     private val viewModel: FamilyDetailViewModel by viewModels {
         FamilyDetailViewModelFactory(
@@ -74,6 +79,11 @@ class FamilyDetailFragment : DialogFragment() {
     private lateinit var familyCodeSection: LinearLayout
     private lateinit var tvFamilyCode: TextView
     private lateinit var btnCopyCode: ImageButton
+    private lateinit var actionsSection: LinearLayout
+    private lateinit var btnSendMessage: LinearLayout
+    private lateinit var btnShareFamily: LinearLayout
+    private lateinit var btnShareFamilyQr: LinearLayout
+    private lateinit var dividerShareFamilyQr: View
     private lateinit var membersCard: MaterialCardView
     private lateinit var membersContainer: LinearLayout
     private lateinit var joinHintSection: LinearLayout
@@ -145,6 +155,11 @@ class FamilyDetailFragment : DialogFragment() {
         familyCodeSection = root.findViewById(R.id.familyCodeSection)
         tvFamilyCode      = root.findViewById(R.id.tvFamilyCode)
         btnCopyCode       = root.findViewById(R.id.btnCopyCode)
+        actionsSection    = root.findViewById(R.id.actionsSection)
+        btnSendMessage    = root.findViewById(R.id.btnSendMessage)
+        btnShareFamily    = root.findViewById(R.id.btnShareFamily)
+        btnShareFamilyQr  = root.findViewById(R.id.btnShareFamilyQr)
+        dividerShareFamilyQr = root.findViewById(R.id.dividerShareFamilyQr)
         membersCard       = root.findViewById(R.id.membersCard)
         membersContainer  = root.findViewById(R.id.membersContainer)
         joinHintSection   = root.findViewById(R.id.joinHintSection)
@@ -226,6 +241,7 @@ class FamilyDetailFragment : DialogFragment() {
             familyCodeSection.isVisible = true
             tvFamilyCode.text = family.familyCode ?: "------"
             btnCopyCode.setOnClickListener { copyCodeToClipboard(family.familyCode) }
+            updateShareActions(family)
 
             injectLiveButton(family)
 
@@ -245,6 +261,8 @@ class FamilyDetailFragment : DialogFragment() {
             tvNotMemberBadge.isVisible = true
 
             familyCodeSection.isVisible = false
+            actionsSection.isVisible = false
+            toolbar.menu.clear()
             btnLive?.isVisible = false
             membersCard.isVisible       = false
             joinHintSection.isVisible   = true
@@ -256,6 +274,35 @@ class FamilyDetailFragment : DialogFragment() {
             btnAction.text = getString(R.string.join_family)
             btnAction.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.primary_teal))
             btnAction.setOnClickListener { showJoinDialog() }
+        }
+    }
+
+    private fun updateShareActions(family: FamilyDetail) {
+        val canShare = family.familyCode != null
+        actionsSection.isVisible = true
+        btnSendMessage.setOnClickListener {
+            Toast.makeText(requireContext(), R.string.send_message_unavailable, Toast.LENGTH_SHORT).show()
+        }
+        btnShareFamily.isEnabled = canShare
+        btnShareFamily.alpha = if (canShare) 1f else 0.5f
+        btnShareFamily.setOnClickListener {
+            if (canShare) shareFamilyLink(family)
+        }
+        btnShareFamilyQr.isVisible = canShare
+        dividerShareFamilyQr.isVisible = canShare
+        btnShareFamilyQr.setOnClickListener {
+            if (canShare) showFamilyQrDialog(family)
+        }
+
+        toolbar.menu.clear()
+        if (canShare) {
+            toolbar.menu.add(R.string.share_family)
+                .setIcon(R.drawable.ic_share)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            toolbar.setOnMenuItemClickListener {
+                shareFamilyLink(family)
+                true
+            }
         }
     }
 
@@ -366,8 +413,34 @@ class FamilyDetailFragment : DialogFragment() {
     }
 
     private fun showJoinDialog() {
-        JoinFamilyDialog()
+        JoinFamilyDialog.newInstance(prefillCode)
             .show(childFragmentManager, JoinFamilyDialog.TAG)
+    }
+
+    private fun shareFamilyLink(family: FamilyDetail) {
+        val code = family.familyCode ?: return
+        val link = FamilyDeepLink(family.id, code).toUriString()
+        val message = getString(R.string.share_family_message, family.name, link)
+
+        val sendIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, message)
+        }
+
+        startActivity(Intent.createChooser(sendIntent, getString(R.string.share_family_chooser)))
+    }
+
+    private fun showFamilyQrDialog(family: FamilyDetail) {
+        val code = family.familyCode ?: return
+        if (childFragmentManager.findFragmentByTag(FamilyQrDialogFragment.TAG) != null) return
+
+        FamilyQrDialogFragment
+            .newInstance(
+                familyId = family.id,
+                familyName = family.name,
+                familyCode = code,
+            )
+            .show(childFragmentManager, FamilyQrDialogFragment.TAG)
     }
 
     private fun confirmLeave(familyName: String) {
@@ -429,6 +502,7 @@ class FamilyDetailFragment : DialogFragment() {
         const val TAG                     = "FamilyDetailFragment"
         private const val ARG_FAMILY_ID          = "family_id"
         private const val ARG_CURRENT_USER_EMAIL = "current_user_email"
+        private const val ARG_PREFILL_CODE       = "prefill_code"
 
         /**
          * @param familyId         the family to display.
@@ -437,10 +511,12 @@ class FamilyDetailFragment : DialogFragment() {
         fun newInstance(
             familyId: Int,
             currentUserEmail: String = "",
+            prefillCode: String? = null,
         ) = FamilyDetailFragment().apply {
             arguments = Bundle().apply {
                 putInt(ARG_FAMILY_ID, familyId)
                 putString(ARG_CURRENT_USER_EMAIL, currentUserEmail)
+                putString(ARG_PREFILL_CODE, prefillCode)
             }
         }
     }
