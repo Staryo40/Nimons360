@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.labpro.nimons360.data.model.map.FavoriteLocationEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -13,11 +14,14 @@ interface FavoriteLocationDao {
     fun observeFavoriteLocations(): Flow<List<FavoriteLocationEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLocation(entity: FavoriteLocationEntity)
+    suspend fun insertLocation(entity: FavoriteLocationEntity): Long
 
-    @Query("DELETE FROM favorite_locations WHERE latitude = :latitude AND longitude = :longitude")
-    suspend fun deleteLocation(latitude: Double, longitude: Double)
+    @Update
+    suspend fun updateLocation(entity: FavoriteLocationEntity)
 
     @Query("DELETE FROM favorite_locations WHERE id = :id")
     suspend fun deleteLocation(id: Int)
+
+    @Query("SELECT * FROM favorite_locations WHERE id = :id LIMIT 1")
+    suspend fun getLocation(id: Int): FavoriteLocationEntity?
 }
