@@ -71,6 +71,8 @@ class TokenManager(context: Context) {
 
     fun setNotificationsEnabled(enabled: Boolean) {
         prefs.edit().putBoolean(KEY_NOTIFICATIONS_ENABLED, enabled).apply()
+    }
+
     fun getPinStyle(): String {
         return prefs.getString(KEY_PIN_STYLE, PIN_TEAL) ?: PIN_TEAL
     }
