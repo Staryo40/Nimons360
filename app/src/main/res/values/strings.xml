@@ -131,6 +131,9 @@
     <string name="map_unknown">Unknown</string>
     <string name="map_charging">Charging</string>
     <string name="map_not_charging">Not charging</string>
+    <string name="share_instagram_story">Story</string>
+    <string name="instagram_not_installed">Instagram is not installed.</string>
+    <string name="instagram_story_share_error">Failed to share Instagram story.</string>
 
     <!-- Network sensing -->
     <string name="disconnected_title">Disconnected</string>
@@ -146,6 +149,7 @@
     <string name="cd_edit_profile">Edit profile</string>
     <string name="cd_family_icon">Family icon</string>
     <string name="cd_map_pin">Location pin for %s</string>
+    <string name="cd_share_instagram_story">Share map to Instagram story</string>
     <string name="cd_profile_avatar">Open profile for %s</string>
     <string name="cd_create_family">Create family</string>
     <string name="cd_join_family_named">Join family %s</string>
