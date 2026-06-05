@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
@@ -21,6 +23,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.labpro.nimons360.core.events.AuthEvent
 import com.labpro.nimons360.core.events.AuthEventBus
 import com.labpro.nimons360.core.network.NetworkMonitor
+import com.labpro.nimons360.core.navigation.FamilyDeepLink
 import com.labpro.nimons360.ui.features.auth.LoginActivity
 import com.labpro.nimons360.ui.main.shared.NetworkSensingWrapper
 import com.labpro.nimons360.ui.main.MainContent
@@ -39,10 +42,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var networkMonitor: NetworkMonitor
+    private var pendingFamilyDeepLink by mutableStateOf<FamilyDeepLink?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        pendingFamilyDeepLink = FamilyDeepLink.fromIntent(intent)
 
         networkMonitor = NetworkMonitor(applicationContext)
 
@@ -69,7 +74,11 @@ class MainActivity : AppCompatActivity() {
                                 MainContent(
                                     user = user,
                                     currentScreen = currentScreen,
-                                    onScreenChange = { viewModel.setScreen(it) }
+                                    onScreenChange = { viewModel.setScreen(it) },
+                                    pendingFamilyDeepLink = pendingFamilyDeepLink,
+                                    onFamilyDeepLinkHandled = {
+                                        pendingFamilyDeepLink = null
+                                    },
                                 )
                             }
 
@@ -85,6 +94,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        pendingFamilyDeepLink = FamilyDeepLink.fromIntent(intent)
     }
 
     private fun observeAuthEvents() {
@@ -103,6 +118,9 @@ class MainActivity : AppCompatActivity() {
     private fun navigateToLogin() {
         val intent = Intent(this, LoginActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            pendingFamilyDeepLink?.let {
+                putExtra(FamilyDeepLink.EXTRA_URI, it.toUriString())
+            }
         }
         startActivity(intent)
         finish()

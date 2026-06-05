@@ -58,10 +58,13 @@ class JoinFamilyDialog : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View = ComposeView(requireContext()).apply {
+        val prefillCode = arguments?.getString(ARG_PREFILL_CODE)
+
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             Nimons360Theme {
                 JoinFamilyDialogContent(
+                    prefillCode = prefillCode,
                     onDismiss = { dismiss() },
                     onConfirm = { code ->
                         parentFragmentManager.setFragmentResult(
@@ -87,16 +90,31 @@ class JoinFamilyDialog : DialogFragment() {
         const val TAG         = "JoinFamilyDialog"
         const val REQUEST_KEY = "join_family_result"
         const val KEY_CODE    = "family_code"
+        private const val ARG_PREFILL_CODE = "prefill_code"
+
+        fun newInstance(prefillCode: String? = null) = JoinFamilyDialog().apply {
+            arguments = Bundle().apply {
+                putString(ARG_PREFILL_CODE, prefillCode)
+            }
+        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun JoinFamilyDialogContent(
+    prefillCode: String?,
     onDismiss: () -> Unit,
     onConfirm: (String) -> Unit,
 ) {
-    var code by remember { mutableStateOf("") }
+    var code by remember {
+        mutableStateOf(
+            prefillCode.orEmpty()
+                .uppercase()
+                .filter { it.isLetterOrDigit() }
+                .take(6)
+        )
+    }
     var hasError by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
 

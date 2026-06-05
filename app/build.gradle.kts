@@ -141,4 +141,7 @@ dependencies {
     // firebase
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation("com.google.firebase:firebase-analytics")
+
+    // QR Code
+    implementation("com.google.zxing:core:3.5.3")
 }
