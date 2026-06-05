@@ -151,9 +151,12 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
                         SendGreetingRequest(familyId, targetUserId, greetingData.title)
                     )
 
-                    Log.d("Send Greetings", "resposeIsSuccessful: ${response.isSuccessful}")
-                    Log.d("Send Greetings", "responseBody: ${response.body()?.data?.sent}")
-                    if (response.isSuccessful && response.body()?.data?.sent == true) {
+//                    Log.d("Send Greetings", "resposeIsSuccessful: ${response.isSuccessful}")
+//                    Log.d("Send Greetings", "responseBody: ${response.body()?.data?.sent}")
+
+                    // If other user blocks notif, will send: {"data":{"delivered":false,"reason":"no_fcm_token"}}
+                    // else: {"data":{"delivered":true}}
+                    if (response.isSuccessful) {
                         Toast.makeText(requireContext(), "Greeting Sent!", Toast.LENGTH_SHORT).show()
                         dismiss()
                     } else {
