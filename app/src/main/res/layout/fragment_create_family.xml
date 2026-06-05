@@ -164,7 +164,7 @@
                         android:layout_marginTop="1dp"
                         android:layout_marginEnd="@dimen/spacing_xs"
                         android:contentDescription="@null"
-                        android:tint="@color/text_secondary"
+                        app:tint="@color/text_secondary"
                         android:src="@drawable/ic_info" />
 
                     <TextView
