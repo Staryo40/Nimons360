@@ -27,6 +27,10 @@ class SendMessageBottomSheet : BottomSheetDialogFragment() {
     private val familyId: Int by lazy {
         requireArguments().getInt(ARG_FAMILY_ID)
     }
+    private val familyName: String by lazy {
+        requireArguments().getString(ARG_FAMILY_NAME, "")
+    }
+    private var senderName: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,6 +40,15 @@ class SendMessageBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.apiService.getMe()
+                if (response.isSuccessful) {
+                    senderName = response.body()?.data?.fullName
+                }
+            } catch (_: Exception) {}
+        }
 
         // Dynamic Time-Based Weather Greeting Setup
         val greetingData = getGreetingData()
@@ -57,8 +70,11 @@ class SendMessageBottomSheet : BottomSheetDialogFragment() {
             btnSendGreeting.isEnabled = false
             lifecycleScope.launch {
                 try {
+                    val currentSender = senderName ?: "Someone"
+                    val formattedMessage = "$currentSender from $familyName: ${greetingData.title}"
+
                     val response = RetrofitClient.apiService.sendBroadcastNotification(
-                        BroadcastNotificationRequest(familyId, greetingData.title)
+                        BroadcastNotificationRequest(familyId, formattedMessage)
                     )
                     if (response.isSuccessful && response.body()?.data?.sent == true) {
                         Toast.makeText(requireContext(), "Family Notification Sent!", Toast.LENGTH_SHORT).show()
@@ -92,8 +108,11 @@ class SendMessageBottomSheet : BottomSheetDialogFragment() {
             btnSend.isEnabled = false
             lifecycleScope.launch {
                 try {
+                    val currentSender = senderName ?: "Someone"
+                    val formattedMessage = "$currentSender from $familyName: $messageText"
+
                     val response = RetrofitClient.apiService.sendBroadcastNotification(
-                        BroadcastNotificationRequest(familyId, messageText)
+                        BroadcastNotificationRequest(familyId, formattedMessage)
                     )
                     if (response.isSuccessful && response.body()?.data?.sent == true) {
                         Toast.makeText(requireContext(), "Family Notification Sent!", Toast.LENGTH_SHORT).show()
@@ -148,10 +167,12 @@ class SendMessageBottomSheet : BottomSheetDialogFragment() {
     companion object {
         const val TAG = "SendMessageBottomSheet"
         private const val ARG_FAMILY_ID = "family_id"
+        private const val ARG_FAMILY_NAME = "family_name"
 
-        fun newInstance(familyId: Int) = SendMessageBottomSheet().apply {
+        fun newInstance(familyId: Int, familyName: String) = SendMessageBottomSheet().apply {
             arguments = Bundle().apply {
                 putInt(ARG_FAMILY_ID, familyId)
+                putString(ARG_FAMILY_NAME, familyName)
             }
         }
     }
