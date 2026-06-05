@@ -13,24 +13,24 @@ import androidx.core.content.ContextCompat
 import com.labpro.nimons360.R
 
 object MapPinMaker {
-    fun self(context: Context, letter: String, rotation: Float): Drawable {
+    fun self(context: Context, letter: String, rotation: Float, color: Int): Drawable {
         val size = dp(context, 54)
         val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         val center = size / 2f
 
         val fill = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = ContextCompat.getColor(context, R.color.primary_teal)
+            this.color = color
             style = Paint.Style.FILL
         }
         val text = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.WHITE
+            this.color = Color.WHITE
             textSize = size * 0.28f
             textAlign = Paint.Align.CENTER
             typeface = android.graphics.Typeface.create(android.graphics.Typeface.DEFAULT_BOLD, android.graphics.Typeface.BOLD)
         }
         val arrow = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = ContextCompat.getColor(context, R.color.secondary_coral)
+            this.color = ContextCompat.getColor(context, R.color.secondary_coral)
             style = Paint.Style.FILL
         }
 

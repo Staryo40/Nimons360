@@ -65,11 +65,26 @@ class TokenManager(context: Context) {
         prefs.edit().putBoolean(KEY_SHARE_LOCATION, enabled).apply()
     }
 
+    fun getPinStyle(): String {
+        return prefs.getString(KEY_PIN_STYLE, PIN_TEAL) ?: PIN_TEAL
+    }
+
+    fun setPinStyle(style: String) {
+        prefs.edit().putString(KEY_PIN_STYLE, style).apply()
+    }
+
     companion object {
         private const val TAG = "TokenManager"
         private const val FILE_NAME = "nimons360_secure_prefs"
         private const val KEY_TOKEN = "auth_token"
         private const val KEY_EXPIRES_AT = "expires_at"
         private const val KEY_SHARE_LOCATION = "share_location"
+        private const val KEY_PIN_STYLE = "pin_style"
+
+        const val PIN_TEAL = "teal"
+        const val PIN_CORAL = "coral"
+        const val PIN_BLUE = "blue"
+        const val PIN_PURPLE = "purple"
+        const val PIN_ORANGE = "orange"
     }
 }
