@@ -27,6 +27,8 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
 
     <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="true" />
     <uses-feature android:name="android.hardware.sensor.compass" android:required="true" />
@@ -85,6 +87,11 @@
             android:exported="false"
             android:theme="@style/Theme.Nimons360" />
 
+        <activity
+            android:name=".ui.features.analytics.AnalyticsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Nimons360.Login" />
+
         <service
             android:name=".core.notifications.NimonsFirebaseMessagingService"
             android:exported="false">
@@ -92,6 +99,11 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <service
+            android:name=".ui.features.map.PresenceForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="location" />
 
     </application>
 

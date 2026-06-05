@@ -55,4 +55,7 @@
     <color name="pin_blue">#2F607D</color>
     <color name="pin_orange">#8A5038</color>
     <color name="pin_purple">#5B3FA3</color>
+    <color name="analytics_blue">#1976D2</color>
+    <color name="analytics_bar">#D8E9FA</color>
+    <color name="analytics_surface">#FBF8FA</color>
 </resources>

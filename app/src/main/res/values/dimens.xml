@@ -40,6 +40,8 @@
     <dimen name="avatar_xxl">100dp</dimen>
     <!-- Map pin size -->
     <dimen name="map_pin_size">40dp</dimen>
+    <dimen name="marked_photo_size">112dp</dimen>
+    <dimen name="analytics_chart_label">10sp</dimen>
     <!-- Family icon in lists -->
     <dimen name="family_icon_sm">36dp</dimen>
     <dimen name="family_icon_md">48dp</dimen>
