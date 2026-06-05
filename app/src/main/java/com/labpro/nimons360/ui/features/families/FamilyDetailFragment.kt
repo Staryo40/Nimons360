@@ -516,7 +516,7 @@ class FamilyDetailFragment : DialogFragment() {
     }
 
     private fun openSendMessageBottomSheet(family: FamilyDetail) {
-        SendMessageBottomSheet.newInstance(family.id)
+        SendMessageBottomSheet.newInstance(family.id, family.name)
             .show(childFragmentManager, SendMessageBottomSheet.TAG)
     }
 

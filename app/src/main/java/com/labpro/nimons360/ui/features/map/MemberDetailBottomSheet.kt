@@ -15,6 +15,7 @@ import coil.load
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.material.textfield.TextInputEditText
 import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
 import com.labpro.nimons360.data.model.NetworkResult
@@ -41,6 +42,7 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
     private val internetStatus: String by lazy { requireArguments().getString(ARG_NET, "Unknown") }
 
     private var resolvedFamilyId: Int? = null
+    private var senderName: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -101,6 +103,15 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
 
         btnCloseSheet.setOnClickListener { dismiss() }
 
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.apiService.getMe()
+                if (response.isSuccessful) {
+                    senderName = response.body()?.data?.fullName
+                }
+            } catch (_: Exception) {}
+        }
+
         // Dynamically fetch user's families to find the shared family ID and name
         val app = requireActivity().application as MainApplication
         val familyRepo = app.familyRepository
@@ -147,15 +158,13 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
             btnSendGreeting.isEnabled = false
             lifecycleScope.launch {
                 try {
+                    val currentSender = senderName ?: "Someone"
+                    val formattedMessage = "$currentSender: ${greetingData.title}"
+
                     val response = RetrofitClient.apiService.sendGreetingToMember(
-                        SendGreetingRequest(familyId, targetUserId, greetingData.title)
+                        SendGreetingRequest(familyId, targetUserId, formattedMessage)
                     )
 
-//                    Log.d("Send Greetings", "resposeIsSuccessful: ${response.isSuccessful}")
-//                    Log.d("Send Greetings", "responseBody: ${response.body()?.data?.sent}")
-
-                    // If other user blocks notif, will send: {"data":{"delivered":false,"reason":"no_fcm_token"}}
-                    // else: {"data":{"delivered":true}}
                     if (response.isSuccessful) {
                         Toast.makeText(requireContext(), "Greeting Sent!", Toast.LENGTH_SHORT).show()
                         dismiss()
@@ -166,6 +175,45 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
                 } catch (e: Exception) {
                     btnSendGreeting.isEnabled = true
                     Toast.makeText(requireContext(), "Error sending greeting: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        val etCustomMessage = view.findViewById<TextInputEditText>(R.id.etCustomMessage)
+        val btnSendCustomMessage = view.findViewById<MaterialButton>(R.id.btnSendCustomMessage)
+        btnSendCustomMessage.setOnClickListener {
+            val familyId = resolvedFamilyId
+            if (familyId == null) {
+                Toast.makeText(requireContext(), "Searching for shared family context...", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val messageText = etCustomMessage.text.toString().trim()
+            if (messageText.isEmpty()) {
+                etCustomMessage.error = "Message cannot be empty"
+                return@setOnClickListener
+            }
+
+            btnSendCustomMessage.isEnabled = false
+            lifecycleScope.launch {
+                try {
+                    val currentSender = senderName ?: "Someone"
+                    val formattedMessage = "$currentSender: $messageText"
+
+                    val response = RetrofitClient.apiService.sendGreetingToMember(
+                        SendGreetingRequest(familyId, targetUserId, formattedMessage)
+                    )
+
+                    if (response.isSuccessful) {
+                        Toast.makeText(requireContext(), "Message Sent!", Toast.LENGTH_SHORT).show()
+                        dismiss()
+                    } else {
+                        btnSendCustomMessage.isEnabled = true
+                        Toast.makeText(requireContext(), "Failed to send message: ${response.code()}", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    btnSendCustomMessage.isEnabled = true
+                    Toast.makeText(requireContext(), "Error sending message: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }
