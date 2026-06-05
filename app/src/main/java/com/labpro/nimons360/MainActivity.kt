@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -27,6 +28,7 @@ import com.labpro.nimons360.core.navigation.FamilyDeepLink
 import com.labpro.nimons360.ui.features.auth.LoginActivity
 import com.labpro.nimons360.ui.main.shared.NetworkSensingWrapper
 import com.labpro.nimons360.ui.main.MainContent
+import com.labpro.nimons360.ui.features.map.PresenceServiceController
 import com.labpro.nimons360.ui.theme.Nimons360Theme
 import com.labpro.nimons360.viewmodel.MainViewModel
 import com.labpro.nimons360.viewmodel.MainViewModelFactory
@@ -69,6 +71,13 @@ class MainActivity : AppCompatActivity() {
 
                             state.user != null -> {
                                 val user = state.user!!
+                                LaunchedEffect(user.id, user.fullName) {
+                                    val app = application as MainApplication
+                                    app.tokenManager.setPresenceName(user.fullName)
+                                    if (app.tokenManager.isLocationSharingEnabled()) {
+                                        PresenceServiceController.start(this@MainActivity, user.fullName)
+                                    }
+                                }
                                 val currentScreen by viewModel.currentScreen.collectAsStateWithLifecycle()
 
                                 MainContent(
@@ -116,6 +125,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun navigateToLogin() {
+        PresenceServiceController.stop(this)
         val intent = Intent(this, LoginActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             pendingFamilyDeepLink?.let {

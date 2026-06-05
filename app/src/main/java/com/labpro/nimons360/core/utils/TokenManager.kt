@@ -42,11 +42,6 @@ class TokenManager(context: Context) {
     fun isLoggedIn(): Boolean {
         val token = getToken() ?: return false
         val expiresAt = prefs.getLong(KEY_EXPIRES_AT, 0L)
-
-        Log.d(TAG, "token=$token")
-        Log.d(TAG, "expiresAt=$expiresAt")
-        Log.d(TAG, "now=${System.currentTimeMillis()}")
-
         return System.currentTimeMillis() < expiresAt
     }
 
@@ -81,6 +76,14 @@ class TokenManager(context: Context) {
         prefs.edit().putString(KEY_PIN_STYLE, style).apply()
     }
 
+    fun setPresenceName(name: String) {
+        prefs.edit().putString(KEY_PRESENCE_NAME, name).apply()
+    }
+
+    fun getPresenceName(): String {
+        return prefs.getString(KEY_PRESENCE_NAME, "Nimons360 User") ?: "Nimons360 User"
+    }
+
     companion object {
         private const val TAG = "TokenManager"
         private const val FILE_NAME = "nimons360_secure_prefs"
@@ -89,6 +92,7 @@ class TokenManager(context: Context) {
         private const val KEY_SHARE_LOCATION = "share_location"
         private const val KEY_NOTIFICATIONS_ENABLED = "notifications_enabled"
         private const val KEY_PIN_STYLE = "pin_style"
+        private const val KEY_PRESENCE_NAME = "presence_name"
 
         const val PIN_TEAL = "teal"
         const val PIN_CORAL = "coral"
