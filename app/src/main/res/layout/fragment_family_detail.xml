@@ -220,6 +220,33 @@
                     android:textSize="@dimen/text_xs"
                     android:letterSpacing="0.08" />
 
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilMemberSearch"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/page_horizontal_padding"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:layout_marginBottom="@dimen/spacing_sm"
+                    android:hint="Search members"
+                    app:endIconMode="clear_text"
+                    app:startIconDrawable="@drawable/ic_search"
+                    app:startIconTint="@color/text_secondary"
+                    app:boxStrokeColor="@color/primary_teal"
+                    app:hintTextColor="@color/primary_teal"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etMemberSearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:textColor="@color/text_primary"
+                        android:textSize="@dimen/text_md" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/membersCard"
                     android:layout_width="match_parent"
@@ -229,11 +256,19 @@
                     app:cardCornerRadius="@dimen/radius_card"
                     app:cardElevation="1dp">
 
-                    <LinearLayout
-                        android:id="@+id/membersContainer"
+                    <androidx.core.widget.NestedScrollView
+                        android:id="@+id/membersScrollView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical" />
+                        android:overScrollMode="never">
+
+                        <LinearLayout
+                            android:id="@+id/membersContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical" />
+
+                    </androidx.core.widget.NestedScrollView>
 
                 </com.google.android.material.card.MaterialCardView>
                 <LinearLayout
