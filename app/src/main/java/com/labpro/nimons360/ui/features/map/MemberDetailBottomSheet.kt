@@ -2,6 +2,7 @@ package com.labpro.nimons360.ui.features.map
 
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -138,7 +139,10 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
                     val response = RetrofitClient.apiService.sendGreetingToMember(
                         SendGreetingRequest(familyId, targetUserId, greetingData.title)
                     )
-                    if (response.isSuccessful && response.body()?.data?.delivered == true) {
+
+//                    Log.d("Send Greetings", "resposeIsSuccessful: ${response.isSuccessful}")
+//                    Log.d("Send Greetings", "responseBody: ${response.body()?.data?.sent}")
+                    if (response.isSuccessful && response.body()?.data?.sent == true) {
                         Toast.makeText(requireContext(), "Greeting Sent!", Toast.LENGTH_SHORT).show()
                         dismiss()
                     } else {

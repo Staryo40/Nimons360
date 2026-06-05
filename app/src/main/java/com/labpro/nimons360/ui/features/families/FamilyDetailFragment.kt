@@ -467,14 +467,6 @@ class FamilyDetailFragment : DialogFragment() {
             .show(childFragmentManager, SendMessageBottomSheet.TAG)
     }
 
-    private fun shareFamilyLink(family: FamilyDetail) {
-        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, "Join my family group on Nimons360 using code: ${family.familyCode ?: ""}")
-        }
-        startActivity(Intent.createChooser(shareIntent, "Share Family Code"))
-    }
-
     private fun copyCodeToClipboard(code: String?) {
         if (code == null) return
         val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
