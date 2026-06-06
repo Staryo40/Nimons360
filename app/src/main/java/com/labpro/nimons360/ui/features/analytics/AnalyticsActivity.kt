@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
+import com.labpro.nimons360.core.utils.applyStatusBarHeaderInset
 import com.labpro.nimons360.data.model.analytics.LocationHistoryEntity
 import com.labpro.nimons360.data.repository.DistanceAnalytics
 import java.io.File
@@ -31,6 +32,7 @@ class AnalyticsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_analytics)
+        findViewById<View>(R.id.analyticsHeader).applyStatusBarHeaderInset(extraTopDp = 18)
         findViewById<View>(R.id.btnAnalyticsBack).setOnClickListener { finish() }
         findViewById<MaterialButton>(R.id.btnExportAnalytics).setOnClickListener {
             exportCsv()
