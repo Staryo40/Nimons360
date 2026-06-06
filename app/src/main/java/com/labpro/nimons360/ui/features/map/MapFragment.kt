@@ -396,7 +396,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
 
         if (selfMarker == null) {
             selfMarker = Marker(mapView).apply {
-                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 title = state.self.fullName
             }
             mapView.overlays.add(selfMarker)
@@ -419,17 +419,17 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         val rotDiff = if (lastSelfRotation != null) abs(lastSelfRotation!! - rotation) else Float.MAX_VALUE
         val needsRotationUpdate = customFile == null && rotDiff >= 3f
         if (selfMarker?.icon == null || lastSelfPinKey != pinKey || needsRotationUpdate) {
-            selfMarker?.icon = customFile?.let { MapPinMaker.custom(requireContext(), it) }
+            selfMarker?.icon = customFile?.let {
+                MapPinMaker.custom(requireContext(), it, state.self.fullName)
+            }
                 ?: MapPinMaker.self(
                     requireContext(),
                     state.self.fullName.firstOrNull()?.uppercase() ?: "Y",
+                    state.self.fullName,
                     state.self.rotation,
                     getSelfPinColor(),
                 )
-            selfMarker?.setAnchor(
-                Marker.ANCHOR_CENTER,
-                if (customFile == null) Marker.ANCHOR_CENTER else Marker.ANCHOR_BOTTOM,
-            )
+            selfMarker?.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
             lastSelfRotation = rotation
             lastSelfPinKey = pinKey
             invalidated = true
@@ -462,7 +462,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         state.members.forEachIndexed { index, member ->
             var isNewMarker = false
             val marker = memberMap[member.userId] ?: Marker(mapView).also {
-                it.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+                it.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 memberMap[member.userId] = it
                 mapView.overlays.add(it)
                 isNewMarker = true
@@ -487,6 +487,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
                 marker.icon = MapPinMaker.member(
                     requireContext(),
                     member.fullName.firstOrNull()?.uppercase() ?: "?",
+                    member.fullName,
                     pinColors[index % pinColors.size],
                 )
                 invalidated = true

@@ -99,8 +99,13 @@ fun MainContent(
 
     Scaffold(
         topBar = {
-            Column {
+            Column(
+                modifier = Modifier
+                    .statusBarsPadding()
+                    .padding(top = 6.dp),
+            ) {
                 TopAppBar(
+                    windowInsets = WindowInsets(0, 0, 0, 0),
                     title = {
                         Text(
                             text       = screenTitle,

@@ -24,6 +24,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
 import com.labpro.nimons360.core.utils.TokenManager
+import com.labpro.nimons360.core.utils.applyStatusBarHeaderInset
 import com.labpro.nimons360.data.model.map.CustomPin
 import com.labpro.nimons360.data.repository.CustomPinRepository
 import com.labpro.nimons360.ui.features.map.MapPinMaker
@@ -65,6 +66,7 @@ class CustomizePinActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_customize_pin)
+        findViewById<View>(R.id.customizePinHeader).applyStatusBarHeaderInset(extraTopDp = 18)
         repository = CustomPinRepository(applicationContext)
         pinContainer = findViewById(R.id.pinGridContainer)
 
@@ -115,6 +117,7 @@ class CustomizePinActivity : AppCompatActivity() {
             initial.background = MapPinMaker.self(
                 this,
                 app.tokenManager.getPresenceName().firstOrNull()?.uppercase() ?: "Y",
+                app.tokenManager.getPresenceName(),
                 0f,
                 selectedColor(),
             )
@@ -133,19 +136,21 @@ class CustomizePinActivity : AppCompatActivity() {
                 orientation = LinearLayout.HORIZONTAL
                 weightSum = 3f
             }
+            if (rowPins.size < 3) {
+                row.addView(createGridSpacer((3f - rowPins.size) / 2f))
+            }
             rowPins.forEach { pin ->
                 row.addView(createPinCard(pin))
             }
-            repeat(3 - rowPins.size) {
-                row.addView(View(this).apply {
-                    layoutParams = LinearLayout.LayoutParams(0, 1, 1f).also {
-                        it.marginStart = dp(5)
-                        it.marginEnd = dp(5)
-                    }
-                })
+            if (rowPins.size < 3) {
+                row.addView(createGridSpacer((3f - rowPins.size) / 2f))
             }
             pinContainer.addView(row)
         }
+    }
+
+    private fun createGridSpacer(weight: Float): View = View(this).apply {
+        layoutParams = LinearLayout.LayoutParams(0, 1, weight)
     }
 
     private fun createPinCard(pin: CustomPin): View {
