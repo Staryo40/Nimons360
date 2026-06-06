@@ -1,8 +1,11 @@
 package com.labpro.nimons360.ui.main
 
+import android.os.Bundle
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.AddLocationAlt
+import androidx.compose.material.icons.outlined.GroupAdd
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -23,6 +26,7 @@ import com.labpro.nimons360.core.navigation.FamilyDeepLink
 import com.labpro.nimons360.data.model.user.UserData
 import com.labpro.nimons360.ui.features.families.CreateFamilyFragment
 import com.labpro.nimons360.ui.features.families.FamilyDetailFragment
+import com.labpro.nimons360.ui.features.map.MapFragment
 import com.labpro.nimons360.ui.features.profile.ProfileFragment
 import com.labpro.nimons360.ui.main.screens.FamilyCompose
 import com.labpro.nimons360.ui.main.screens.HomeCompose
@@ -42,6 +46,7 @@ fun MainContent(
     val lifecycleOwner = LocalLifecycleOwner.current
     val fm = (context as FragmentActivity).supportFragmentManager
     val app = context.applicationContext as MainApplication
+    var addMenuExpanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(currentScreen) {
         if (currentScreen == MainScreenEnum.FAMILY) {
@@ -59,11 +64,19 @@ fun MainContent(
     }
 
     fun openCreateFamily() {
+        addMenuExpanded = false
         if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
             if (!fm.isStateSaved && fm.findFragmentByTag(CreateFamilyFragment.TAG) == null) {
                 CreateFamilyFragment().show(fm, CreateFamilyFragment.TAG)
             }
         }
+    }
+
+    fun markCurrentLocation() {
+        addMenuExpanded = false
+        if (fm.isStateSaved) return
+        fm.setFragmentResult(MapFragment.REQUEST_MARK_CURRENT_LOCATION, Bundle.EMPTY)
+        onScreenChange(MainScreenEnum.MAP)
     }
 
     fun openFamilyDetail(familyId: Int, prefillCode: String? = null): Boolean {
@@ -158,18 +171,47 @@ fun MainContent(
         },
         floatingActionButton = {
             if (currentScreen != MainScreenEnum.MAP) {
-                FloatingActionButton(
-                    onClick        = { openCreateFamily() },
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor   = MaterialTheme.colorScheme.onSecondary,
-                    modifier       = Modifier.size(64.dp),
-                    elevation      = FloatingActionButtonDefaults.elevation(6.dp),
-                ) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = stringResource(R.string.cd_create_family),
-                        modifier           = Modifier.size(28.dp),
-                    )
+                Box {
+                    DropdownMenu(
+                        expanded = addMenuExpanded,
+                        onDismissRequest = { addMenuExpanded = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.action_add_family)) },
+                            onClick = { openCreateFamily() },
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Outlined.GroupAdd,
+                                    contentDescription = null,
+                                )
+                            },
+                        )
+                        HorizontalDivider()
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.action_mark_location)) },
+                            onClick = { markCurrentLocation() },
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Outlined.AddLocationAlt,
+                                    contentDescription = null,
+                                )
+                            },
+                        )
+                    }
+
+                    FloatingActionButton(
+                        onClick = { addMenuExpanded = true },
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary,
+                        modifier = Modifier.size(64.dp),
+                        elevation = FloatingActionButtonDefaults.elevation(6.dp),
+                    ) {
+                        Icon(
+                            Icons.Default.Add,
+                            contentDescription = stringResource(R.string.cd_add_actions),
+                            modifier = Modifier.size(28.dp),
+                        )
+                    }
                 }
             }
         },

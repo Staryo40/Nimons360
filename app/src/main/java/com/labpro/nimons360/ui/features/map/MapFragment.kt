@@ -11,6 +11,8 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.HorizontalScrollView
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -26,12 +28,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.labpro.nimons360.BuildConfig
 import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
 import com.labpro.nimons360.core.utils.InstagramStoryShareHelper
 import com.labpro.nimons360.core.utils.TokenManager
+import com.labpro.nimons360.data.model.NetworkResult
+import com.labpro.nimons360.data.model.family.FamilyWithMembers
 import com.labpro.nimons360.data.model.map.FavoriteLocationEntity
 import com.labpro.nimons360.data.model.map.CustomPin
 import com.labpro.nimons360.data.model.map.MapMember
@@ -61,6 +66,8 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
     private lateinit var tvBanner: TextView
     private lateinit var tvStatus: TextView
     private lateinit var pbLocate: ProgressBar
+    private lateinit var familyFilterScroll: HorizontalScrollView
+    private lateinit var familyFilterContainer: LinearLayout
 
     private lateinit var locationTracker: LocationTracker
     private lateinit var orientationTracker: OrientationTracker
@@ -78,6 +85,9 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
     private var trackersOn = false
     private var locationWatcherOn = false
     private var viewActive = false
+    private var pendingMarkCurrentLocation = false
+    private var familyFilters: List<MapFamilyFilter> = emptyList()
+    private var selectedFamilyId: Int? = null
 
     private val locationProviderReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -108,12 +118,20 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
                 PresenceServiceController.start(requireContext(), readUser().fullName)
             }
             handleLocationAvailability(showDialog = true)
+        } else {
+            pendingMarkCurrentLocation = false
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Configuration.getInstance().userAgentValue = requireContext().packageName
+        parentFragmentManager.setFragmentResultListener(
+            REQUEST_MARK_CURRENT_LOCATION,
+            this,
+        ) { _, _ ->
+            requestMarkCurrentLocation()
+        }
     }
 
     override fun onCreateView(
@@ -141,6 +159,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         viewModel.setPermission(granted)
         viewModel.bind()
         app().analytics.mapOpened()
+        loadFamilyFilters()
         startLocationWatcher()
         if (granted) {
             if (app().tokenManager.isLocationSharingEnabled()) {
@@ -186,6 +205,9 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         tvBanner = root.findViewById(R.id.tvBanner)
         tvStatus = root.findViewById(R.id.tvStatus)
         pbLocate = root.findViewById(R.id.pbLocate)
+        familyFilterScroll = root.findViewById(R.id.familyFilterScroll)
+        familyFilterContainer = root.findViewById(R.id.familyFilterContainer)
+        renderFamilyFilters()
     }
 
     private fun shareMapStory() {
@@ -334,6 +356,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
 
         renderSelf(state)
         renderMembers(state)
+        openPendingCurrentLocation(state)
 
         if (state.selected != null) {
             showInfo(state.selected)
@@ -447,7 +470,8 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
     }
 
     private fun renderMembers(state: MapUiState) {
-        val keep = state.members.map { it.userId }.toSet()
+        val visibleMembers = filteredMembers(state.members)
+        val keep = visibleMembers.map { it.userId }.toSet()
         var invalidated = false
 
         memberMap.keys.toList()
@@ -459,7 +483,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
                 }
             }
 
-        state.members.forEachIndexed { index, member ->
+        visibleMembers.forEachIndexed { index, member ->
             var isNewMarker = false
             val marker = memberMap[member.userId] ?: Marker(mapView).also {
                 it.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
@@ -516,6 +540,109 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         netTracker.start(viewModel::setNet)
     }
 
+    private fun loadFamilyFilters() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            when (val result = app().familyRepository.getMyFamilies()) {
+                is NetworkResult.Success -> {
+                    familyFilters = result.data.data.map(::toMapFamilyFilter)
+                    if (selectedFamilyId != null &&
+                        familyFilters.none { it.id == selectedFamilyId }
+                    ) {
+                        selectedFamilyId = null
+                    }
+                    if (viewActive) {
+                        renderFamilyFilters()
+                        render(viewModel.uiState.value)
+                    }
+                }
+                is NetworkResult.Error -> {
+                    familyFilters = emptyList()
+                    selectedFamilyId = null
+                    if (viewActive) {
+                        renderFamilyFilters()
+                        render(viewModel.uiState.value)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun renderFamilyFilters() {
+        if (!::familyFilterContainer.isInitialized) return
+        val scrollX = familyFilterScroll.scrollX
+        familyFilterContainer.removeAllViews()
+        familyFilterContainer.addView(
+            createFamilyChip(
+                id = null,
+                label = getString(R.string.all_families_filter),
+                accessibilityLabel = getString(R.string.all_families_filter),
+            )
+        )
+        familyFilters.forEach { family ->
+            familyFilterContainer.addView(
+                createFamilyChip(
+                    id = family.id,
+                    label = abbreviateFamilyName(family.name),
+                    accessibilityLabel = family.name,
+                )
+            )
+        }
+        familyFilterScroll.post { familyFilterScroll.scrollTo(scrollX, 0) }
+    }
+
+    private fun createFamilyChip(
+        id: Int?,
+        label: String,
+        accessibilityLabel: String,
+    ): Chip {
+        return Chip(requireContext()).apply {
+            text = label
+            isCheckable = true
+            isChecked = selectedFamilyId == id
+            isCheckedIconVisible = false
+            isCloseIconVisible = false
+            minHeight = resources.getDimensionPixelSize(R.dimen.touch_target_min)
+            contentDescription = getString(
+                R.string.map_family_filter_description,
+                accessibilityLabel,
+            )
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+            ).apply {
+                marginEnd = resources.getDimensionPixelSize(R.dimen.spacing_sm)
+            }
+            setOnClickListener {
+                selectedFamilyId = id
+                renderFamilyFilters()
+                render(viewModel.uiState.value)
+            }
+        }
+    }
+
+    private fun filteredMembers(members: List<MapMember>): List<MapMember> {
+        val selected = selectedFamilyId ?: return members
+        val emails = familyFilters.firstOrNull { it.id == selected }?.memberEmails ?: return members
+        return members.filter { it.email.lowercase() in emails }
+    }
+
+    private fun toMapFamilyFilter(family: FamilyWithMembers): MapFamilyFilter {
+        return MapFamilyFilter(
+            id = family.id,
+            name = family.name,
+            memberEmails = family.members.mapTo(mutableSetOf()) { it.email.lowercase() },
+        )
+    }
+
+    private fun abbreviateFamilyName(name: String): String {
+        val clean = name.trim()
+        return if (clean.length <= MAX_FAMILY_FILTER_NAME) {
+            clean
+        } else {
+            clean.take(MAX_FAMILY_FILTER_NAME - 2).trimEnd() + ".."
+        }
+    }
+
     private fun stopTrackers() {
         if (!trackersOn) return
         trackersOn = false
@@ -532,6 +659,26 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
                 Manifest.permission.ACCESS_COARSE_LOCATION,
             )
         )
+    }
+
+    private fun requestMarkCurrentLocation() {
+        pendingMarkCurrentLocation = true
+        if (!viewActive) return
+
+        when {
+            !locationTracker.hasPermission() -> askPermission()
+            !locationTracker.isGpsReady() -> handleLocationAvailability(showDialog = true)
+            else -> openPendingCurrentLocation(viewModel.uiState.value)
+        }
+    }
+
+    private fun openPendingCurrentLocation(state: MapUiState) {
+        if (!pendingMarkCurrentLocation || childFragmentManager.isStateSaved) return
+        val latitude = state.self.latitude ?: return
+        val longitude = state.self.longitude ?: return
+
+        pendingMarkCurrentLocation = false
+        showMarkedLocationEditor(GeoPoint(latitude, longitude))
     }
 
     private fun recenterMap() {
@@ -582,13 +729,16 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         app().analytics.memberPopupOpened()
     }
 
-    private fun buildStatus(state: MapUiState): String = when {
+    private fun buildStatus(state: MapUiState): String {
+        val memberCount = filteredMembers(state.members).size
+        return when {
         state.showGrant -> getString(R.string.map_permission_waiting)
         state.isLocating -> getString(R.string.map_waiting_location)
         state.socket is MapSocket.Connecting -> getString(R.string.map_connecting)
-        state.socket is MapSocket.Connected && state.members.isEmpty() -> getString(R.string.map_live_ready_empty)
-        state.socket is MapSocket.Connected -> getString(R.string.map_live_ready_members, state.members.size)
-        else -> getString(R.string.map_idle_status, state.members.size)
+        state.socket is MapSocket.Connected && memberCount == 0 -> getString(R.string.map_live_ready_empty)
+        state.socket is MapSocket.Connected -> getString(R.string.map_live_ready_members, memberCount)
+        else -> getString(R.string.map_idle_status, memberCount)
+        }
     }
 
     private val pinColors by lazy {
@@ -617,6 +767,8 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
     }
 
     companion object {
+        const val REQUEST_MARK_CURRENT_LOCATION = "request_mark_current_location"
+        private const val MAX_FAMILY_FILTER_NAME = 14
         private const val ARG_ID = "arg_id"
         private const val ARG_NAME = "arg_name"
         private const val ARG_EMAIL = "arg_email"
@@ -636,5 +788,11 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         nim = "",
         email = requireArguments().getString(ARG_EMAIL).orEmpty(),
         fullName = requireArguments().getString(ARG_NAME).orEmpty(),
+    )
+
+    private data class MapFamilyFilter(
+        val id: Int,
+        val name: String,
+        val memberEmails: Set<String>,
     )
 }
