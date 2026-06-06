@@ -2,12 +2,15 @@ package com.labpro.nimons360.ui.main.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -47,6 +51,7 @@ import androidx.compose.runtime.getValue
 fun FamilyCompose(
     user: UserData,
     onFamilyClick: (familyId: Int) -> Unit = {},
+    initialFilter: FamilyFilter? = null,
     vm: FamilyViewModel = viewModel(
         factory = FamilyViewModelFactory(
             (LocalContext.current.applicationContext as MainApplication).familyRepository,
@@ -70,14 +75,25 @@ fun FamilyCompose(
     val unpinnedFamilies = filteredFamilies.filter { it.id !in state.pinnedIds }
 
     LaunchedEffect(Unit) {
-            vm.load()
+        vm.load()
     }
 
-    Column(
+    LaunchedEffect(initialFilter) {
+        initialFilter?.let(vm::setFilter)
+    }
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth()
+                .widthIn(max = 1200.dp)
+                .align(Alignment.Center),
+        ) {
         OutlinedTextField(
             value         = state.searchQuery,
             onValueChange = { vm.setSearch(it) },
@@ -105,30 +121,37 @@ fun FamilyCompose(
             ),
         )
 
-        Row(
-            modifier            = Modifier.padding(start = 16.dp, bottom = 4.dp),
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 4.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            FilterChip(
-                selected = state.filter == FamilyFilter.ALL,
-                onClick  = { vm.setFilter(FamilyFilter.ALL) },
-                label    = { Text(stringResource(R.string.all_families)) },
-                colors   = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.primary,
-                    selectedLabelColor     = MaterialTheme.colorScheme.onPrimary,
-                    labelColor = MaterialTheme.colorScheme.onSurface,
-                ),
-            )
-            FilterChip(
-                selected = state.filter == FamilyFilter.MY_FAMILIES,
-                onClick  = { vm.setFilter(FamilyFilter.MY_FAMILIES) },
-                label    = { Text(stringResource(R.string.my_families_filter)) },
-                colors   = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.primary,
-                    selectedLabelColor     = MaterialTheme.colorScheme.onPrimary,
-                    labelColor = MaterialTheme.colorScheme.onSurface,
-                ),
-            )
+            item {
+                FilterChip(
+                    selected = state.filter == FamilyFilter.ALL,
+                    onClick  = { vm.setFilter(FamilyFilter.ALL) },
+                    label    = { Text(stringResource(R.string.all_families)) },
+                    colors   = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                        selectedLabelColor     = MaterialTheme.colorScheme.onPrimary,
+                        labelColor = MaterialTheme.colorScheme.onSurface,
+                    ),
+                )
+            }
+            item {
+                FilterChip(
+                    selected = state.filter == FamilyFilter.MY_FAMILIES,
+                    onClick  = { vm.setFilter(FamilyFilter.MY_FAMILIES) },
+                    label    = { Text(stringResource(R.string.my_families_filter)) },
+                    colors   = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                        selectedLabelColor     = MaterialTheme.colorScheme.onPrimary,
+                        labelColor = MaterialTheme.colorScheme.onSurface,
+                    ),
+                )
+            }
         }
 
         when {
@@ -184,6 +207,7 @@ fun FamilyCompose(
                     }
                 }
             }
+        }
         }
     }
 }

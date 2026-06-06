@@ -13,12 +13,16 @@ fun View.applyStatusBarHeaderInset(extraTopDp: Int = 6) {
     val extraTop = (extraTopDp * resources.displayMetrics.density).toInt()
 
     ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
-        val statusBarTop = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
-        val addedTop = statusBarTop + extraTop
+        val safeInsets = insets.getInsets(
+            WindowInsetsCompat.Type.statusBars() or
+                WindowInsetsCompat.Type.displayCutout(),
+        )
+        val symmetricHorizontalInset = maxOf(safeInsets.left, safeInsets.right)
+        val addedTop = safeInsets.top + extraTop
         view.setPadding(
-            initialLeft,
+            initialLeft + symmetricHorizontalInset,
             initialTop + addedTop,
-            initialRight,
+            initialRight + symmetricHorizontalInset,
             initialBottom,
         )
         if (initialHeight > 0) {

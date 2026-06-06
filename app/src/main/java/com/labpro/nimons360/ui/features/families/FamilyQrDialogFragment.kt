@@ -9,8 +9,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -59,10 +59,26 @@ class FamilyQrDialogFragment : DialogFragment() {
     override fun onStart() {
         super.onStart()
         dialog?.window?.apply {
-            setLayout(MATCH_PARENT, WRAP_CONTENT)
+            val horizontalMargin = 24.dpToPx()
+            val verticalMargin = 24.dpToPx()
+            val availableWidth = resources.displayMetrics.widthPixels - (horizontalMargin * 2)
+            val availableHeight = resources.displayMetrics.heightPixels - (verticalMargin * 2)
+            val dialogWidth = minOf(availableWidth, 560.dpToPx())
+
+            setLayout(dialogWidth, WRAP_CONTENT)
             setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
+            addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            attributes = attributes.apply { dimAmount = 0.55f }
+
+            decorView.post {
+                val measuredHeight = view?.measuredHeight ?: availableHeight
+                setLayout(dialogWidth, minOf(measuredHeight, availableHeight))
+            }
         }
     }
+
+    private fun Int.dpToPx(): Int =
+        (this * resources.displayMetrics.density).toInt()
 
     private fun shareQrPng(familyId: Int, familyName: String) {
         runCatching {

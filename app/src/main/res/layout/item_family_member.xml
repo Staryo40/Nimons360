@@ -58,6 +58,8 @@
             android:id="@+id/tvMemberName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
             android:textColor="@color/text_primary"
             android:textSize="@dimen/text_body"
             android:textStyle="bold"
@@ -67,6 +69,8 @@
             android:id="@+id/tvMemberEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="@color/text_secondary"
             android:textSize="@dimen/text_sm"
             tools:text="xxx@std.stei.itb.ac.id" />

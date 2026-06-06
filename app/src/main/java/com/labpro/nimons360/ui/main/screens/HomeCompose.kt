@@ -32,14 +32,20 @@ import com.labpro.nimons360.ui.main.screens.home.DiscoverFamilyItem
 import com.labpro.nimons360.ui.main.screens.home.MyFamilyCard
 import androidx.compose.material3.pulltorefresh.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalConfiguration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeCompose(
     user: UserData,
-    onFamilyClick: (familyId: Int) -> Unit = {}
+    onFamilyClick: (familyId: Int) -> Unit = {},
+    onViewAllFamilies: () -> Unit = {},
 ) {
     val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val useCompactFamilyCards =
+        configuration.screenWidthDp >= 600 ||
+            configuration.screenWidthDp > configuration.screenHeightDp
     val vm: HomeViewModel = viewModel(
         factory = remember {
             val app = context.applicationContext as MainApplication
@@ -94,10 +100,18 @@ fun HomeCompose(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .widthIn(max = 1200.dp)
+                .align(Alignment.Center)
                 .background(MaterialTheme.colorScheme.background),
-            contentPadding = PaddingValues(bottom = 24.dp),
+            contentPadding = PaddingValues(bottom = 104.dp),
         ) {
-            item { SectionHeader(stringResource(R.string.section_my_families)) }
+            item {
+                SectionHeader(
+                    title = stringResource(R.string.section_my_families),
+                    actionLabel = stringResource(R.string.action_see_all_families),
+                    onActionClick = onViewAllFamilies,
+                )
+            }
 
             item {
                 when {
@@ -107,13 +121,17 @@ fun HomeCompose(
                         modifier = Modifier.padding(bottom = 8.dp),
                     )
                     else -> LazyRow(
-                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        contentPadding = PaddingValues(
+                            start = 16.dp,
+                            end = 104.dp,
+                        ),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.padding(bottom = 8.dp),
                     ) {
                         items(state.myFamilies) { family ->
                             MyFamilyCard(
                                 family = family,
+                                compact = useCompactFamilyCards,
                                 onClick = { onFamilyClick(family.id) }
                             )
                         }

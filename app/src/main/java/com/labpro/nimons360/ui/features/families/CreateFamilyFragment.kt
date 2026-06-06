@@ -12,7 +12,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
@@ -26,6 +25,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
+import com.labpro.nimons360.core.utils.applyStatusBarHeaderInset
 import com.labpro.nimons360.data.model.ui_state.CreateFamilyUiState
 import com.labpro.nimons360.viewmodel.FAMILY_ICON_URLS
 import com.labpro.nimons360.viewmodel.CreateFamilyViewModel
@@ -78,16 +78,7 @@ class CreateFamilyFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val appBar = view.findViewById<View>(R.id.appBarLayout)
-        ViewCompat.setOnApplyWindowInsetsListener(appBar) { v, insets ->
-            val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            v.setPadding(
-                v.paddingLeft,
-                statusBarInsets.top,
-                v.paddingRight,
-                v.paddingBottom
-            )
-            insets
-        }
+        appBar.applyStatusBarHeaderInset(extraTopDp = 0)
 
         bindViews(view)
         makeIconsSquare()

@@ -63,7 +63,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_max="480dp">
+                app:layout_constraintWidth_max="@dimen/content_max_width_form">
 
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
