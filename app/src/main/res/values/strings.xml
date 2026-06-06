@@ -152,6 +152,7 @@
     <string name="map_title">Map</string>
     <string name="search_location_member">Search location or member…</string>
     <string name="all_families_filter">All Families</string>
+    <string name="map_family_filter_description">Show locations for %1$s</string>
     <string name="btn_close">Close</string>
     <string name="label_battery">Battery</string>
     <string name="label_location">Location</string>
@@ -231,6 +232,9 @@
     <string name="cd_share_instagram_story">Share map to Instagram story</string>
     <string name="cd_profile_avatar">Open profile for %s</string>
     <string name="cd_create_family">Create family</string>
+    <string name="cd_add_actions">Open add menu</string>
+    <string name="action_add_family">Add Family</string>
+    <string name="action_mark_location">Mark Location</string>
     <string name="cd_join_family_named">Join family %s</string>
     <string name="cd_open_family">Open family %s</string>
     <string name="cd_pin_family_named">Pin family %s</string>
