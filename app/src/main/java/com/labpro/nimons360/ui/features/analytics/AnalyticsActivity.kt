@@ -9,7 +9,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.button.MaterialButton
 import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
@@ -22,6 +24,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -37,15 +40,19 @@ class AnalyticsActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.btnExportAnalytics).setOnClickListener {
             exportCsv()
         }
-        loadAnalytics()
+        observeAnalytics()
     }
 
-    private fun loadAnalytics() {
+    private fun observeAnalytics() {
         lifecycleScope.launch {
-            val analytics = withContext(Dispatchers.IO) {
-                app.analyticsRepository.summary()
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                app.analyticsRepository.observeRecent().collectLatest {
+                    val analytics = withContext(Dispatchers.IO) {
+                        app.analyticsRepository.summary()
+                    }
+                    render(analytics)
+                }
             }
-            render(analytics)
         }
     }
 

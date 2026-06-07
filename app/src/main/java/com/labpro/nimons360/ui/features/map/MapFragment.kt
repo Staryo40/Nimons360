@@ -45,6 +45,7 @@ import com.labpro.nimons360.data.model.ui_state.MapUiState
 import com.labpro.nimons360.data.repository.CustomPinRepository
 import com.labpro.nimons360.viewmodel.MapViewModel
 import com.labpro.nimons360.viewmodel.MapViewModelFactory
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
@@ -532,7 +533,15 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         if (trackersOn) return
         trackersOn = true
         locationTracker.start(
-            onPoint = viewModel::setLocation,
+            onPoint = { point ->
+                viewModel.setLocation(point)
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                    app().analyticsRepository.recordLocation(
+                        point.latitude,
+                        point.longitude,
+                    )
+                }
+            },
             onError = viewModel::setLocationError,
         )
         orientationTracker.start(viewModel::setRotation)
