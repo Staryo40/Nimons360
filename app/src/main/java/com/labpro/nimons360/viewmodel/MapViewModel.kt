@@ -40,6 +40,11 @@ class MapViewModel(
     )
     val uiState: StateFlow<MapUiState> = _uiState.asStateFlow()
 
+    var savedZoomLevel: Double? = null
+    var savedMapCenter: MapPoint? = null
+    var hasMoved = false
+    var selectedFamilyId: Int? = null
+
     private val socket = PresenceSocket(
         scope = viewModelScope,
         token = token,

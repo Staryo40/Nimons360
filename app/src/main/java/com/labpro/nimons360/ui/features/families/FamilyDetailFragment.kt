@@ -442,7 +442,7 @@ class FamilyDetailFragment : DialogFragment() {
         )
 
         val btnChatMember = row.findViewById<View>(R.id.btnChatMember)
-        if (isCurrentUser) {
+        if (isCurrentUser || isCensored) {
             btnChatMember.isVisible = false
         } else {
             btnChatMember.isVisible = true

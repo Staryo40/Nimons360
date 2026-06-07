@@ -75,7 +75,9 @@ fun FamilyCompose(
     val unpinnedFamilies = filteredFamilies.filter { it.id !in state.pinnedIds }
 
     LaunchedEffect(Unit) {
-        vm.load()
+        if (state.allFamilies.isEmpty()) {
+            vm.load()
+        }
     }
 
     LaunchedEffect(initialFilter) {
