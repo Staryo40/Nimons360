@@ -95,6 +95,7 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
         val tvGreetingTitle = view.findViewById<TextView>(R.id.tvGreetingTitle)
         val btnSendGreeting = view.findViewById<MaterialButton>(R.id.btnSendGreeting)
         val btnCloseSheet = view.findViewById<View>(R.id.btnCloseSheet)
+        val switchAnonymous = view.findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchAnonymous)
 
         ivGreetingWeatherIcon.setImageResource(greetingData.iconResId)
         tvGreetingTimeLabel.text = greetingData.label
@@ -163,7 +164,12 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
             lifecycleScope.launch {
                 try {
                     val currentSender = senderName ?: "Someone"
-                    val formattedMessage = "$currentSender: ${greetingData.title}"
+                    val isAnonymous = switchAnonymous?.isChecked ?: true
+                    val formattedMessage = if (isAnonymous) {
+                        greetingData.title
+                    } else {
+                        "$currentSender: ${greetingData.title}"
+                    }
 
                     val response = RetrofitClient.apiService.sendGreetingToMember(
                         SendGreetingRequest(familyId, targetUserId, formattedMessage)
@@ -204,7 +210,12 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
             lifecycleScope.launch {
                 try {
                     val currentSender = senderName ?: "Someone"
-                    val formattedMessage = "$currentSender: $messageText"
+                    val isAnonymous = switchAnonymous?.isChecked ?: true
+                    val formattedMessage = if (isAnonymous) {
+                        messageText
+                    } else {
+                        "$currentSender: $messageText"
+                    }
 
                     val response = RetrofitClient.apiService.sendGreetingToMember(
                         SendGreetingRequest(familyId, targetUserId, formattedMessage)
