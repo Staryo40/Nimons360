@@ -48,6 +48,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        supportFragmentManager.findFragmentByTag("map_fragment")?.let { fragment ->
+            supportFragmentManager.beginTransaction().remove(fragment).commitNow()
+        }
         WindowCompat.setDecorFitsSystemWindows(window, false)
         pendingFamilyDeepLink = FamilyDeepLink.fromIntent(intent)
 

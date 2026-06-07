@@ -972,7 +972,9 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
     private fun activeMapView(): MapView? {
         if (!viewActive || view == null) return null
         if (!viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) return null
-        return mapView
+        val map = mapView ?: return null
+        if (!map.isAttachedToWindow) return null
+        return map
     }
 
     companion object {
