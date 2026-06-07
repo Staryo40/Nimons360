@@ -69,11 +69,18 @@ object MapPinMaker {
         return BitmapDrawable(context.resources, bitmap)
     }
 
-    fun member(context: Context, letter: String, name: String, color: Int): Drawable {
+    fun member(
+        context: Context,
+        letter: String,
+        name: String,
+        color: Int,
+        showLabel: Boolean = true,
+    ): Drawable {
         val size = dp(context, 48)
-        val label = labelSpec(context, name)
-        val bitmapWidth = max(size, label.width)
-        val bitmapHeight = label.height + size
+        val label = if (showLabel) labelSpec(context, name) else null
+        val labelHeight = label?.height ?: 0
+        val bitmapWidth = max(size, label?.width ?: 0)
+        val bitmapHeight = labelHeight + size
         val bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         val fill = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -87,10 +94,10 @@ object MapPinMaker {
             typeface = android.graphics.Typeface.create(android.graphics.Typeface.DEFAULT_BOLD, android.graphics.Typeface.BOLD)
         }
         val centerX = bitmapWidth / 2f
-        val centerY = label.height + size / 2f
+        val centerY = labelHeight + size / 2f
         val bounds = Rect()
 
-        drawLabel(canvas, label, bitmapWidth)
+        label?.let { drawLabel(canvas, it, bitmapWidth) }
         canvas.drawCircle(centerX, centerY, size * 0.36f, fill)
         text.getTextBounds(letter, 0, letter.length, bounds)
         canvas.drawText(letter, centerX, centerY + bounds.height() / 2f, text)

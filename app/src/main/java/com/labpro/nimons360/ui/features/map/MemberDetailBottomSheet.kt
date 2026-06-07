@@ -170,11 +170,13 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
                         dismiss()
                     } else {
                         btnSendGreeting.isEnabled = true
-                        Toast.makeText(requireContext(), "Failed to send greeting: ${response.code()}", Toast.LENGTH_SHORT).show()
+                        Log.e(TAG, "Greeting request failed with HTTP ${response.code()}")
+                        Toast.makeText(requireContext(), R.string.error_generic, Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {
                     btnSendGreeting.isEnabled = true
-                    Toast.makeText(requireContext(), "Error sending greeting: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Log.e(TAG, "Unable to send greeting", e)
+                    Toast.makeText(requireContext(), R.string.error_generic, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -209,11 +211,13 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
                         dismiss()
                     } else {
                         btnSendCustomMessage.isEnabled = true
-                        Toast.makeText(requireContext(), "Failed to send message: ${response.code()}", Toast.LENGTH_SHORT).show()
+                        Log.e(TAG, "Message request failed with HTTP ${response.code()}")
+                        Toast.makeText(requireContext(), R.string.error_generic, Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {
                     btnSendCustomMessage.isEnabled = true
-                    Toast.makeText(requireContext(), "Error sending message: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Log.e(TAG, "Unable to send member message", e)
+                    Toast.makeText(requireContext(), R.string.error_generic, Toast.LENGTH_SHORT).show()
                 }
             }
         }

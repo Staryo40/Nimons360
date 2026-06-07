@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.Configuration as AndroidConfiguration
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
@@ -58,7 +59,7 @@ import kotlin.math.abs
 
 class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
     private lateinit var mapRoot: View
-    private lateinit var mapView: MapView
+    private var mapView: MapView? = null
     private lateinit var bannerCard: MaterialCardView
     private lateinit var grantCard: MaterialCardView
     private lateinit var btnGrant: MaterialButton
@@ -155,7 +156,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
 
     override fun onStart() {
         super.onStart()
-        mapView.onResume()
+        mapView?.onResume()
         val granted = locationTracker.hasPermission()
         viewModel.setPermission(granted)
         viewModel.bind()
@@ -177,21 +178,25 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         stopLocationWatcher()
         stopTrackers()
         viewModel.unbind()
-        mapView.onPause()
+        mapView?.onPause()
     }
 
     override fun onDestroyView() {
         viewActive = false
         locationSettingsDialog?.dismiss()
-        memberMap.values.forEach { mapView.overlays.remove(it) }
-        favoriteMarkers.forEach { mapView.overlays.remove(it) }
-        selfMarker?.let { mapView.overlays.remove(it) }
+        mapView?.let { map ->
+            memberMap.values.forEach { map.overlays.remove(it) }
+            favoriteMarkers.forEach { map.overlays.remove(it) }
+            selfMarker?.let { map.overlays.remove(it) }
+            map.onDetach()
+        }
         selfMarker = null
         lastSelfPosition = null
         lastSelfRotation = null
         lastSelfPinKey = null
         memberMap.clear()
         favoriteMarkers.clear()
+        mapView = null
         super.onDestroyView()
     }
 
@@ -243,11 +248,12 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
     }
 
     private fun setupMap() {
-        mapView.setTileSource(TileSourceFactory.MAPNIK)
-        mapView.setMultiTouchControls(true)
-        mapView.controller.setZoom(16.0)
-        mapView.controller.setCenter(BANDUNG)
-        mapView.zoomController.setVisibility(org.osmdroid.views.CustomZoomButtonsController.Visibility.NEVER)
+        val map = mapView ?: return
+        map.setTileSource(TileSourceFactory.MAPNIK)
+        map.setMultiTouchControls(true)
+        map.controller.setZoom(16.0)
+        map.controller.setCenter(BANDUNG)
+        map.zoomController.setVisibility(org.osmdroid.views.CustomZoomButtonsController.Visibility.NEVER)
 
         val mapEventsReceiver = object : MapEventsReceiver {
             override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean = false
@@ -258,7 +264,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
                 return true
             }
         }
-        mapView.overlays.add(MapEventsOverlay(mapEventsReceiver))
+        map.overlays.add(MapEventsOverlay(mapEventsReceiver))
     }
 
     private fun showMarkedLocationEditor(point: GeoPoint) {
@@ -347,7 +353,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
     }
 
     private fun render(state: MapUiState) {
-        if (!viewActive) return
+        if (activeMapView() == null) return
 
         grantCard.isVisible = state.showGrant
         bannerCard.isVisible = !state.banner.isNullOrBlank()
@@ -366,9 +372,9 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
     }
 
     private fun renderFavorites(favorites: List<FavoriteLocationEntity>) {
-        if (!viewActive) return
+        val map = activeMapView() ?: return
 
-        favoriteMarkers.forEach { mapView.overlays.remove(it) }
+        favoriteMarkers.forEach { map.overlays.remove(it) }
         favoriteMarkers.clear()
 
         favorites.forEach { fav ->
@@ -377,7 +383,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
                 ?.mutate()
             markerIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.pin_orange))
 
-            val marker = Marker(mapView).apply {
+            val marker = Marker(map).apply {
                 position = GeoPoint(fav.latitude, fav.longitude)
                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 icon = markerIcon
@@ -395,22 +401,23 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
             }
 
             favoriteMarkers.add(marker)
-            mapView.overlays.add(marker)
+            map.overlays.add(marker)
         }
 
-        mapView.invalidate()
+        map.invalidate()
     }
 
     private fun renderSelf(state: MapUiState) {
+        val map = activeMapView() ?: return
         val lat = state.self.latitude
         val lon = state.self.longitude
         if (lat == null || lon == null) {
             selfMarker?.let { marker ->
-                mapView.overlays.remove(marker)
+                map.overlays.remove(marker)
                 selfMarker = null
                 lastSelfPosition = null
                 lastSelfRotation = null
-                mapView.invalidate()
+                map.invalidate()
             }
             return
         }
@@ -419,11 +426,11 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         var invalidated = false
 
         if (selfMarker == null) {
-            selfMarker = Marker(mapView).apply {
+            selfMarker = Marker(map).apply {
                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 title = state.self.fullName
             }
-            mapView.overlays.add(selfMarker)
+            map.overlays.add(selfMarker)
             lastSelfPosition = null
             lastSelfRotation = null
             invalidated = true
@@ -461,16 +468,17 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         selfMarker?.setInfoWindow(null)
 
         if (!hasMoved) {
-            mapView.controller.animateTo(point)
+            map.controller.animateTo(point)
             hasMoved = true
         }
 
         if (invalidated) {
-            mapView.invalidate()
+            map.invalidate()
         }
     }
 
     private fun renderMembers(state: MapUiState) {
+        val map = activeMapView() ?: return
         val visibleMembers = filteredMembers(state.members)
         val keep = visibleMembers.map { it.userId }.toSet()
         var invalidated = false
@@ -479,17 +487,17 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
             .filterNot(keep::contains)
             .forEach { key ->
                 memberMap.remove(key)?.let { marker ->
-                    mapView.overlays.remove(marker)
+                    map.overlays.remove(marker)
                     invalidated = true
                 }
             }
 
         visibleMembers.forEachIndexed { index, member ->
             var isNewMarker = false
-            val marker = memberMap[member.userId] ?: Marker(mapView).also {
+            val marker = memberMap[member.userId] ?: Marker(map).also {
                 it.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 memberMap[member.userId] = it
-                mapView.overlays.add(it)
+                map.overlays.add(it)
                 isNewMarker = true
                 invalidated = true
             }
@@ -514,6 +522,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
                     member.fullName.firstOrNull()?.uppercase() ?: "?",
                     member.fullName,
                     pinColors[index % pinColors.size],
+                    showLabel = resources.configuration.orientation != AndroidConfiguration.ORIENTATION_LANDSCAPE,
                 )
                 invalidated = true
             }
@@ -525,7 +534,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         }
 
         if (invalidated) {
-            mapView.invalidate()
+            map.invalidate()
         }
     }
 
@@ -535,7 +544,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         locationTracker.start(
             onPoint = { point ->
                 viewModel.setLocation(point)
-                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(Dispatchers.IO) {
                     app().analyticsRepository.recordLocation(
                         point.latitude,
                         point.longitude,
@@ -691,6 +700,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
     }
 
     private fun recenterMap() {
+        val map = activeMapView() ?: return
         val state = viewModel.uiState.value.self
         val lat = state.latitude
         val lon = state.longitude
@@ -698,7 +708,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
             Toast.makeText(requireContext(), R.string.marked_location_current_unavailable, Toast.LENGTH_SHORT).show()
             return
         }
-        mapView.controller.animateTo(GeoPoint(lat, lon))
+        map.controller.animateTo(GeoPoint(lat, lon))
     }
 
     override fun onSaveMarkedLocation(location: FavoriteLocationEntity) {
@@ -773,6 +783,12 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
 
     private fun app(): MainApplication {
         return requireActivity().application as MainApplication
+    }
+
+    private fun activeMapView(): MapView? {
+        if (!viewActive || view == null) return null
+        if (!viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) return null
+        return mapView
     }
 
     companion object {

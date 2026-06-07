@@ -100,7 +100,6 @@ class ProfileFragment : DialogFragment() {
         com.google.firebase.messaging.FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful && task.result != null) {
                 val token = task.result
-                android.util.Log.d("ProfileFragment", "FCM Token: $token")
                 val app = requireActivity().application as MainApplication
                 lifecycleScope.launch {
                     try {
@@ -142,7 +141,8 @@ class ProfileFragment : DialogFragment() {
             tempImageUri = createTempImageUri()
             takePictureLauncher.launch(tempImageUri!!)
         } catch (e: Exception) {
-            Toast.makeText(requireContext(), "Camera capture error: ${e.message}", Toast.LENGTH_SHORT).show()
+            android.util.Log.e(TAG, "Unable to start camera capture", e)
+            Toast.makeText(requireContext(), R.string.error_generic, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -290,7 +290,6 @@ class ProfileFragment : DialogFragment() {
                         cleanPath
                     }
                     try {
-                        coil.Coil.imageLoader(requireContext()).diskCache?.remove(resolvedUrl)
                         coil.Coil.imageLoader(requireContext()).memoryCache?.remove(coil.memory.MemoryCache.Key(resolvedUrl))
                     } catch (e: Exception) {
                         // Safe catch
@@ -406,10 +405,19 @@ class ProfileFragment : DialogFragment() {
                 var quality = 90
                 bitmap.compress(format, quality, byteArrayOutputStream)
 
-                while (byteArrayOutputStream.size() > 500 * 1024 && quality > 10) {
+                while (byteArrayOutputStream.size() > MAX_PROFILE_PHOTO_BYTES && quality > 10) {
                     byteArrayOutputStream.reset()
                     quality -= 10
                     bitmap.compress(format, quality, byteArrayOutputStream)
+                }
+
+                if (byteArrayOutputStream.size() > MAX_PROFILE_PHOTO_BYTES) {
+                    Toast.makeText(
+                        context,
+                        R.string.profile_photo_too_large,
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@launch
                 }
 
                 val bytes = byteArrayOutputStream.toByteArray()
@@ -420,7 +428,8 @@ class ProfileFragment : DialogFragment() {
                 isUploadingPhoto = true
                 viewModel.uploadPhoto(body)
             } catch (e: Exception) {
-                Toast.makeText(context, "Error processing image: ${e.message}", Toast.LENGTH_SHORT).show()
+                android.util.Log.e(TAG, "Unable to process profile image", e)
+                Toast.makeText(context, R.string.error_generic, Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -439,5 +448,6 @@ class ProfileFragment : DialogFragment() {
         const val TAG = "ProfileFragment"
         const val REQUEST_KEY = "profile_request_key"
         const val KEY_PROFILE_CHANGED = "profile_changed"
+        private const val MAX_PROFILE_PHOTO_BYTES = 500 * 1024
     }
 }

@@ -256,7 +256,7 @@ class FamilyDetailFragment : DialogFragment() {
             actionsSection.isVisible = false
             toolbar.menu.clear()
             btnLive?.isVisible = false
-            membersCard.isVisible       = false
+            membersCard.isVisible       = true
             joinHintSection.isVisible   = true
 
             tilMemberSearch.isVisible = false
@@ -351,8 +351,7 @@ class FamilyDetailFragment : DialogFragment() {
     }
 
     private fun buildCensoredMemberRows(members: List<FamilyMember>) {
-        membersContainer.removeAllViews()
-        adjustMembersCardHeight()
+        buildMemberRows(members)
     }
 
     private fun setupSearchInput() {

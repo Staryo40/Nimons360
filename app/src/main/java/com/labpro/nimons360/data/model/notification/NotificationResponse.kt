@@ -38,6 +38,10 @@ data class SentData(
 /** Response body for POST /api/notifications/greeting */
 data class SendGreetingResponse(
     @SerializedName("data")
-    val data: SentData
+    val data: DeliveredData
 )
 
+data class DeliveredData(
+    @SerializedName("delivered")
+    val delivered: Boolean
+)

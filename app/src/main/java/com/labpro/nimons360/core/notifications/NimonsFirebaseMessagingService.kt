@@ -27,8 +27,6 @@ class NimonsFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        Log.d(TAG, "Refreshed FCM Token: $token")
-        
         val app = application as MainApplication
         val tokenManager = app.tokenManager
         

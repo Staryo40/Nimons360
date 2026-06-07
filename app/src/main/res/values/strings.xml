@@ -16,6 +16,7 @@
     <string name="error_invalid_email">Please enter a valid email address.</string>
     <string name="error_network">No internet connection. Please try again.</string>
     <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="profile_photo_too_large">This photo could not be compressed below 500 KB. Please choose another photo.</string>
     <string name="error_unauthorized">Your session has expired. Please sign in again.</string>
 
     <!-- Navigation labels -->
