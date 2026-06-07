@@ -33,12 +33,12 @@ val firebaseAppId = env.getProperty("FIREBASE_APP_ID") ?: ""
 
 android {
     namespace = "com.labpro.nimons360"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.labpro.mad"
         minSdk = 30
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
