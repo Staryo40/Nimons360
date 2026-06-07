@@ -127,23 +127,28 @@ class CustomizePinActivity : AppCompatActivity() {
 
     private fun renderPins() {
         pinContainer.removeAllViews()
-        CustomPin.all.chunked(3).forEach { rowPins ->
+        val columnCount = when {
+            resources.configuration.screenWidthDp >= 840 -> 5
+            resources.configuration.screenWidthDp >= 600 -> 4
+            else -> 3
+        }
+        CustomPin.all.chunked(columnCount).forEach { rowPins ->
             val row = LinearLayout(this).apply {
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                 ).also { it.topMargin = dp(10) }
                 orientation = LinearLayout.HORIZONTAL
-                weightSum = 3f
+                weightSum = columnCount.toFloat()
             }
-            if (rowPins.size < 3) {
-                row.addView(createGridSpacer((3f - rowPins.size) / 2f))
+            if (rowPins.size < columnCount) {
+                row.addView(createGridSpacer((columnCount - rowPins.size) / 2f))
             }
             rowPins.forEach { pin ->
                 row.addView(createPinCard(pin))
             }
-            if (rowPins.size < 3) {
-                row.addView(createGridSpacer((3f - rowPins.size) / 2f))
+            if (rowPins.size < columnCount) {
+                row.addView(createGridSpacer((columnCount - rowPins.size) / 2f))
             }
             pinContainer.addView(row)
         }
@@ -156,10 +161,15 @@ class CustomizePinActivity : AppCompatActivity() {
     private fun createPinCard(pin: CustomPin): View {
         val card = LayoutInflater.from(this)
             .inflate(R.layout.item_custom_pin, pinContainer, false) as MaterialCardView
-        card.layoutParams = LinearLayout.LayoutParams(0, dp(116), 1f).also {
+        card.layoutParams = LinearLayout.LayoutParams(
+            0,
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            1f,
+        ).also {
             it.marginStart = dp(5)
             it.marginEnd = dp(5)
         }
+        card.minimumHeight = dp(116)
 
         val downloaded = repository.isDownloaded(pin)
         if (repository.isDownloading(pin)) downloading += pin.id

@@ -17,6 +17,7 @@ components:
   schemas:
     UserData:
       type: object
+      required: [id, nim, email, fullName]
       properties:
         id:
           type: integer
@@ -33,6 +34,10 @@ components:
         updatedAt:
           type: string
           format: date-time
+          nullable: true
+        profileImageUrl:
+          type: string
+          format: uri
           nullable: true
 
     UpdateProfileRequest:
@@ -67,6 +72,7 @@ components:
 
     FamilyMember:
       type: object
+      required: [fullName, email]
       properties:
         id:
           type: integer
@@ -78,6 +84,10 @@ components:
         joinedAt:
           type: string
           format: date-time
+          nullable: true
+        profileImageUrl:
+          type: string
+          format: uri
           nullable: true
 
     FamilyBase:
@@ -95,12 +105,18 @@ components:
         - $ref: '#/components/schemas/FamilyBase'
         - type: object
           properties:
+            isMember:
+              type: boolean
             familyCode:
               type: string
               nullable: true
             createdAt:
               type: string
               format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+              nullable: true
             members:
               type: array
               items:
@@ -130,6 +146,69 @@ components:
       properties:
         familyId:
           type: integer
+
+    SubscribeTokenRequest:
+      type: object
+      required: [fcmToken]
+      properties:
+        fcmToken:
+          type: string
+
+    BroadcastNotificationRequest:
+      type: object
+      required: [familyId, message]
+      properties:
+        familyId:
+          type: integer
+        message:
+          type: string
+
+    GreetingRequest:
+      type: object
+      required: [familyId, targetUserId, message]
+      properties:
+        familyId:
+          type: integer
+        targetUserId:
+          type: integer
+        message:
+          type: string
+
+    SubscribedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            subscribed:
+              type: boolean
+
+    UnsubscribedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            unsubscribed:
+              type: boolean
+
+    NotificationSentResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            sent:
+              type: boolean
+
+    GreetingDeliveredResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            delivered:
+              type: boolean
 
 paths:
   /api/login:
@@ -180,6 +259,35 @@ paths:
       responses:
         '200':
           description: User profile updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/UserData'
+
+  /api/me/photo:
+    post:
+      summary: Upload or replace the current user's profile photo
+      tags: [Profile]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [photo]
+              properties:
+                photo:
+                  type: string
+                  format: binary
+                  description: PNG or JPEG image, maximum 500 KB
+      responses:
+        '200':
+          description: Profile photo uploaded
           content:
             application/json:
               schema:
@@ -309,8 +417,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
-                    type: string
+                  data:
+                    type: object
+                    properties:
+                      joined:
+                        type: boolean
 
   /api/families/leave:
     post:
@@ -332,5 +443,82 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
-                    type: string
+                  data:
+                    type: object
+                    properties:
+                      left:
+                        type: boolean
+
+  /api/notifications/subscribe:
+    post:
+      summary: Register or replace the current user's FCM device token
+      tags: [Notifications]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscribeTokenRequest'
+      responses:
+        '200':
+          description: Device token subscribed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscribedResponse'
+
+  /api/notifications/unsubscribe:
+    post:
+      summary: Remove the current user's FCM device token
+      tags: [Notifications]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Device token unsubscribed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnsubscribedResponse'
+
+  /api/notifications/send:
+    post:
+      summary: Send a push notification to all other members of a family
+      tags: [Notifications]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BroadcastNotificationRequest'
+      responses:
+        '200':
+          description: Family notification sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSentResponse'
+
+  /api/notifications/greeting:
+    post:
+      summary: Send a greeting notification to one member of a shared family
+      tags: [Notifications]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GreetingRequest'
+      responses:
+        '200':
+          description: Greeting delivered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GreetingDeliveredResponse'

@@ -2,10 +2,10 @@
 
 <p align="center">
   <a href="https://kotlinlang.org/">
-    <img src="https://img.shields.io/badge/Kotlin-1.9.10-blue.svg" alt="Kotlin Version" />
+    <img src="https://img.shields.io/badge/Kotlin-2.0.21-blue.svg" alt="Kotlin Version" />
   </a>
   <a href="https://gradle.org/">
-    <img src="https://img.shields.io/badge/Gradle-8.3-green.svg" alt="Gradle Version" />
+    <img src="https://img.shields.io/badge/Gradle-8.11.1-green.svg" alt="Gradle Version" />
   </a>
 
   <a href="https://developer.android.com/training/data-storage/room">
@@ -46,6 +46,7 @@ https://coolors.co/ffeaee-006d77-e29578-f4f6f8-1d3557-d62828-2a9d8f-e9c46a-457b9
 
 - [Features](#features)
 - [Libraries](#libraries)
+- [Security Analysis](#security-analysis)
 - [Screenshots and Accessibility Testing](#screenshots-and-accessibility-testing)
 - [Project Structure](#project-structure)
 - [Running the Program](#running-the-program)
@@ -54,87 +55,137 @@ https://coolors.co/ffeaee-006d77-e29578-f4f6f8-1d3557-d62828-2a9d8f-e9c46a-457b9
 
 ## Features
 
-1. Authentication & System Logic
-    - Secure Login: JWT-based authentication using POST /api/login. 
-    - Token Security: Best-practice sensitive data storage using Android Keystore and encrypted preferences. 
-    - Auto-Logout: Automatic session termination and redirection upon 409 Unauthorized responses. 
-    - Profile Management: View user data and update display names via PATCH /api/me with a bottom-sheet interface.
-    - Network Sensing: Automated detection of internet loss with a non-intrusive auto-dismissing pop-up.
-    - Accessibility: Fully optimized for contrast and touch targets via Google’s Accessibility Scanner.
+1. Authentication, Profile, and Notifications
+    - JWT login with encrypted token storage backed by Android Keystore.
+    - Profile display-name and profile-photo updates.
+    - Firebase Cloud Messaging subscription, greeting, and family notifications.
+    - Internet connectivity sensing and automatic session handling.
 
-2. Family Management 
-    - Group Creation: Create families with custom names and predefined icons assets. 
-    - Membership Logic: Join families via 6-character codes and leave feature. 
-    - Livestreaming: Real-time video sharing between family members.
-    - Search Engine: Name-based filtering for the family list.
-    - Discovery: View random "Discover Families" or track your joined groups in "My Families" which can be refreshed. 
-    - Local Pinning: Mark priority families as "Pinned" using Room Database for persistent local storage.
+2. Family Management and Sharing
+    - Create, discover, search, join, pin, and leave families.
+    - Share family invitations through links, QR codes, and Android sharing.
+    - Instagram Story sharing and real-time family livestream rooms.
+    - Responsive family lists and detail screens for phones, landscape, and tablets.
 
-3. Real-Time Map & Tracking
-    - Live Map: Interactive osmdroid integration with pan and zoom capabilities.
-    - WebSocket Sync: Real-time location broadcasting and dynamic member marker movement. 
-    - Favorite Locations: Local persistence for places saved by user.
-    - Device Awareness: Live monitoring of member battery levels, GPS coordinates, and network types (WiFi/Mobile). 
-    - Compass Orientation: User markers display a directional arrow reflecting the phone's physical heading.
+3. Map Extended and Background Presence
+    - Interactive osmdroid map with zoom, drag, recenter, and family filters.
+    - WebSocket location presence continues through a foreground service while the app is closed.
+    - Member detail includes coordinates, battery and charging state, connectivity, and last update.
+    - Battery state is collected through a `BroadcastReceiver`.
+    - Long press or the global add menu creates marked locations using selected or current coordinates.
+    - Marked locations support name, description, camera/gallery photos, Google Maps navigation, edit, and delete.
+    - Location metadata is stored locally in Room/SQLite; photos are stored in the filesystem and removed with their location.
+
+4. Custom Pins and Analytics
+    - Local-only color pins and downloadable pin skins.
+    - Pin downloads use a foreground service with Android notification progress.
+    - Analytics dashboard includes monthly distance average, total distance, daily average, active days, daily graph, and recent location history.
+    - Analytics and location history can be exported as CSV through Android's share sheet.
+    - Firebase Analytics records key app events while the in-app dashboard uses local location history.
+
+5. Quality and Platform Support
+    - Responsive layouts for portrait, landscape, and tablet window sizes.
+    - Accessibility labels, contrast, and touch-target improvements.
+    - Security-oriented storage and networking practices following the repository's OWASP checklist.
+    - REST API contract documented in [`openapi.yml`](openapi.yml).
 
 ## Libraries
 
-- **UI**: Jetpack Compose, Material 3, Navigation
+- **UI**: Jetpack Compose, Android Views, Material Components, Navigation
 - **Networking**: Retrofit, OkHttp, Gson
 - **Database**: Room
 - **Maps & Location**: osmdroid, Google Play Services
 - **Media & Realtime**: Media3 (ExoPlayer), WebRTC, Agora VideoUIKit
 - **Image Loading**: Coil
-- **Firebase**: Analytics, App Distribution
+- **Sharing**: ZXing QR Code, Android Sharesheet, Instagram Story Intent
+- **Firebase**: Analytics, Cloud Messaging, App Distribution
 - **Async**: Kotlin Coroutines
 - **Security**: EncryptedSharedPreferences
 - **Testing**: JUnit, Espresso, Compose UI Test
 
+## Security Analysis
+
+The application applies client-side protections for the three OWASP Mobile Top 10
+areas required by the assignment. The backend is treated as untrusted, so input and
+output are still validated on the Android client.
+
+### M4: Insufficient Input/Output Validation
+
+- Login validates empty fields and email format before sending a request.
+- Family name, six-character join code, profile name, notification message, marked-location name, description, latitude, and longitude are validated before use.
+- Profile photos are decoded as images and compressed to a maximum of 500 KB before upload.
+- Downloaded custom pins are checked as non-empty image files before they become selectable.
+- API and location values are nullable where appropriate, with empty, loading, and error states instead of unsafe assumptions.
+
+### M8: Security Misconfiguration
+
+- The application uses the required `applicationId` (`com.labpro.mad`), Android 11 minimum SDK, and Android 15 target/compile SDK.
+- Components that do not need external access are declared with `android:exported="false"`.
+- `FileProvider` is used for camera, QR, marked-location, and CSV files instead of exposing filesystem paths.
+- REST and WebSocket traffic use HTTPS/WSS; the base REST URL comes from `BuildConfig.BASE_URL`.
+- HTTP body logging is enabled only in debug builds and disabled in release builds.
+- Technical exceptions and HTTP codes are written to Logcat while users receive a generic, actionable error message.
+
+### M9: Insecure Data Storage
+
+- JWT and local privacy preferences use `EncryptedSharedPreferences` with an Android Keystore `MasterKey`.
+- Authentication tokens, FCM tokens, passwords, and precise coordinates are not written to user-facing errors or analytics events.
+- Android application backup is disabled so encrypted preferences and local location history are not copied through device backup.
+- Marked-location photos stay in the app-private filesystem and are deleted when their location is removed.
+- CSV exports are created in the cache directory and shared through temporary `FileProvider` permissions.
+
+No additional livestream backend is used. Livestreaming uses Agora VideoUIKit directly, so there is no separate backend repository to link.
+
 ## Screenshots and Accessibility Testing
 
-### Original Interface
+### Application Interface
 
-| No  | Page                                                     | Screenshot                                                              |
-| --- | -------------------------------------------------------- | ----------------------------------------------------------------------- |
-| 1   | Splash Screen                                            | <img src="Screenshots/Original/Splashscreen.png" width="140">           |
-| 2   | Login Screen                                             | <img src="Screenshots/Original/Login.png" width="140">                  |
-| 3   | Login Validation: Email Kosong                           | <img src="Screenshots/Original/field_login_kosong_1.png" width="140">   |
-| 4   | Login Validation: Password Kosong                        | <img src="Screenshots/Original/field_login_kosong_2.png" width="140">   |
-| 5   | Login Validation: Email atau Pass Salah                  | <img src="Screenshots/Original/Fail_login.png" width="140">             |
-| 6   | Home Screen                                              | <img src="Screenshots/Original/Home.png" alt="Home Screen" width="140"> |
-| 7   | My Families Screen: Sebelum bergabung dengan Family Baru | <img src="Screenshots/Original/my_family_1.png" width="140">            |
-| 8   | My Families Screen: Setelah bergabung dengan Family Baru | <img src="Screenshots/Original/my_family_2.png" width="140">            |
-| 9   | Families Search Result                                   | <img src="Screenshots/Original/Search_Fam.png" width="140">             |
-| 10  | Create Family Screen                                     | <img src="Screenshots/Original/Create_New_Fam.png" width="140">         |
-| 11  | Create Family Validation: Nama Family Kosong             | <img src="Screenshots/Original/nama_fam_kosong.png" width="140">        |
-| 12  | Join Family Dialog                                       | <img src="Screenshots/Original/Join_Fam_1.png" width="140">             |
-| 13  | Join Family Berhasil                                     | <img src="Screenshots/Original/Join_Fam_2.png" width="140">             |
-| 14  | Join Family Validation: Salah Kode                       | <img src="Screenshots/Original/join_salah.png" width="140">             |
-| 15  | Family Detail Screen: Overview                           | <img src="Screenshots/Original/Fam_detail_1.png" width="140">           |
-| 16  | Family Detail Screen: Members Section                    | <img src="Screenshots/Original/Fam_detail_2.png" width="140">           |
-| 17  | Leave Family Confirmation                                | <img src="Screenshots/Original/leave_fam.png" width="140">              |
-| 18  | Profile Screen                                           | <img src="Screenshots/Original/profile.png" width="140">                |
-| 19  | Edit Profile Screen                                      | <img src="Screenshots/Original/edit_profile.png" width="140">           |
-| 20  | Profile Screen After Edit                                | <img src="Screenshots/Original/after_edit_profile.png" width="140">     |
-| 21  | Map Screen: Location Permission Prompt                   | <img src="Screenshots/Original/grand_permission_loc.png" width="140">   |
-| 22  | Map Screen: Location Permission Granted                  | <img src="Screenshots/Original/grand_permission_loc_2.png" width="140"> |
-| 23  | Map Screen: Lokasi 1                                     | <img src="Screenshots/Original/fam_loc_1.png" width="140">              |
-| 24  | Map Screen: Lokasi 2                                     | <img src="Screenshots/Original/fam_loc_2.png" width="140">              |
-| 25  | Map Member Details: Lokasi 1                             | <img src="Screenshots/Original/fam_loc_detail_1.png" width="140">       |
-| 26  | Map Member Details: Lokasi 2                             | <img src="Screenshots/Original/fam_loc_detail_2.png" width="140">       |
-| 27  | Favorite Location Flow: Sebelum Pin                      | <img src="Screenshots/Original/pin_before.png" width="140">             |
-| 28  | Favorite Location Flow: Setelah Pin 1                    | <img src="Screenshots/Original/pin_after.png" width="140">              |
-| 29  | Favorite Location Flow: Setelah Pin 2                    | <img src="Screenshots/Original/pin_after_2.png" width="140">            |
-| 30  | Favorite Locations Overview: Variant 1                   | <img src="Screenshots/Original/fav1.jpeg" width="140">                  |
-| 31  | Favorite Locations Overview: Variant 2                   | <img src="Screenshots/Original/fav2.jpeg" width="140">                  |
-| 32  | Favorite Locations Overview: Variant 3                   | <img src="Screenshots/Original/fav3.jpeg" width="140">                  |
-| 33  | Connectivity Status: Wi-Fi                               | <img src="Screenshots/Original/internet_wifi.png" width="140">          |
-| 34  | Connectivity Status: Mobile                              | <img src="Screenshots/Original/internet_mobile.png" width="140">        |
-| 35  | Connectivity Status: Offline                             | <img src="Screenshots/Original/Disconnect.jpeg"  width="140">           |
-| 36  | Live Location Active                                     | <img src="Screenshots/Original/live_loc_aktif.png" width="140">         |
-| 37  | Live Room Join                                           | <img src="Screenshots/Original/Live_1.png" width="140">                 |
-| 38  | Live Room Screen: 1                                      | <img src="Screenshots/Original/live.png" width="140">                   |
-| 39  | Live Room Screen: 2                                      | <img src="Screenshots/Original/live_2.png" width="140">                 |
+| No | Page | Screenshot |
+| --- | --- | --- |
+| 1 | Splash Screen | <img src="Screenshots/Original/Splashscreen.png" width="140"> |
+| 2 | Login Screen | <img src="Screenshots/Original/Login.png" width="140"> |
+| 3 | Login Validation | <img src="Screenshots/Original/Fail_login.png" width="140"> |
+| 4 | Home Screen | <img src="Screenshots/Original/Home.png" alt="Home Screen" width="140"> |
+| 5 | My Families | <img src="Screenshots/Original/my_family_2.png" width="140"> |
+| 6 | Families Search | <img src="Screenshots/Original/Search_Fam.png" width="140"> |
+| 7 | Create Family | <img src="Screenshots/Original/Create_New_Fam.png" width="140"> |
+| 8 | Join Family | <img src="Screenshots/Original/Join_Fam_1.png" width="140"> |
+| 9 | Family Detail | <img src="Screenshots/Original/Fam_detail_1.png" width="140"> |
+| 10 | Leave Family | <img src="Screenshots/Original/leave_fam.png" width="140"> |
+| 11 | Profile | <img src="Screenshots/Original/profile.png" width="140"> |
+| 12 | Edit Profile | <img src="Screenshots/Original/edit_profile.png" width="140"> |
+| 13 | Location Permission | <img src="Screenshots/Original/grand_permission_loc.png" width="140"> |
+| 14 | Family Locations | <img src="Screenshots/Original/fam_loc_1.png" width="140"> |
+| 15 | Map Member Detail | <img src="Screenshots/Original/fam_loc_detail_1.png" width="140"> |
+| 16 | Favorite Location | <img src="Screenshots/Original/pin_after.png" width="140"> |
+| 17 | Connectivity Status | <img src="Screenshots/Original/internet_wifi.png" width="140"> |
+| 18 | Offline State | <img src="Screenshots/Original/Disconnect.jpeg" width="140"> |
+| 19 | Live Location | <img src="Screenshots/Original/live_loc_aktif.png" width="140"> |
+| 20 | Live Room | <img src="Screenshots/Original/live.png" width="140"> |
+| 21 | Responsive Home | <img src="Screenshots/Original/tubes2/home_portrait.png" width="140"> |
+| 22 | Add Action Menu | <img src="Screenshots/Original/tubes2/home_add_menu_portrait.png" width="140"> |
+| 23 | Home on Tablet | <img src="Screenshots/Original/tubes2/home_tablet.png" width="190"> |
+| 24 | Interactive Map | <img src="Screenshots/Original/tubes2/map_portrait.png" width="140"> |
+| 25 | Map in Landscape | <img src="Screenshots/Original/tubes2/map_landscape.png" width="260"> |
+| 26 | Map on Tablet | <img src="Screenshots/Original/tubes2/map_tablet.png" width="190"> |
+| 27 | Create Marked Location | <img src="Screenshots/Original/tubes2/marked_location_create_portrait.png" width="140"> |
+| 28 | Extended Member Detail | <img src="Screenshots/Original/tubes2/map_member_detail_portrait.png" width="140"> |
+| 29 | Updated Profile | <img src="Screenshots/Original/tubes2/profile_portrait.png" width="140"> |
+| 30 | Customize Pin | <img src="Screenshots/Original/tubes2/customize_pin_portrait.png" width="140"> |
+| 31 | Customize Pin Colors | <img src="Screenshots/Original/tubes2/customize_pin_colors_portrait.png" width="140"> |
+| 32 | Pin Download Complete | <img src="Screenshots/Original/tubes2/customize_pin_download_complete.png" width="140"> |
+| 33 | Analytics Dashboard | <img src="Screenshots/Original/tubes2/analytics_portrait.png" width="140"> |
+| 34 | Analytics History | <img src="Screenshots/Original/tubes2/analytics_recent_and_export_portrait.png" width="140"> |
+| 35 | Analytics on Tablet | <img src="Screenshots/Original/tubes2/analytics_tablet.png" width="190"> |
+| 36 | Export Analytics to CSV | <img src="Screenshots/Original/tubes2/analytics_export_csv_share_sheet.png" width="140"> |
+| 37 | Browse Families | <img src="Screenshots/Original/tubes2/families_browse_portrait.png" width="140"> |
+| 38 | My Families Filter | <img src="Screenshots/Original/tubes2/families_my_filter_portrait.png" width="140"> |
+| 39 | Responsive Family Detail | <img src="Screenshots/Original/tubes2/family_detail_portrait.png" width="140"> |
+| 40 | Family Actions | <img src="Screenshots/Original/tubes2/family_detail_actions_portrait.png" width="140"> |
+| 41 | Family Detail on Tablet | <img src="Screenshots/Original/tubes2/family_detail_tablet.png" width="190"> |
+| 42 | Share Family QR Code | <img src="Screenshots/Original/tubes2/family_qr_portrait.png" width="140"> |
+
+Additional full-resolution screenshots are available in [`Screenshots/Original`](Screenshots/Original/).
 
 ### Accessibility Testing
 
@@ -294,28 +345,12 @@ adb shell pm clear com.labpro.nimons360
 
 ## Team Roles
 
-| No | Feature                | Contributors |
-|----|------------------------|--------------|
-| 1  | Livestreaming          | 13523114     |
-| 2  | Network Sensing        | 13523114     |
-| 3  | OpenAPI                | 13523114     |
-| 4  | Mark Favorite Location | 13523114     |
-| 5  | Map & GPS              | 13523068     |
-| 6  | Websocket              | 13523068     |
-| 7  | Map User Info          | 13523068     |
-| 8  | Internet Status        | 13523068     |
-| 9  | Phone orientation      | 13523068     |
-| 10 | Accessibility Testing  | 13523068     |
-| 11 | Auth                   | 13523100     |
-| 12 | Header & Bottom Navbar | 13523100     |
-| 13 | Home                   | 13523100     |
-| 14 | Families List          | 13523100     |
-| 15 | Profile Detail & Edit  | 13523100     |
-| 16 | Create Family          | 13523100     |
-| 17 | Join Family            | 13523100     |
-| 18 | Leave Family           | 13523100     |
-| 19 | Family Detail          | 13523100     |
-| 20 | Search Family          | 13523100     |
+| Contributor | Features |
+| --- | --- |
+| 13523068 - Muh. Rusmin Nurwadin | Map and GPS, WebSocket presence, map member information, internet status, phone orientation, marked locations, Map Extended, Analytics, and accessibility testing |
+| 13523100 - Aryo Wisanggeni | Authentication, header and bottom navigation, Home, family list, profile detail and editing, profile photo, notifications, customizable icon, create/join/leave family, family detail, and family search |
+| 13523114 - Guntara Hambali | Livestreaming, network sensing, OpenAPI, favorite locations, family sharing, QR sharing, and Instagram Story sharing |
+| All contributors | Responsive UI, OWASP review, integration testing, and release verification |
 
 ## Preparation and Working Hours
 

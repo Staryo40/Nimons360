@@ -49,12 +49,20 @@
         android:layout_weight="1"
         android:fillViewport="true">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/page_horizontal_padding">
+            android:paddingHorizontal="@dimen/page_horizontal_padding">
 
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingVertical="@dimen/page_vertical_padding"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="@dimen/content_max_width_dashboard">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -97,17 +105,22 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_md"
                 android:baselineAligned="false"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:orientation="horizontal">
 
                 <com.google.android.material.card.MaterialCardView
                     style="@style/Widget.Nimons360.Card"
                     android:layout_width="0dp"
-                    android:layout_height="132dp"
-                    android:layout_weight="1">
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="3dp"
+                    android:layout_weight="1"
+                    android:minHeight="132dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="132dp"
                         android:gravity="bottom"
                         android:orientation="vertical"
                         android:padding="@dimen/spacing_md">
@@ -145,12 +158,15 @@
                 <com.google.android.material.card.MaterialCardView
                     style="@style/Widget.Nimons360.Card"
                     android:layout_width="0dp"
-                    android:layout_height="132dp"
-                    android:layout_weight="1">
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="3dp"
+                    android:layout_weight="1"
+                    android:minHeight="132dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="132dp"
                         android:gravity="bottom"
                         android:orientation="vertical"
                         android:padding="@dimen/spacing_md">
@@ -188,12 +204,15 @@
                 <com.google.android.material.card.MaterialCardView
                     style="@style/Widget.Nimons360.Card"
                     android:layout_width="0dp"
-                    android:layout_height="132dp"
-                    android:layout_weight="1">
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="3dp"
+                    android:layout_weight="1"
+                    android:minHeight="132dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="132dp"
                         android:gravity="bottom"
                         android:orientation="vertical"
                         android:padding="@dimen/spacing_md">
@@ -326,6 +345,7 @@
                 app:strokeColor="@color/analytics_blue" />
 
         </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

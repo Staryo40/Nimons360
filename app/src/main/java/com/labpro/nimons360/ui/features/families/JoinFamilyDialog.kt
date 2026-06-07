@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager.LayoutParams.WRAP_CONTENT
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -121,6 +123,10 @@ private fun JoinFamilyDialogContent(
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
     AlertDialog(
+        modifier = Modifier
+            .fillMaxWidth()
+            .widthIn(max = 480.dp)
+            .imePadding(),
         onDismissRequest = onDismiss,
         icon = {
             Icon(
@@ -136,7 +142,12 @@ private fun JoinFamilyDialogContent(
             )
         },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(
+                modifier = Modifier
+                    .heightIn(max = 320.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
                 Text(
                     text  = stringResource(R.string.join_prompt),
                     style = MaterialTheme.typography.bodyMedium,

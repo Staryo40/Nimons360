@@ -110,7 +110,7 @@ class MarkedLocationBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bind(view)
-        populate()
+        populate(savedInstanceState)
 
         useCurrent.setOnClickListener { useCurrentLocation() }
         navigate.setOnClickListener { openNavigation() }
@@ -122,10 +122,20 @@ class MarkedLocationBottomSheet : BottomSheetDialogFragment() {
     }
 
     override fun onDestroy() {
-        if (!committed) {
+        if (!committed && activity?.isChangingConfigurations != true) {
             repository.deleteUncommittedPhotos(addedPhotoPaths)
         }
         super.onDestroy()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putStringArrayList(STATE_PHOTOS, ArrayList(photoPaths))
+        outState.putStringArrayList(STATE_ADDED_PHOTOS, ArrayList(addedPhotoPaths))
+        outState.putStringArrayList(STATE_INITIAL_PHOTOS, ArrayList(initialPhotoPaths))
+        outState.putString(STATE_PENDING_CAMERA, pendingCameraPath)
+        outState.putBoolean(STATE_COMMITTED, committed)
+        outState.putBoolean(STATE_EDITING, editing)
+        super.onSaveInstanceState(outState)
     }
 
     private fun bind(view: View) {
@@ -146,16 +156,25 @@ class MarkedLocationBottomSheet : BottomSheetDialogFragment() {
         save = view.findViewById(R.id.btnSaveMarkedLocation)
     }
 
-    private fun populate() {
+    private fun populate(savedInstanceState: Bundle?) {
         val id = requireArguments().getInt(ARG_ID)
         name.setText(requireArguments().getString(ARG_NAME).orEmpty())
         description.setText(requireArguments().getString(ARG_DESCRIPTION).orEmpty())
         latitude.setText(formatCoordinate(requireArguments().getDouble(ARG_LATITUDE)))
         longitude.setText(formatCoordinate(requireArguments().getDouble(ARG_LONGITUDE)))
-        photoPaths.addAll(requireArguments().getStringArrayList(ARG_PHOTOS).orEmpty())
-        initialPhotoPaths.addAll(photoPaths)
+        photoPaths.addAll(
+            savedInstanceState?.getStringArrayList(STATE_PHOTOS)
+                ?: requireArguments().getStringArrayList(ARG_PHOTOS).orEmpty()
+        )
+        addedPhotoPaths.addAll(savedInstanceState?.getStringArrayList(STATE_ADDED_PHOTOS).orEmpty())
+        initialPhotoPaths.addAll(
+            savedInstanceState?.getStringArrayList(STATE_INITIAL_PHOTOS)
+                ?: requireArguments().getStringArrayList(ARG_PHOTOS).orEmpty()
+        )
+        pendingCameraPath = savedInstanceState?.getString(STATE_PENDING_CAMERA)
+        committed = savedInstanceState?.getBoolean(STATE_COMMITTED) ?: false
 
-        editing = id == 0
+        editing = savedInstanceState?.getBoolean(STATE_EDITING) ?: (id == 0)
         setEditing(editing)
         renderPhotos()
     }
@@ -344,6 +363,12 @@ class MarkedLocationBottomSheet : BottomSheetDialogFragment() {
         private const val ARG_PHOTOS = "photos"
         private const val ARG_CURRENT_LATITUDE = "current_latitude"
         private const val ARG_CURRENT_LONGITUDE = "current_longitude"
+        private const val STATE_PHOTOS = "state_photos"
+        private const val STATE_ADDED_PHOTOS = "state_added_photos"
+        private const val STATE_INITIAL_PHOTOS = "state_initial_photos"
+        private const val STATE_PENDING_CAMERA = "state_pending_camera"
+        private const val STATE_COMMITTED = "state_committed"
+        private const val STATE_EDITING = "state_editing"
 
         fun newLocation(
             latitude: Double,

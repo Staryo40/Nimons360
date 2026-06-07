@@ -11,5 +11,5 @@ suspend inline fun <T> safeCall(
 } catch (e: Exception) {
     val msg = e.message ?: "Unknown network error."
     Log.e(tag, "Network error: $msg", e)
-    NetworkResult.Error(msg)
+    NetworkResult.Error("Unable to complete the request. Please try again.")
 }

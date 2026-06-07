@@ -1,6 +1,7 @@
 package com.labpro.nimons360.ui.main
 
 import android.os.Bundle
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -10,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -21,6 +23,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
+import com.labpro.nimons360.data.enums.FamilyFilter
 import com.labpro.nimons360.data.enums.MainScreenEnum
 import com.labpro.nimons360.core.navigation.FamilyDeepLink
 import com.labpro.nimons360.data.model.user.UserData
@@ -46,7 +49,14 @@ fun MainContent(
     val lifecycleOwner = LocalLifecycleOwner.current
     val fm = (context as FragmentActivity).supportFragmentManager
     val app = context.applicationContext as MainApplication
+    val layoutDirection = LocalLayoutDirection.current
+    val safeDrawingPadding = WindowInsets.safeDrawing.asPaddingValues()
+    val symmetricSafeHorizontalPadding = maxOf(
+        safeDrawingPadding.calculateStartPadding(layoutDirection),
+        safeDrawingPadding.calculateEndPadding(layoutDirection),
+    )
     var addMenuExpanded by remember { mutableStateOf(false) }
+    var requestedFamilyFilter by remember { mutableStateOf<FamilyFilter?>(null) }
 
     LaunchedEffect(currentScreen) {
         if (currentScreen == MainScreenEnum.FAMILY) {
@@ -114,10 +124,19 @@ fun MainContent(
         topBar = {
             Column(
                 modifier = Modifier
-                    .statusBarsPadding()
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surface)
+                    .windowInsetsPadding(
+                        WindowInsets.safeDrawing.only(
+                            WindowInsetsSides.Top,
+                        ),
+                    )
                     .padding(top = 6.dp),
             ) {
                 TopAppBar(
+                    modifier = Modifier.padding(
+                        horizontal = symmetricSafeHorizontalPadding,
+                    ),
                     windowInsets = WindowInsets(0, 0, 0, 0),
                     title = {
                         Text(
@@ -142,7 +161,7 @@ fun MainContent(
                                 R.string.cd_profile_avatar,
                                 user.fullName,
                             ),
-                            modifier = Modifier.padding(end = 8.dp),
+                            modifier = Modifier.padding(end = 16.dp),
                             onClick = { openProfile() }
                         )
                     },
@@ -165,7 +184,10 @@ fun MainContent(
                 )
                 Navbar(
                     currentScreen    = currentScreen,
-                    onScreenSelected = { onScreenChange(it) },
+                    onScreenSelected = {
+                        requestedFamilyFilter = null
+                        onScreenChange(it)
+                    },
                 )
             }
         },
@@ -226,11 +248,16 @@ fun MainContent(
                 MainScreenEnum.HOME -> HomeCompose(
                     user          = user,
                     onFamilyClick = { openFamilyDetail(it) },
+                    onViewAllFamilies = {
+                        requestedFamilyFilter = FamilyFilter.MY_FAMILIES
+                        onScreenChange(MainScreenEnum.FAMILY)
+                    },
                 )
                 MainScreenEnum.MAP -> MapCompose(user = user)
                 MainScreenEnum.FAMILY -> FamilyCompose(
                     user          = user,
                     onFamilyClick = { openFamilyDetail(it) },
+                    initialFilter = requestedFamilyFilter,
                 )
             }
         }

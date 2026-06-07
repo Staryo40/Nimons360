@@ -18,8 +18,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -32,6 +30,7 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
+import com.labpro.nimons360.core.utils.applyStatusBarHeaderInset
 import com.labpro.nimons360.core.navigation.FamilyDeepLink
 import com.labpro.nimons360.data.model.family.FamilyDetail
 import com.labpro.nimons360.data.model.family.FamilyMember
@@ -127,16 +126,7 @@ class FamilyDetailFragment : DialogFragment() {
 
         bindViews(view)
         val appBar = view.findViewById<View>(R.id.appBarLayout)
-        ViewCompat.setOnApplyWindowInsetsListener(appBar) { v, insets ->
-            val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            v.setPadding(
-                v.paddingLeft,
-                statusBarInsets.top,
-                v.paddingRight,
-                v.paddingBottom
-            )
-            insets
-        }
+        appBar.applyStatusBarHeaderInset(extraTopDp = 0)
 
         setupToolbar()
         setupJoinDialogResultListener()
@@ -266,7 +256,7 @@ class FamilyDetailFragment : DialogFragment() {
             actionsSection.isVisible = false
             toolbar.menu.clear()
             btnLive?.isVisible = false
-            membersCard.isVisible       = false
+            membersCard.isVisible       = true
             joinHintSection.isVisible   = true
 
             tilMemberSearch.isVisible = false
@@ -361,8 +351,7 @@ class FamilyDetailFragment : DialogFragment() {
     }
 
     private fun buildCensoredMemberRows(members: List<FamilyMember>) {
-        membersContainer.removeAllViews()
-        adjustMembersCardHeight()
+        buildMemberRows(members)
     }
 
     private fun setupSearchInput() {
@@ -402,7 +391,7 @@ class FamilyDetailFragment : DialogFragment() {
     private fun adjustMembersCardHeight() {
         membersContainer.post {
             if (!isAdded) return@post
-            val maxPx = (240 * resources.displayMetrics.density).toInt()
+            val maxPx = resources.getDimensionPixelSize(R.dimen.family_members_max_height)
             val params = membersScrollView.layoutParams
             if (membersContainer.measuredHeight > maxPx) {
                 params.height = maxPx

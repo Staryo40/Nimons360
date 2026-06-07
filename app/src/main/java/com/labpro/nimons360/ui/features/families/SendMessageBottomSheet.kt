@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -81,11 +82,13 @@ class SendMessageBottomSheet : BottomSheetDialogFragment() {
                         dismiss()
                     } else {
                         btnSendGreeting.isEnabled = true
-                        Toast.makeText(requireContext(), "Failed to send greeting: ${response.code()}", Toast.LENGTH_SHORT).show()
+                        Log.e(TAG, "Greeting request failed with HTTP ${response.code()}")
+                        Toast.makeText(requireContext(), R.string.error_generic, Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {
                     btnSendGreeting.isEnabled = true
-                    Toast.makeText(requireContext(), "Error sending greeting: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Log.e(TAG, "Unable to send greeting", e)
+                    Toast.makeText(requireContext(), R.string.error_generic, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -119,11 +122,13 @@ class SendMessageBottomSheet : BottomSheetDialogFragment() {
                         dismiss()
                     } else {
                         btnSend.isEnabled = true
-                        Toast.makeText(requireContext(), "Failed to send message: ${response.code()}", Toast.LENGTH_SHORT).show()
+                        Log.e(TAG, "Message request failed with HTTP ${response.code()}")
+                        Toast.makeText(requireContext(), R.string.error_generic, Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {
                     btnSend.isEnabled = true
-                    Toast.makeText(requireContext(), "Error sending message: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Log.e(TAG, "Unable to send family message", e)
+                    Toast.makeText(requireContext(), R.string.error_generic, Toast.LENGTH_SHORT).show()
                 }
             }
         }

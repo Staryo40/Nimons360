@@ -59,4 +59,8 @@
     <!-- ── Page padding ──────────────────────────────────────────────── -->
     <dimen name="page_horizontal_padding">16dp</dimen>
     <dimen name="page_vertical_padding">16dp</dimen>
+    <dimen name="content_max_width_form">760dp</dimen>
+    <dimen name="content_max_width_detail">960dp</dimen>
+    <dimen name="content_max_width_dashboard">1120dp</dimen>
+    <dimen name="family_members_max_height">240dp</dimen>
 </resources>

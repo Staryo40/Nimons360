@@ -35,6 +35,7 @@ fun MapCompose(user: UserData, modifier: Modifier = Modifier) {
 
     DisposableEffect(host, frameId) {
         onDispose {
+            if (host.isChangingConfigurations) return@onDispose
             val fm = host.supportFragmentManager
             if (!fm.isStateSaved) {
                 fm.findFragmentByTag(TAG)?.let { fragment ->

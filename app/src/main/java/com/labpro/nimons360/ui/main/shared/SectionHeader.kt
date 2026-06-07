@@ -1,6 +1,10 @@
 package com.labpro.nimons360.ui.main.shared
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,14 +19,29 @@ import androidx.compose.ui.unit.sp
 fun SectionHeader(
     title: String,
     modifier: Modifier = Modifier,
+    actionLabel: String? = null,
+    onActionClick: (() -> Unit)? = null,
 ) {
-    Text(
-        text  = title,
-        style = MaterialTheme.typography.labelMedium.copy(letterSpacing = 1.0.sp),
-        color = MaterialTheme.colorScheme.onSurface,
+    Row(
         modifier = modifier
-            .semantics { heading() }
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        fontWeight = FontWeight.SemiBold,
-    )
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.labelMedium.copy(letterSpacing = 1.0.sp),
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier
+                .semantics { heading() }
+                .padding(vertical = 14.dp),
+            fontWeight = FontWeight.SemiBold,
+        )
+
+        if (actionLabel != null && onActionClick != null) {
+            TextButton(onClick = onActionClick) {
+                Text(actionLabel)
+            }
+        }
+    }
 }
