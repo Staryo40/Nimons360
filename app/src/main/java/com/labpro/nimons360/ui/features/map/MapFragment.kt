@@ -8,6 +8,8 @@ import android.content.IntentFilter
 import android.content.res.Configuration as AndroidConfiguration
 import android.location.LocationManager
 import android.os.Bundle
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
@@ -82,6 +84,13 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
     private var lastSelfPinKey: String? = null
     private val memberMap = linkedMapOf<Int, Marker>()
     private val favoriteMarkers = mutableListOf<Marker>()
+    private val memberProfileImageMap = mutableMapOf<String, String>()
+    private val memberAvatarBitmaps = mutableMapOf<Int, Bitmap>()
+    private val loadingMemberAvatars = mutableSetOf<Int>()
+    private val markerIconKeys = mutableMapOf<Int, String>()
+    private var selfProfileImageUrl: String? = null
+    private var selfAvatarBitmap: Bitmap? = null
+    private var loadingSelfAvatar = false
     private var locationSettingsDialog: AlertDialog? = null
     private var hasMoved = false
     private var trackersOn = false
@@ -196,6 +205,13 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         lastSelfPinKey = null
         memberMap.clear()
         favoriteMarkers.clear()
+        memberProfileImageMap.clear()
+        memberAvatarBitmaps.clear()
+        loadingMemberAvatars.clear()
+        markerIconKeys.clear()
+        selfProfileImageUrl = null
+        selfAvatarBitmap = null
+        loadingSelfAvatar = false
         mapView = null
         super.onDestroyView()
     }
@@ -448,22 +464,97 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
             ?.let { pin -> CustomPinRepository(requireContext()).takeIf { it.isDownloaded(pin) }?.file(pin) }
         val pinKey = customFile?.absolutePath ?: "color:${app().tokenManager.getPinStyle()}"
         val rotDiff = if (lastSelfRotation != null) abs(lastSelfRotation!! - rotation) else Float.MAX_VALUE
-        val needsRotationUpdate = customFile == null && rotDiff >= 3f
-        if (selfMarker?.icon == null || lastSelfPinKey != pinKey || needsRotationUpdate) {
-            selfMarker?.icon = customFile?.let {
-                MapPinMaker.custom(requireContext(), it, state.self.fullName)
+        val needsRotationUpdate = rotDiff >= 3f
+
+        val imageUrl = selfProfileImageUrl ?: readUser().profileImageUrl
+        if (imageUrl.isNullOrBlank() || customFile != null) {
+            val actualNeedsRotationUpdate = customFile == null && needsRotationUpdate
+            if (selfMarker?.icon == null || lastSelfPinKey != pinKey || actualNeedsRotationUpdate) {
+                selfMarker?.icon = customFile?.let {
+                    MapPinMaker.custom(requireContext(), it, state.self.fullName)
+                }
+                    ?: MapPinMaker.self(
+                        requireContext(),
+                        state.self.fullName.firstOrNull()?.uppercase() ?: "Y",
+                        state.self.fullName,
+                        rotation,
+                        getSelfPinColor(),
+                    )
+                selfMarker?.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                lastSelfRotation = rotation
+                lastSelfPinKey = pinKey
+                invalidated = true
             }
-                ?: MapPinMaker.self(
-                    requireContext(),
-                    state.self.fullName.firstOrNull()?.uppercase() ?: "Y",
-                    state.self.fullName,
-                    state.self.rotation,
-                    getSelfPinColor(),
-                )
-            selfMarker?.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-            lastSelfRotation = rotation
-            lastSelfPinKey = pinKey
-            invalidated = true
+        } else {
+            val cleanPath = imageUrl.substringBefore("?")
+            val resolvedUrl = if (cleanPath.startsWith("/")) {
+                "${BuildConfig.BASE_URL}$cleanPath"
+            } else {
+                cleanPath
+            }
+
+            val cachedBitmap = selfAvatarBitmap
+            if (cachedBitmap != null) {
+                val currentIconKey = "self_photo:$resolvedUrl"
+                if (selfMarker?.icon == null || lastSelfPinKey != currentIconKey || needsRotationUpdate) {
+                    selfMarker?.icon = MapPinMaker.selfWithBitmap(
+                        requireContext(),
+                        cachedBitmap,
+                        state.self.fullName,
+                        rotation,
+                        getSelfPinColor(),
+                    )
+                    selfMarker?.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                    lastSelfRotation = rotation
+                    lastSelfPinKey = currentIconKey
+                    invalidated = true
+                }
+            } else {
+                val fallbackIconKey = "self_initials:$rotation"
+                if (selfMarker?.icon == null || lastSelfPinKey != fallbackIconKey || needsRotationUpdate) {
+                    selfMarker?.icon = MapPinMaker.self(
+                        requireContext(),
+                        state.self.fullName.firstOrNull()?.uppercase() ?: "Y",
+                        state.self.fullName,
+                        rotation,
+                        getSelfPinColor(),
+                    )
+                    selfMarker?.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                    lastSelfRotation = rotation
+                    lastSelfPinKey = fallbackIconKey
+                    invalidated = true
+                }
+
+                if (!loadingSelfAvatar) {
+                    loadingSelfAvatar = true
+                    val loader = coil.Coil.imageLoader(requireContext())
+                    val request = coil.request.ImageRequest.Builder(requireContext())
+                        .data(resolvedUrl)
+                        .allowHardware(false)
+                        .bitmapConfig(Bitmap.Config.ARGB_8888)
+                        .target(
+                            onSuccess = { drawable ->
+                                val bitmap = (drawable as? BitmapDrawable)?.bitmap
+                                if (bitmap != null) {
+                                    lifecycleScope.launch(Dispatchers.Main) {
+                                        selfAvatarBitmap = bitmap
+                                        loadingSelfAvatar = false
+                                        if (viewActive) {
+                                            renderSelf(viewModel.uiState.value)
+                                        }
+                                    }
+                                }
+                            },
+                            onError = {
+                                lifecycleScope.launch(Dispatchers.Main) {
+                                    loadingSelfAvatar = false
+                                }
+                            }
+                        )
+                        .build()
+                    loader.enqueue(request)
+                }
+            }
         }
         selfMarker?.setInfoWindow(null)
 
@@ -516,15 +607,89 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
                 invalidated = true
             }
 
-            if (isNewMarker || marker.icon == null) {
-                marker.icon = MapPinMaker.member(
-                    requireContext(),
-                    member.fullName.firstOrNull()?.uppercase() ?: "?",
-                    member.fullName,
-                    pinColors[index % pinColors.size],
-                    showLabel = resources.configuration.orientation != AndroidConfiguration.ORIENTATION_LANDSCAPE,
-                )
-                invalidated = true
+            val emailKey = member.email.lowercase()
+            val imageUrl = memberProfileImageMap[emailKey]
+
+            if (imageUrl.isNullOrBlank()) {
+                val fallbackIconKey = "initials:${member.fullName}:${resources.configuration.orientation}"
+                if (isNewMarker || marker.icon == null || markerIconKeys[member.userId] != fallbackIconKey) {
+                    marker.icon = MapPinMaker.member(
+                        requireContext(),
+                        member.fullName.firstOrNull()?.uppercase() ?: "?",
+                        member.fullName,
+                        pinColors[index % pinColors.size],
+                        showLabel = resources.configuration.orientation != AndroidConfiguration.ORIENTATION_LANDSCAPE,
+                    )
+                    markerIconKeys[member.userId] = fallbackIconKey
+                    invalidated = true
+                }
+            } else {
+                val cleanPath = imageUrl.substringBefore("?")
+                val resolvedUrl = if (cleanPath.startsWith("/")) {
+                    "${BuildConfig.BASE_URL}$cleanPath"
+                } else {
+                    cleanPath
+                }
+
+                val cachedBitmap = memberAvatarBitmaps[member.userId]
+                if (cachedBitmap != null) {
+                    val currentIconKey = "photo:$resolvedUrl:${resources.configuration.orientation}"
+                    if (isNewMarker || marker.icon == null || markerIconKeys[member.userId] != currentIconKey) {
+                        marker.icon = MapPinMaker.memberWithBitmap(
+                            requireContext(),
+                            cachedBitmap,
+                            member.fullName,
+                            pinColors[index % pinColors.size],
+                            showLabel = resources.configuration.orientation != AndroidConfiguration.ORIENTATION_LANDSCAPE,
+                        )
+                        markerIconKeys[member.userId] = currentIconKey
+                        invalidated = true
+                    }
+                } else {
+                    val fallbackIconKey = "initials:${member.fullName}:${resources.configuration.orientation}"
+                    if (isNewMarker || marker.icon == null || markerIconKeys[member.userId] != fallbackIconKey) {
+                        marker.icon = MapPinMaker.member(
+                            requireContext(),
+                            member.fullName.firstOrNull()?.uppercase() ?: "?",
+                            member.fullName,
+                            pinColors[index % pinColors.size],
+                            showLabel = resources.configuration.orientation != AndroidConfiguration.ORIENTATION_LANDSCAPE,
+                        )
+                        markerIconKeys[member.userId] = fallbackIconKey
+                        invalidated = true
+                    }
+
+                    if (!loadingMemberAvatars.contains(member.userId)) {
+                        loadingMemberAvatars.add(member.userId)
+
+                        val loader = coil.Coil.imageLoader(requireContext())
+                        val request = coil.request.ImageRequest.Builder(requireContext())
+                            .data(resolvedUrl)
+                            .allowHardware(false)
+                            .bitmapConfig(Bitmap.Config.ARGB_8888)
+                            .target(
+                                onSuccess = { drawable ->
+                                    val bitmap = (drawable as? BitmapDrawable)?.bitmap
+                                    if (bitmap != null) {
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            memberAvatarBitmaps[member.userId] = bitmap
+                                            loadingMemberAvatars.remove(member.userId)
+                                            if (viewActive) {
+                                                renderMembers(viewModel.uiState.value)
+                                            }
+                                        }
+                                    }
+                                },
+                                onError = {
+                                    lifecycleScope.launch(Dispatchers.Main) {
+                                        loadingMemberAvatars.remove(member.userId)
+                                    }
+                                }
+                            )
+                            .build()
+                        loader.enqueue(request)
+                    }
+                }
             }
 
             marker.setOnMarkerClickListener { _, _ ->
@@ -560,8 +725,27 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
 
     private fun loadFamilyFilters() {
         viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val response = com.labpro.nimons360.data.remote.RetrofitClient.apiService.getMe()
+                if (response.isSuccessful) {
+                    selfProfileImageUrl = response.body()?.data?.profileImageUrl
+                    if (viewActive) {
+                        renderSelf(viewModel.uiState.value)
+                    }
+                }
+            } catch (_: Exception) {}
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
             when (val result = app().familyRepository.getMyFamilies()) {
                 is NetworkResult.Success -> {
+                    result.data.data.forEach { family ->
+                        family.members.forEach { member ->
+                            if (!member.profileImageUrl.isNullOrBlank()) {
+                                memberProfileImageMap[member.email.lowercase()] = member.profileImageUrl
+                            }
+                        }
+                    }
                     familyFilters = result.data.data.map(::toMapFamilyFilter)
                     if (selectedFamilyId != null &&
                         familyFilters.none { it.id == selectedFamilyId }
@@ -797,6 +981,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         private const val ARG_ID = "arg_id"
         private const val ARG_NAME = "arg_name"
         private const val ARG_EMAIL = "arg_email"
+        private const val ARG_PHOTO = "arg_photo"
         private val BANDUNG = GeoPoint(-6.9175, 107.6191)
 
         fun newInstance(user: com.labpro.nimons360.data.model.user.UserData): MapFragment = MapFragment().apply {
@@ -804,6 +989,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
                 putInt(ARG_ID, user.id)
                 putString(ARG_NAME, user.fullName)
                 putString(ARG_EMAIL, user.email)
+                putString(ARG_PHOTO, user.profileImageUrl)
             }
         }
     }
@@ -813,6 +999,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         nim = "",
         email = requireArguments().getString(ARG_EMAIL).orEmpty(),
         fullName = requireArguments().getString(ARG_NAME).orEmpty(),
+        profileImageUrl = requireArguments().getString(ARG_PHOTO),
     )
 
     private data class MapFamilyFilter(
