@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -52,6 +53,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
+import org.osmdroid.events.MapListener
+import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
@@ -92,13 +96,11 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
     private var selfAvatarBitmap: Bitmap? = null
     private var loadingSelfAvatar = false
     private var locationSettingsDialog: AlertDialog? = null
-    private var hasMoved = false
     private var trackersOn = false
     private var locationWatcherOn = false
     private var viewActive = false
     private var pendingMarkCurrentLocation = false
     private var familyFilters: List<MapFamilyFilter> = emptyList()
-    private var selectedFamilyId: Int? = null
 
     private val locationProviderReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -110,7 +112,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         }
     }
 
-    private val viewModel: MapViewModel by viewModels {
+    private val viewModel: MapViewModel by activityViewModels {
         val app = requireActivity().application as MainApplication
         MapViewModelFactory(
             user = readUser(),
@@ -194,6 +196,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         viewActive = false
         locationSettingsDialog?.dismiss()
         mapView?.let { map ->
+            saveMapState()
             memberMap.values.forEach { map.overlays.remove(it) }
             favoriteMarkers.forEach { map.overlays.remove(it) }
             selfMarker?.let { map.overlays.remove(it) }
@@ -267,8 +270,16 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         val map = mapView ?: return
         map.setTileSource(TileSourceFactory.MAPNIK)
         map.setMultiTouchControls(true)
-        map.controller.setZoom(16.0)
-        map.controller.setCenter(BANDUNG)
+        
+        val savedZoom = viewModel.savedZoomLevel
+        val savedCenter = viewModel.savedMapCenter
+        if (savedZoom != null && savedCenter != null) {
+            map.controller.setZoom(savedZoom)
+            map.controller.setCenter(GeoPoint(savedCenter.latitude, savedCenter.longitude))
+        } else {
+            map.controller.setZoom(16.0)
+            map.controller.setCenter(BANDUNG)
+        }
         map.zoomController.setVisibility(org.osmdroid.views.CustomZoomButtonsController.Visibility.NEVER)
 
         val mapEventsReceiver = object : MapEventsReceiver {
@@ -281,6 +292,28 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
             }
         }
         map.overlays.add(MapEventsOverlay(mapEventsReceiver))
+
+        map.addMapListener(object : MapListener {
+            override fun onScroll(event: ScrollEvent?): Boolean {
+                saveMapState()
+                return false
+            }
+
+            override fun onZoom(event: ZoomEvent?): Boolean {
+                saveMapState()
+                return false
+            }
+        })
+    }
+
+    private fun saveMapState() {
+        val map = mapView ?: return
+        val zoom = map.zoomLevelDouble
+        val center = map.mapCenter
+        if (zoom > 0 && center != null && (abs(center.latitude) > 0.0001 || abs(center.longitude) > 0.0001)) {
+            viewModel.savedZoomLevel = zoom
+            viewModel.savedMapCenter = com.labpro.nimons360.data.model.map.MapPoint(center.latitude, center.longitude)
+        }
     }
 
     private fun showMarkedLocationEditor(point: GeoPoint) {
@@ -558,9 +591,9 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         }
         selfMarker?.setInfoWindow(null)
 
-        if (!hasMoved) {
+        if (!viewModel.hasMoved) {
             map.controller.animateTo(point)
-            hasMoved = true
+            viewModel.hasMoved = true
         }
 
         if (invalidated) {
@@ -747,10 +780,10 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
                         }
                     }
                     familyFilters = result.data.data.map(::toMapFamilyFilter)
-                    if (selectedFamilyId != null &&
-                        familyFilters.none { it.id == selectedFamilyId }
+                    if (viewModel.selectedFamilyId != null &&
+                        familyFilters.none { it.id == viewModel.selectedFamilyId }
                     ) {
-                        selectedFamilyId = null
+                        viewModel.selectedFamilyId = null
                     }
                     if (viewActive) {
                         renderFamilyFilters()
@@ -759,7 +792,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
                 }
                 is NetworkResult.Error -> {
                     familyFilters = emptyList()
-                    selectedFamilyId = null
+                    viewModel.selectedFamilyId = null
                     if (viewActive) {
                         renderFamilyFilters()
                         render(viewModel.uiState.value)
@@ -800,7 +833,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
         return Chip(requireContext()).apply {
             text = label
             isCheckable = true
-            isChecked = selectedFamilyId == id
+            isChecked = viewModel.selectedFamilyId == id
             isCheckedIconVisible = false
             isCloseIconVisible = false
             minHeight = resources.getDimensionPixelSize(R.dimen.touch_target_min)
@@ -815,7 +848,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
                 marginEnd = resources.getDimensionPixelSize(R.dimen.spacing_sm)
             }
             setOnClickListener {
-                selectedFamilyId = id
+                viewModel.selectedFamilyId = id
                 renderFamilyFilters()
                 render(viewModel.uiState.value)
             }
@@ -823,7 +856,7 @@ class MapFragment : Fragment(), MarkedLocationBottomSheet.Listener {
     }
 
     private fun filteredMembers(members: List<MapMember>): List<MapMember> {
-        val selected = selectedFamilyId ?: return members
+        val selected = viewModel.selectedFamilyId ?: return members
         val emails = familyFilters.firstOrNull { it.id == selected }?.memberEmails ?: return members
         return members.filter { it.email.lowercase() in emails }
     }
