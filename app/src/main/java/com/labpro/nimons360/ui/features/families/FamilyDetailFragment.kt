@@ -440,6 +440,27 @@ class FamilyDetailFragment : DialogFragment() {
             member.email,
             if (isCurrentUser) ", ${getString(R.string.member_you)}" else "",
         )
+
+        val btnChatMember = row.findViewById<View>(R.id.btnChatMember)
+        if (isCurrentUser || isCensored) {
+            btnChatMember.isVisible = false
+        } else {
+            btnChatMember.isVisible = true
+            btnChatMember.setOnClickListener {
+                val sheet = com.labpro.nimons360.ui.features.map.MemberDetailBottomSheet.newInstance(
+                    userId = member.id ?: 0,
+                    name = member.fullName,
+                    email = member.email,
+                    lat = 0.0,
+                    lon = 0.0,
+                    battery = -1,
+                    charging = null,
+                    net = null,
+                    hideTelemetry = true
+                )
+                sheet.show(childFragmentManager, com.labpro.nimons360.ui.features.map.MemberDetailBottomSheet.TAG)
+            }
+        }
     }
 
     private fun makeDivider(): View {

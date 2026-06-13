@@ -69,6 +69,92 @@ object MapPinMaker {
         return BitmapDrawable(context.resources, bitmap)
     }
 
+    fun selfWithBitmap(
+        context: Context,
+        avatar: Bitmap,
+        name: String,
+        rotation: Float,
+        color: Int,
+    ): Drawable {
+        val size = dp(context, 54)
+        val label = labelSpec(context, name)
+        val bitmapWidth = max(size, label.width)
+        val bitmapHeight = label.height + size
+        val bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val centerX = bitmapWidth / 2f
+        val centerY = label.height + size / 2f
+        val radius = size * 0.36f
+
+        val fill = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            this.color = color
+            style = Paint.Style.FILL
+        }
+        val arrow = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            this.color = ContextCompat.getColor(context, R.color.secondary_coral)
+            style = Paint.Style.FILL
+        }
+
+        drawLabel(canvas, label, bitmapWidth)
+        canvas.drawCircle(centerX, centerY, radius, fill)
+
+        val innerRadius = radius - dp(context, 2)
+        if (innerRadius > 0) {
+            val safeAvatar = if (avatar.config == Bitmap.Config.HARDWARE) {
+                avatar.copy(Bitmap.Config.ARGB_8888, false)
+            } else {
+                avatar
+            }
+            
+            val cropped = if (safeAvatar.width != safeAvatar.height) {
+                centerCropToSquare(safeAvatar)
+            } else {
+                safeAvatar
+            }
+            
+            val scaledAvatar = Bitmap.createScaledBitmap(cropped, (innerRadius * 2).toInt(), (innerRadius * 2).toInt(), true)
+            
+            val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+            val clipPath = Path().apply {
+                addCircle(centerX, centerY, innerRadius, Path.Direction.CW)
+            }
+            
+            canvas.save()
+            canvas.clipPath(clipPath)
+            
+            canvas.drawBitmap(
+                scaledAvatar,
+                centerX - innerRadius,
+                centerY - innerRadius,
+                paint
+            )
+            
+            canvas.restore()
+            if (scaledAvatar !== cropped) {
+                scaledAvatar.recycle()
+            }
+            if (cropped !== safeAvatar) {
+                cropped.recycle()
+            }
+            if (safeAvatar !== avatar) {
+                safeAvatar.recycle()
+            }
+        }
+
+        canvas.save()
+        canvas.rotate(rotation, centerX, centerY)
+        val path = Path().apply {
+            moveTo(centerX, label.height + size * 0.02f)
+            lineTo(centerX - size * 0.11f, label.height + size * 0.22f)
+            lineTo(centerX + size * 0.11f, label.height + size * 0.22f)
+            close()
+        }
+        canvas.drawPath(path, arrow)
+        canvas.restore()
+
+        return BitmapDrawable(context.resources, bitmap)
+    }
+
     fun member(
         context: Context,
         letter: String,
@@ -103,6 +189,86 @@ object MapPinMaker {
         canvas.drawText(letter, centerX, centerY + bounds.height() / 2f, text)
 
         return BitmapDrawable(context.resources, bitmap)
+    }
+
+    fun memberWithBitmap(
+        context: Context,
+        avatar: Bitmap,
+        name: String,
+        color: Int,
+        showLabel: Boolean = true,
+    ): Drawable {
+        val size = dp(context, 48)
+        val label = if (showLabel) labelSpec(context, name) else null
+        val labelHeight = label?.height ?: 0
+        val bitmapWidth = max(size, label?.width ?: 0)
+        val bitmapHeight = labelHeight + size
+        val bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+
+        label?.let { drawLabel(canvas, it, bitmapWidth) }
+
+        val centerX = bitmapWidth / 2f
+        val centerY = labelHeight + size / 2f
+        val radius = size * 0.36f
+
+        val ringPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            this.color = color
+            style = Paint.Style.FILL
+        }
+        canvas.drawCircle(centerX, centerY, radius, ringPaint)
+
+        val innerRadius = radius - dp(context, 2)
+        if (innerRadius > 0) {
+            val safeAvatar = if (avatar.config == Bitmap.Config.HARDWARE) {
+                avatar.copy(Bitmap.Config.ARGB_8888, false)
+            } else {
+                avatar
+            }
+            
+            val cropped = if (safeAvatar.width != safeAvatar.height) {
+                centerCropToSquare(safeAvatar)
+            } else {
+                safeAvatar
+            }
+            
+            val scaledAvatar = Bitmap.createScaledBitmap(cropped, (innerRadius * 2).toInt(), (innerRadius * 2).toInt(), true)
+            
+            val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+            val clipPath = Path().apply {
+                addCircle(centerX, centerY, innerRadius, Path.Direction.CW)
+            }
+            
+            canvas.save()
+            canvas.clipPath(clipPath)
+            
+            canvas.drawBitmap(
+                scaledAvatar,
+                centerX - innerRadius,
+                centerY - innerRadius,
+                paint
+            )
+            
+            canvas.restore()
+            if (scaledAvatar !== cropped) {
+                scaledAvatar.recycle()
+            }
+            if (cropped !== safeAvatar) {
+                cropped.recycle()
+            }
+            if (safeAvatar !== avatar) {
+                safeAvatar.recycle()
+            }
+        }
+
+        return BitmapDrawable(context.resources, bitmap)
+    }
+
+    private fun centerCropToSquare(bitmap: Bitmap): Bitmap {
+        val size = Math.min(bitmap.width, bitmap.height)
+        val x = (bitmap.width - size) / 2
+        val y = (bitmap.height - size) / 2
+        return Bitmap.createBitmap(bitmap, x, y, size, size)
     }
 
     fun custom(context: Context, file: File, name: String): Drawable? {

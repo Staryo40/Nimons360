@@ -88,9 +88,9 @@ fun HomeCompose(
     }
 
     LaunchedEffect(Unit) {
-//        if (state.myFamilies.isEmpty() && state.discoverFamilies.isEmpty()) {
+        if (state.myFamilies.isEmpty() && state.discoverFamilies.isEmpty()) {
             vm.refresh()
-//        }
+        }
     }
 
     PullToRefreshBox(

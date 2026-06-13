@@ -57,6 +57,7 @@ class SendMessageBottomSheet : BottomSheetDialogFragment() {
         val tvGreetingTimeLabel = view.findViewById<TextView>(R.id.tvGreetingTimeLabel)
         val tvGreetingTitle = view.findViewById<TextView>(R.id.tvGreetingTitle)
         val btnSendGreeting = view.findViewById<MaterialButton>(R.id.btnSendGreeting)
+        val switchAnonymous = view.findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchAnonymous)
 
         ivGreetingWeatherIcon.setImageResource(greetingData.iconResId)
         tvGreetingTimeLabel.text = greetingData.label
@@ -72,7 +73,12 @@ class SendMessageBottomSheet : BottomSheetDialogFragment() {
             lifecycleScope.launch {
                 try {
                     val currentSender = senderName ?: "Someone"
-                    val formattedMessage = "$currentSender from $familyName: ${greetingData.title}"
+                    val isAnonymous = switchAnonymous?.isChecked ?: true
+                    val formattedMessage = if (isAnonymous) {
+                        greetingData.title
+                    } else {
+                        "$currentSender from $familyName: ${greetingData.title}"
+                    }
 
                     val response = RetrofitClient.apiService.sendBroadcastNotification(
                         BroadcastNotificationRequest(familyId, formattedMessage)
@@ -112,7 +118,12 @@ class SendMessageBottomSheet : BottomSheetDialogFragment() {
             lifecycleScope.launch {
                 try {
                     val currentSender = senderName ?: "Someone"
-                    val formattedMessage = "$currentSender from $familyName: $messageText"
+                    val isAnonymous = switchAnonymous?.isChecked ?: true
+                    val formattedMessage = if (isAnonymous) {
+                        messageText
+                    } else {
+                        "$currentSender from $familyName: $messageText"
+                    }
 
                     val response = RetrofitClient.apiService.sendBroadcastNotification(
                         BroadcastNotificationRequest(familyId, formattedMessage)

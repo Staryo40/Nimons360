@@ -40,6 +40,7 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
         } else null
     }
     private val internetStatus: String by lazy { requireArguments().getString(ARG_NET, "Unknown") }
+    private val hideTelemetry: Boolean by lazy { requireArguments().getBoolean(ARG_HIDE_TELEMETRY, false) }
 
     private var resolvedFamilyId: Int? = null
     private var senderName: String? = null
@@ -66,6 +67,9 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
 
         // Grid Status Elements
         val tvBattery = view.findViewById<TextView>(R.id.tvBattery)
+        val layoutTelemetry = view.findViewById<View>(R.id.layoutTelemetry)
+        layoutTelemetry.visibility = if (hideTelemetry) View.GONE else View.VISIBLE
+
         val tvLoc = view.findViewById<TextView>(R.id.tvLoc)
         val tvNet = view.findViewById<TextView>(R.id.tvNet)
 
@@ -91,6 +95,7 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
         val tvGreetingTitle = view.findViewById<TextView>(R.id.tvGreetingTitle)
         val btnSendGreeting = view.findViewById<MaterialButton>(R.id.btnSendGreeting)
         val btnCloseSheet = view.findViewById<View>(R.id.btnCloseSheet)
+        val switchAnonymous = view.findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchAnonymous)
 
         ivGreetingWeatherIcon.setImageResource(greetingData.iconResId)
         tvGreetingTimeLabel.text = greetingData.label
@@ -159,7 +164,12 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
             lifecycleScope.launch {
                 try {
                     val currentSender = senderName ?: "Someone"
-                    val formattedMessage = "$currentSender: ${greetingData.title}"
+                    val isAnonymous = switchAnonymous?.isChecked ?: true
+                    val formattedMessage = if (isAnonymous) {
+                        greetingData.title
+                    } else {
+                        "$currentSender: ${greetingData.title}"
+                    }
 
                     val response = RetrofitClient.apiService.sendGreetingToMember(
                         SendGreetingRequest(familyId, targetUserId, formattedMessage)
@@ -200,7 +210,12 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
             lifecycleScope.launch {
                 try {
                     val currentSender = senderName ?: "Someone"
-                    val formattedMessage = "$currentSender: $messageText"
+                    val isAnonymous = switchAnonymous?.isChecked ?: true
+                    val formattedMessage = if (isAnonymous) {
+                        messageText
+                    } else {
+                        "$currentSender: $messageText"
+                    }
 
                     val response = RetrofitClient.apiService.sendGreetingToMember(
                         SendGreetingRequest(familyId, targetUserId, formattedMessage)
@@ -269,6 +284,7 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
         private const val ARG_BATTERY = "battery"
         private const val ARG_CHARGING = "charging"
         private const val ARG_NET = "net"
+        private const val ARG_HIDE_TELEMETRY = "hide_telemetry"
 
         fun newInstance(
             userId: Int,
@@ -278,7 +294,8 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
             lon: Double,
             battery: Int?,
             charging: Boolean?,
-            net: String?
+            net: String?,
+            hideTelemetry: Boolean = false
         ) = MemberDetailBottomSheet().apply {
             arguments = Bundle().apply {
                 putInt(ARG_USER_ID, userId)
@@ -291,6 +308,7 @@ class MemberDetailBottomSheet : BottomSheetDialogFragment() {
                     putBoolean(ARG_CHARGING, charging)
                 }
                 putString(ARG_NET, net ?: "Unknown")
+                putBoolean(ARG_HIDE_TELEMETRY, hideTelemetry)
             }
         }
     }
