@@ -120,7 +120,10 @@ private fun JoinFamilyDialogContent(
     var hasError by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(Unit) { focusRequester.requestFocus() }
+    LaunchedEffect(Unit) {
+        withFrameNanos {  }
+        runCatching { focusRequester.requestFocus() }
+    }
 
     AlertDialog(
         modifier = Modifier
