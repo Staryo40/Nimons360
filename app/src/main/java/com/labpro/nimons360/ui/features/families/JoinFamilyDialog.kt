@@ -23,6 +23,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.labpro.nimons360.R
@@ -100,7 +101,10 @@ private fun JoinFamilyDialogContent(
     var hasError by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(Unit) { focusRequester.requestFocus() }
+    LaunchedEffect(Unit) {
+        withFrameNanos {  }
+        runCatching { focusRequester.requestFocus() }
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
