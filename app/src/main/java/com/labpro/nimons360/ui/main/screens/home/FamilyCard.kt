@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -29,13 +31,15 @@ import com.labpro.nimons360.data.model.family.FamilyWithMembers
 @Composable
 fun MyFamilyCard(
     family: FamilyWithMembers,
+    compact: Boolean = false,
     onClick: () -> Unit,
 ) {
     val pluralSuffix = if (family.members.size != 1) "s" else ""
     val openFamilyDescription = stringResource(R.string.cd_open_family, family.name)
     Card(
         modifier = Modifier
-            .width(160.dp)
+            .width(if (compact) 224.dp else 160.dp)
+            .defaultMinSize(minHeight = if (compact) 96.dp else 0.dp)
             .semantics {
                 contentDescription = openFamilyDescription
             }
@@ -44,44 +48,85 @@ fun MyFamilyCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
-        Column(
-            modifier = Modifier.padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center,
+        if (compact) {
+            Row(
+                modifier = Modifier.padding(14.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text  = family.name.first().uppercaseChar().toString(),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    fontWeight = FontWeight.Bold,
+                FamilyInitial(name = family.name)
+
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(5.dp),
+                ) {
+                    FamilySummary(
+                        family = family,
+                        pluralSuffix = pluralSuffix,
+                    )
+                }
+            }
+        } else {
+            Column(
+                modifier = Modifier.padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                FamilyInitial(name = family.name)
+                FamilySummary(
+                    family = family,
+                    pluralSuffix = pluralSuffix,
                 )
             }
-
-            Text(
-                text      = family.name,
-                style     = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold,
-                maxLines  = 1,
-                overflow  = TextOverflow.Ellipsis,
-            )
-
-            Text(
-                text  = stringResource(
-                    R.string.home_family_members_count,
-                    family.members.size,
-                    pluralSuffix,
-                ),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-
-            MemberAvatarRow(members = family.members, total = family.members.size)
         }
+    }
+}
+
+@Composable
+private fun FamilyInitial(name: String) {
+    Box(
+        modifier = Modifier
+            .size(44.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.primary),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = name.firstOrNull()?.uppercaseChar()?.toString() ?: "?",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontWeight = FontWeight.Bold,
+        )
+    }
+}
+
+@Composable
+private fun FamilySummary(
+    family: FamilyWithMembers,
+    pluralSuffix: String,
+) {
+    Text(
+        text = family.name,
+        style = MaterialTheme.typography.titleSmall,
+        fontWeight = FontWeight.SemiBold,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
+
+    Text(
+        text = stringResource(
+            R.string.home_family_members_count,
+            family.members.size,
+            pluralSuffix,
+        ),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        maxLines = 1,
+    )
+
+    if (family.members.isNotEmpty()) {
+        MemberAvatarRow(
+            members = family.members,
+            total = family.members.size,
+        )
     }
 }

@@ -46,7 +46,7 @@ fun Navbar(
                 Icon(   
                     if (currentScreen == MainScreenEnum.HOME) Icons.Filled.Home
                     else Icons.Outlined.Home,
-                    contentDescription = stringResource(R.string.cd_nav_home),
+                    contentDescription = null,
                 )
             },
             colors = itemColors,
@@ -60,7 +60,7 @@ fun Navbar(
                 Icon(
                     if (currentScreen == MainScreenEnum.MAP) Icons.Filled.LocationOn
                     else Icons.Outlined.LocationOn,
-                    contentDescription = stringResource(R.string.cd_nav_map),
+                    contentDescription = null,
                 )
             },
             colors = itemColors,
@@ -74,7 +74,7 @@ fun Navbar(
                 Icon(
                     if (currentScreen == MainScreenEnum.FAMILY) Icons.Filled.Group
                     else Icons.Outlined.Group,
-                    contentDescription = stringResource(R.string.cd_nav_families),
+                    contentDescription = null,
                 )
             },
             colors = itemColors,

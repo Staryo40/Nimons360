@@ -16,12 +16,14 @@
     <string name="error_invalid_email">Please enter a valid email address.</string>
     <string name="error_network">No internet connection. Please try again.</string>
     <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="profile_photo_too_large">This photo could not be compressed below 500 KB. Please choose another photo.</string>
     <string name="error_unauthorized">Your session has expired. Please sign in again.</string>
 
     <!-- Navigation labels -->
     <string name="nav_home">Home</string>
     <string name="nav_map">Map</string>
     <string name="nav_families">Families</string>
+    <string name="title_browse_families">Browse Families</string>
 
     <!-- Home screen -->
     <string name="section_my_families">MY FAMILIES</string>
@@ -31,6 +33,7 @@
     <string name="home_empty_my_families">You haven\'t joined any families yet.</string>
     <string name="home_empty_discover">No new families to discover right now.</string>
     <string name="home_family_members_count">%1$d member%2$s</string>
+    <string name="action_see_all_families">See all</string>
 
     <!-- Families screen -->
     <string name="all_families">All</string>
@@ -43,6 +46,7 @@
 
     <!-- Family detail -->
     <string name="family_code_label">FAMILY CODE</string>
+    <string name="invite_code_label">INVITE CODE</string>
     <string name="family_code_copy_hint">Share this code so others can join your family</string>
     <string name="not_a_member">Not a member</string>
     <string name="members_section">MEMBERS</string>
@@ -62,6 +66,17 @@
     <string name="btn_join_confirm">Join</string>
     <string name="family_code_clipboard_label">Family Code</string>
     <string name="family_code_copied">Code copied!</string>
+    <string name="share_family">Share Family Link</string>
+    <string name="share_family_qr">Share Family QR Code</string>
+    <string name="share_family_qr_code">Family QR Code</string>
+    <string name="share_family_message">Join %1$s on Nimons360: %2$s</string>
+    <string name="share_family_chooser">Share family link</string>
+    <string name="qr_share_chooser">Share family QR code</string>
+    <string name="qr_share_error">Failed to share QR code.</string>
+    <string name="qr_preview_hint">Scan this QR code to open the family invite.</string>
+    <string name="actions_section">ACTIONS</string>
+    <string name="send_message">Send Message</string>
+    <string name="send_message_unavailable">Send Message is not available yet.</string>
     <string name="family_meta_with_date">%1$d member%2$s · Created %3$s</string>
     <string name="family_meta_without_date">%1$d member%2$s</string>
     <string name="live_room">Live Room</string>
@@ -88,31 +103,119 @@
     <string name="display_name_visible">This name is visible to your family members</string>
     <string name="btn_save">Save</string>
     <string name="app_version">© Nimons360</string>
+    <string name="analytics_title">Analytics</string>
+    <string name="analytics_empty_summary">No local activity has been recorded yet.\n\nLocation sharing: %1$s</string>
+    <string name="analytics_summary">Map opened: %1$d\nFavorite added: %2$d\nFavorite removed: %3$d\nPin customized: %4$d\nMember popup opened: %5$d\nLocation sharing: %6$s</string>
+    <string name="analytics_enabled">Enabled</string>
+    <string name="analytics_disabled">Disabled</string>
+    <string name="analytics_reset">Reset</string>
+    <string name="analytics_reset_done">Analytics summary reset</string>
+    <string name="analytics_back">Back</string>
+    <string name="analytics_monthly_average">Monthly distance average</string>
+    <string name="analytics_km_value">%1$.1f km</string>
+    <string name="analytics_number_value">%1$.1f</string>
+    <string name="analytics_monthly_description">You have traveled %1$.1f km this month</string>
+    <string name="analytics_total_icon">TOTAL</string>
+    <string name="analytics_daily_icon">AVG</string>
+    <string name="analytics_active_icon">DAYS</string>
+    <string name="analytics_total_km">Total km</string>
+    <string name="analytics_avg_day_km">Avg/day km</string>
+    <string name="analytics_active_days">Active days</string>
+    <string name="analytics_daily_distance">Daily Distance</string>
+    <string name="analytics_recent_locations">Recent Locations</string>
+    <string name="analytics_no_locations">Location history will appear after live location tracking starts.</string>
+    <string name="analytics_export_csv">Export to CSV</string>
+    <string name="analytics_export_title">Export analytics CSV</string>
+    <string name="analytics_export_failed">Unable to export analytics.</string>
+    <string name="analytics_just_now">Just now</string>
+    <string name="analytics_minutes_ago">%1$d min ago</string>
+    <string name="analytics_hours_minutes_ago">%1$dh %2$02dm ago</string>
+    <string name="analytics_chart_description">Daily distance graph, total %1$.1f kilometers this month.</string>
+    <string name="pin_customize_title">Customize Pin</string>
+    <string name="pin_back">Back</string>
+    <string name="pin_current">Your current pin</string>
+    <string name="pin_local_only">Visible only on your map</string>
+    <string name="pin_choose_skin">Choose a Skin</string>
+    <string name="pin_color_menu">Color Pins</string>
+    <string name="pin_color_selected">Selected: %1$s</string>
+    <string name="pin_choose_color">Choose a pin color</string>
+    <string name="pin_selected">Pin selected</string>
+    <string name="pin_download_channel">Custom pin downloads</string>
+    <string name="pin_downloading_title">Downloading %1$s</string>
+    <string name="pin_downloading_body">Download in progress</string>
+    <string name="pin_download_complete">%1$s is ready</string>
+    <string name="pin_download_select_hint">Open Customize Pin to select it.</string>
+    <string name="pin_download_failed">Could not download %1$s</string>
+    <string name="pin_download_ready">Pin downloaded and ready to select</string>
+    <string name="pin_download_error">Pin download failed</string>
+    <string name="pin_notification_required">Notification permission is required to show pin download progress.</string>
 
     <!-- Map -->
     <string name="map_title">Map</string>
     <string name="search_location_member">Search location or member…</string>
     <string name="all_families_filter">All Families</string>
+    <string name="map_family_filter_description">Show locations for %1$s</string>
     <string name="btn_close">Close</string>
     <string name="label_battery">Battery</string>
     <string name="label_location">Location</string>
+    <string name="label_charging">Charging</string>
+    <string name="label_internet">Internet</string>
     <string name="label_network">Wi-Fi Network</string>
     <string name="map_need_permission">Location access needed</string>
     <string name="map_need_permission_body">Allow location permission so Nimons360 can place your pin and share live presence.</string>
     <string name="map_grant_permission">Grant Permission</string>
+    <string name="map_location_off_title">Location is turned off</string>
+    <string name="map_location_off_body">Turn location services back on so the map can show your position and continue live tracking.</string>
+    <string name="map_open_location_settings">Open Settings</string>
     <string name="map_waiting_location">Waiting for your location…</string>
     <string name="map_permission_waiting">Location permission is not granted yet.</string>
     <string name="map_live_ready">Live location is active.</string>
+    <string name="map_live_ready_empty">Live location is active. No other members online.</string>
+    <string name="marked_location_add_title">Mark location</string>
+    <string name="marked_location_detail_title">Marked location</string>
+    <string name="marked_location_edit_title">Edit marked location</string>
+    <string name="marked_location_name">Location name</string>
+    <string name="marked_location_description">Description</string>
+    <string name="marked_location_latitude">Latitude</string>
+    <string name="marked_location_longitude">Longitude</string>
+    <string name="marked_location_use_current">Use my location</string>
+    <string name="marked_location_navigate">Navigate</string>
+    <string name="marked_location_photos">Photos</string>
+    <string name="marked_location_photo">Marked location photo</string>
+    <string name="marked_location_photo_optional">Photos are optional.</string>
+    <string name="marked_location_gallery">Gallery</string>
+    <string name="marked_location_camera">Camera</string>
+    <string name="marked_location_remove_photo">Remove</string>
+    <string name="marked_location_edit">Edit</string>
+    <string name="marked_location_save">Save</string>
+    <string name="marked_location_delete">Delete</string>
+    <string name="marked_location_delete_title">Delete marked location?</string>
+    <string name="marked_location_delete_message">The location and all of its stored photos will be permanently deleted.</string>
+    <string name="marked_location_name_required">Location name is required.</string>
+    <string name="marked_location_description_required">Description is required.</string>
+    <string name="marked_location_invalid_coordinates">Enter valid latitude and longitude.</string>
+    <string name="marked_location_current_unavailable">Your current location is not available yet.</string>
+    <string name="marked_location_camera_permission">Camera permission is required to take a photo.</string>
+    <string name="map_recenter">Recenter map on my location</string>
+    <string name="presence_channel_name">Live location</string>
+    <string name="presence_notification_title">Nimons360 live location</string>
+    <string name="presence_notification_body">Sharing your location with your family.</string>
+    <string name="map_live_ready_members">%1$d members active on the map.</string>
     <string name="map_connecting">Connecting to live map…</string>
     <string name="map_idle_status">%1$d members active on the map.</string>
     <string name="map_member_title">Member Info</string>
-    <string name="map_loc_value">Location: %.5f, %.5f</string>
+    <string name="map_loc_value">Location: %1$.5f, %2$.5f</string>
     <string name="map_battery_value">Battery: %1$s</string>
     <string name="map_charge_value">Charging: %1$s</string>
     <string name="map_net_value">Internet: %1$s</string>
     <string name="map_unknown">Unknown</string>
     <string name="map_charging">Charging</string>
     <string name="map_not_charging">Not charging</string>
+    <string name="map_internet_wifi">WiFi</string>
+    <string name="map_internet_mobile">Mobile Data</string>
+    <string name="share_instagram_story">Story</string>
+    <string name="instagram_not_installed">Instagram is not installed.</string>
+    <string name="instagram_story_share_error">Failed to share Instagram story.</string>
 
     <!-- Network sensing -->
     <string name="disconnected_title">Disconnected</string>
@@ -122,19 +225,33 @@
     <string name="cd_avatar">Avatar for %s</string>
     <string name="cd_pin_family">Pin family</string>
     <string name="cd_copy_code">Copy family code</string>
+    <string name="cd_share_family">Share family link</string>
+    <string name="cd_share_family_qr">Share family QR code</string>
+    <string name="cd_send_message">Send message</string>
     <string name="cd_edit_profile">Edit profile</string>
     <string name="cd_family_icon">Family icon</string>
     <string name="cd_map_pin">Location pin for %s</string>
+    <string name="cd_share_instagram_story">Share map to Instagram story</string>
     <string name="cd_profile_avatar">Open profile for %s</string>
     <string name="cd_create_family">Create family</string>
+    <string name="cd_add_actions">Open add menu</string>
+    <string name="action_add_family">Add Family</string>
+    <string name="action_mark_location">Mark Location</string>
+    <string name="cd_join_family_named">Join family %s</string>
     <string name="cd_open_family">Open family %s</string>
     <string name="cd_pin_family_named">Pin family %s</string>
     <string name="cd_unpin_family_named">Unpin family %s</string>
     <string name="cd_discover_family_icon">Icon for %s family</string>
+    <string name="cd_screen_title">%s screen</string>
     <string name="cd_nav_home">Home</string>
     <string name="cd_nav_map">Map</string>
     <string name="cd_nav_families">Families</string>
     <string name="cd_back">Navigate up</string>
     <string name="cd_loading_overlay">Loading</string>
     <string name="a11y_more_members">Plus %d more members</string>
+    <string name="a11y_member_row">Members: %1$s</string>
+
+    <!-- Notifications -->
+    <string name="default_notification_channel_id">family_notifications</string>
+    <string name="default_notification_channel_name">Family Notifications</string>
 </resources>

@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
@@ -21,9 +24,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.labpro.nimons360.core.events.AuthEvent
 import com.labpro.nimons360.core.events.AuthEventBus
 import com.labpro.nimons360.core.network.NetworkMonitor
+import com.labpro.nimons360.core.navigation.FamilyDeepLink
 import com.labpro.nimons360.ui.features.auth.LoginActivity
 import com.labpro.nimons360.ui.main.shared.NetworkSensingWrapper
 import com.labpro.nimons360.ui.main.MainContent
+import com.labpro.nimons360.ui.features.map.PresenceServiceController
 import com.labpro.nimons360.ui.theme.Nimons360Theme
 import com.labpro.nimons360.viewmodel.MainViewModel
 import com.labpro.nimons360.viewmodel.MainViewModelFactory
@@ -39,10 +44,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var networkMonitor: NetworkMonitor
+    private var pendingFamilyDeepLink by mutableStateOf<FamilyDeepLink?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        supportFragmentManager.findFragmentByTag("map_fragment")?.let { fragment ->
+            supportFragmentManager.beginTransaction().remove(fragment).commitNow()
+        }
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        pendingFamilyDeepLink = FamilyDeepLink.fromIntent(intent)
 
         networkMonitor = NetworkMonitor(applicationContext)
 
@@ -62,12 +72,27 @@ class MainActivity : AppCompatActivity() {
                                 Text("Loading...", style = MaterialTheme.typography.bodyMedium)
                             }
 
-                        state.user != null -> {
-                            val user = state.user!!
-                            MainContent(
-                                user = user
-                            )
-                        }
+                            state.user != null -> {
+                                val user = state.user!!
+                                LaunchedEffect(user.id, user.fullName) {
+                                    val app = application as MainApplication
+                                    app.tokenManager.setPresenceName(user.fullName)
+                                    if (app.tokenManager.isLocationSharingEnabled()) {
+                                        PresenceServiceController.start(this@MainActivity, user.fullName)
+                                    }
+                                }
+                                val currentScreen by viewModel.currentScreen.collectAsStateWithLifecycle()
+
+                                MainContent(
+                                    user = user,
+                                    currentScreen = currentScreen,
+                                    onScreenChange = { viewModel.setScreen(it) },
+                                    pendingFamilyDeepLink = pendingFamilyDeepLink,
+                                    onFamilyDeepLinkHandled = {
+                                        pendingFamilyDeepLink = null
+                                    },
+                                )
+                            }
 
                             state.error != null -> {
                                 Text(
@@ -81,6 +106,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        pendingFamilyDeepLink = FamilyDeepLink.fromIntent(intent)
     }
 
     private fun observeAuthEvents() {
@@ -97,8 +128,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun navigateToLogin() {
+        PresenceServiceController.stop(this)
         val intent = Intent(this, LoginActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            pendingFamilyDeepLink?.let {
+                putExtra(FamilyDeepLink.EXTRA_URI, it.toUriString())
+            }
         }
         startActivity(intent)
         finish()

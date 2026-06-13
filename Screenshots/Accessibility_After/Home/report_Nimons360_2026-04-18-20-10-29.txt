@@ -1,0 +1,22 @@
+The following is a list of opportunities to improve the accessibility of Nimons360. Each item corresponds to an outlined area on the attached screenshot.
+
+Text contrast
+[868,1018][937,1057]
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 3.89. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #B96E4E. Consider using colors that result in a contrast ratio greater than 4.50 for small text, or 3.00 for large text. This item may be obscured by other on-screen content. Consider manually testing this item's contrast.
+
+Text contrast
+[868,1246][937,1285]
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 3.89. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #B96E4E. Consider using colors that result in a contrast ratio greater than 4.50 for small text, or 3.00 for large text. This item may be obscured by other on-screen content. Consider manually testing this item's contrast.
+
+Text contrast
+[868,1474][937,1513]
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 3.89. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #B96E4E. Consider using colors that result in a contrast ratio greater than 4.50 for small text, or 3.00 for large text. This item may be obscured by other on-screen content. Consider manually testing this item's contrast.
+
+Text contrast
+[868,1709][937,1748]
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 3.89. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #B96E4E. Consider using colors that result in a contrast ratio greater than 4.50 for small text, or 3.00 for large text. This item may be obscured by other on-screen content. Consider manually testing this item's contrast.
+

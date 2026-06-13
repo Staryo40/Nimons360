@@ -40,6 +40,8 @@
     <dimen name="avatar_xxl">100dp</dimen>
     <!-- Map pin size -->
     <dimen name="map_pin_size">40dp</dimen>
+    <dimen name="marked_photo_size">112dp</dimen>
+    <dimen name="analytics_chart_label">10sp</dimen>
     <!-- Family icon in lists -->
     <dimen name="family_icon_sm">36dp</dimen>
     <dimen name="family_icon_md">48dp</dimen>
@@ -57,4 +59,8 @@
     <!-- ── Page padding ──────────────────────────────────────────────── -->
     <dimen name="page_horizontal_padding">16dp</dimen>
     <dimen name="page_vertical_padding">16dp</dimen>
+    <dimen name="content_max_width_form">760dp</dimen>
+    <dimen name="content_max_width_detail">960dp</dimen>
+    <dimen name="content_max_width_dashboard">1120dp</dimen>
+    <dimen name="family_members_max_height">240dp</dimen>
 </resources>

@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager.LayoutParams.WRAP_CONTENT
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -59,10 +61,13 @@ class JoinFamilyDialog : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View = ComposeView(requireContext()).apply {
+        val prefillCode = arguments?.getString(ARG_PREFILL_CODE)
+
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             Nimons360Theme {
                 JoinFamilyDialogContent(
+                    prefillCode = prefillCode,
                     onDismiss = { dismiss() },
                     onConfirm = { code ->
                         parentFragmentManager.setFragmentResult(
@@ -88,16 +93,31 @@ class JoinFamilyDialog : DialogFragment() {
         const val TAG         = "JoinFamilyDialog"
         const val REQUEST_KEY = "join_family_result"
         const val KEY_CODE    = "family_code"
+        private const val ARG_PREFILL_CODE = "prefill_code"
+
+        fun newInstance(prefillCode: String? = null) = JoinFamilyDialog().apply {
+            arguments = Bundle().apply {
+                putString(ARG_PREFILL_CODE, prefillCode)
+            }
+        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun JoinFamilyDialogContent(
+    prefillCode: String?,
     onDismiss: () -> Unit,
     onConfirm: (String) -> Unit,
 ) {
-    var code by remember { mutableStateOf("") }
+    var code by remember {
+        mutableStateOf(
+            prefillCode.orEmpty()
+                .uppercase()
+                .filter { it.isLetterOrDigit() }
+                .take(6)
+        )
+    }
     var hasError by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
 
@@ -107,6 +127,10 @@ private fun JoinFamilyDialogContent(
     }
 
     AlertDialog(
+        modifier = Modifier
+            .fillMaxWidth()
+            .widthIn(max = 480.dp)
+            .imePadding(),
         onDismissRequest = onDismiss,
         icon = {
             Icon(
@@ -122,7 +146,12 @@ private fun JoinFamilyDialogContent(
             )
         },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(
+                modifier = Modifier
+                    .heightIn(max = 320.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
                 Text(
                     text  = stringResource(R.string.join_prompt),
                     style = MaterialTheme.typography.bodyMedium,

@@ -57,7 +57,7 @@ class LocationTracker(context: Context) {
 
         client.lastLocation.addOnSuccessListener { point ->
             if (point != null) {
-                onPoint(MapPoint(point.latitude, point.longitude))
+                call?.invoke(MapPoint(point.latitude, point.longitude))
             }
         }
 

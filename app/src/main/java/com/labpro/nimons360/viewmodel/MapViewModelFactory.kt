@@ -8,7 +8,7 @@ import com.labpro.nimons360.data.repository.LocationRepository
 class MapViewModelFactory(
     private val user: UserData,
     private val token: () -> String?,
-    private val locationRepository: LocationRepository
+    private val locationRepository: LocationRepository,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

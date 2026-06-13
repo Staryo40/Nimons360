@@ -1,0 +1,27 @@
+The following is a list of opportunities to improve the accessibility of Nimons360. Each item corresponds to an outlined area on the attached screenshot.
+
+Text contrast
+[159,968][298,1017]
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 4.00. This ratio is based on an estimated foreground color of #6C757D and an estimated background color of #E4EFF0. Consider increasing this item's text contrast ratio to 4.50 or greater.
+
+Text contrast
+[159,1197][277,1246]
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 4.00. This ratio is based on an estimated foreground color of #6C757D and an estimated background color of #E4EFF0. Consider increasing this item's text contrast ratio to 4.50 or greater.
+
+Text contrast
+[595,1197][743,1246]
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 4.00. This ratio is based on an estimated foreground color of #6C757D and an estimated background color of #E4EFF0. Consider increasing this item's text contrast ratio to 4.50 or greater.
+
+Text contrast
+[159,1483][285,1532]
+Consider increasing this item's text foreground to background contrast ratio.
+The item's text contrast ratio is 4.00. This ratio is based on an estimated foreground color of #6C757D and an estimated background color of #E4EFF0. Consider increasing this item's text contrast ratio to 4.50 or greater.
+
+Text Scaling
+[181,641][357,817]
+This ViewGroup has a fixed size and contains a TextView with scalable text.
+Consider modifying the LayoutParams to allow for text expansion.
+

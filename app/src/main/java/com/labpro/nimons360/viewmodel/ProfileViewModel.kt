@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 
 class ProfileViewModel(
     private val userRepository: UserRepository,
@@ -34,7 +35,8 @@ class ProfileViewModel(
                         it.copy(
                             isLoading = false,
                             name = result.data.fullName,
-                            email = result.data.email
+                            email = result.data.email,
+                            profileImageUrl = result.data.profileImageUrl
                         )
                     }
                 }
@@ -54,7 +56,35 @@ class ProfileViewModel(
             when (val result = userRepository.updateProfile(newName)) {
                 is NetworkResult.Success -> {
                     _uiState.update {
-                        it.copy(isLoading = false, name = result.data.fullName, error = null)
+                        it.copy(
+                            isLoading = false,
+                            name = result.data.fullName,
+                            profileImageUrl = result.data.profileImageUrl,
+                            error = null
+                        )
+                    }
+                }
+                is NetworkResult.Error -> {
+                    _uiState.update { it.copy(isLoading = false, error = result.message) }
+                }
+            }
+        }
+    }
+
+    fun uploadPhoto(photoPart: MultipartBody.Part) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
+
+            when (val result = userRepository.uploadProfilePhoto(photoPart)) {
+                is NetworkResult.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            name = result.data.fullName,
+                            email = result.data.email,
+                            profileImageUrl = result.data.profileImageUrl,
+                            error = null
+                        )
                     }
                 }
                 is NetworkResult.Error -> {

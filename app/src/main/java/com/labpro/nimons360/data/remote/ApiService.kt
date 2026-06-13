@@ -20,6 +20,9 @@ import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Multipart
+import retrofit2.http.Part
+import okhttp3.MultipartBody
 
 /**
  * Retrofit service interface for the Nimons360 REST API.
@@ -50,6 +53,13 @@ interface ApiService {
         @Body request: UpdateProfileRequest,
     ): Response<UserResponse>
 
+    /** POST /api/me/photo — uploads a new profile photo. */
+    @Multipart
+    @POST("/api/me/photo")
+    suspend fun uploadProfilePhoto(
+        @Part photo: MultipartBody.Part,
+    ): Response<UserResponse>
+
     // === Families ===
     /** GET /api/families — all families (id, name, iconUrl only). */
     @GET("/api/families")
@@ -78,4 +88,24 @@ interface ApiService {
     /** POST /api/families/leave */
     @POST("/api/families/leave")
     suspend fun leaveFamily(@Body request: LeaveFamilyRequest): Response<LeaveFamilyResponse>
+
+    // === Notifications ===
+
+    @POST("/api/notifications/subscribe")
+    suspend fun subscribeDeviceToken(
+        @Body request: com.labpro.nimons360.data.model.notification.SubscribeTokenRequest
+    ): Response<com.labpro.nimons360.data.model.notification.SubscribeTokenResponse>
+
+    @POST("/api/notifications/unsubscribe")
+    suspend fun unsubscribeDeviceToken(): Response<com.labpro.nimons360.data.model.notification.UnsubscribeTokenResponse>
+
+    @POST("/api/notifications/send")
+    suspend fun sendBroadcastNotification(
+        @Body request: com.labpro.nimons360.data.model.notification.BroadcastNotificationRequest
+    ): Response<com.labpro.nimons360.data.model.notification.BroadcastNotificationResponse>
+
+    @POST("/api/notifications/greeting")
+    suspend fun sendGreetingToMember(
+        @Body request: com.labpro.nimons360.data.model.notification.SendGreetingRequest
+    ): Response<com.labpro.nimons360.data.model.notification.SendGreetingResponse>
 }

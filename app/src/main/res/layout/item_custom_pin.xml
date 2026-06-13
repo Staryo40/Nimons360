@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="116dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardBackgroundColor="@color/surface_white"
+    app:cardCornerRadius="@dimen/radius_md"
+    app:cardElevation="1dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_sm">
+
+            <ImageView
+                android:id="@+id/ivPinPreview"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:contentDescription="@null"
+                android:scaleType="centerInside"
+                app:tint="@null" />
+
+            <TextView
+                android:id="@+id/tvPinName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:gravity="center"
+                android:maxLines="1"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_sm" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ivPinStatus"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="@dimen/spacing_xs"
+            android:background="@drawable/bg_pin_status"
+            android:contentDescription="@null"
+            android:padding="6dp"
+            app:tint="@color/analytics_blue" />
+    </FrameLayout>
+</com.google.android.material.card.MaterialCardView>

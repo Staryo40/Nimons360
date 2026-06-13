@@ -42,11 +42,6 @@ class TokenManager(context: Context) {
     fun isLoggedIn(): Boolean {
         val token = getToken() ?: return false
         val expiresAt = prefs.getLong(KEY_EXPIRES_AT, 0L)
-
-        Log.d(TAG, "token=$token")
-        Log.d(TAG, "expiresAt=$expiresAt")
-        Log.d(TAG, "now=${System.currentTimeMillis()}")
-
         return System.currentTimeMillis() < expiresAt
     }
 
@@ -57,10 +52,65 @@ class TokenManager(context: Context) {
             .apply()
     }
 
+    fun isLocationSharingEnabled(): Boolean {
+        return prefs.getBoolean(KEY_SHARE_LOCATION, true)
+    }
+
+    fun setLocationSharingEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_SHARE_LOCATION, enabled).apply()
+    }
+
+    fun isNotificationsEnabled(): Boolean {
+        return prefs.getBoolean(KEY_NOTIFICATIONS_ENABLED, true)
+    }
+
+    fun setNotificationsEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_NOTIFICATIONS_ENABLED, enabled).apply()
+    }
+
+    fun getPinStyle(): String {
+        return prefs.getString(KEY_PIN_STYLE, PIN_TEAL) ?: PIN_TEAL
+    }
+
+    fun setPinStyle(style: String) {
+        prefs.edit()
+            .putString(KEY_PIN_STYLE, style)
+            .putString(KEY_PIN_SKIN, PIN_SKIN_COLOR)
+            .apply()
+    }
+
+    fun getPinSkin(): String {
+        return prefs.getString(KEY_PIN_SKIN, PIN_SKIN_COLOR) ?: PIN_SKIN_COLOR
+    }
+
+    fun setPinSkin(skin: String) {
+        prefs.edit().putString(KEY_PIN_SKIN, skin).apply()
+    }
+
+    fun setPresenceName(name: String) {
+        prefs.edit().putString(KEY_PRESENCE_NAME, name).apply()
+    }
+
+    fun getPresenceName(): String {
+        return prefs.getString(KEY_PRESENCE_NAME, "Nimons360 User") ?: "Nimons360 User"
+    }
+
     companion object {
         private const val TAG = "TokenManager"
         private const val FILE_NAME = "nimons360_secure_prefs"
         private const val KEY_TOKEN = "auth_token"
         private const val KEY_EXPIRES_AT = "expires_at"
+        private const val KEY_SHARE_LOCATION = "share_location"
+        private const val KEY_NOTIFICATIONS_ENABLED = "notifications_enabled"
+        private const val KEY_PIN_STYLE = "pin_style"
+        private const val KEY_PIN_SKIN = "pin_skin"
+        private const val KEY_PRESENCE_NAME = "presence_name"
+
+        const val PIN_TEAL = "teal"
+        const val PIN_CORAL = "coral"
+        const val PIN_BLUE = "blue"
+        const val PIN_PURPLE = "purple"
+        const val PIN_ORANGE = "orange"
+        const val PIN_SKIN_COLOR = "color"
     }
 }

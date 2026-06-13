@@ -10,6 +10,7 @@ import com.labpro.nimons360.data.remote.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import okhttp3.MultipartBody
 
 class UserRepository(
     private val tokenManager: TokenManager
@@ -22,9 +23,16 @@ class UserRepository(
 
         if (response.isSuccessful) {
             val currentUser = response.body()!!.data
-            _user.value = currentUser
+            val resolvedUser = if (!currentUser.profileImageUrl.isNullOrBlank()) {
+                currentUser.copy(
+                    profileImageUrl = "${currentUser.profileImageUrl}?t=${System.currentTimeMillis()}"
+                )
+            } else {
+                currentUser
+            }
+            _user.value = resolvedUser
 
-            NetworkResult.Success(currentUser)
+            NetworkResult.Success(resolvedUser)
         } else {
             NetworkResult.Error("Failed to load profile (HTTP ${response.code()}).")
         }
@@ -35,11 +43,38 @@ class UserRepository(
 
         if (response.isSuccessful) {
             val updatedUser = response.body()!!.data
-            _user.value = updatedUser
+            val resolvedUser = if (!updatedUser.profileImageUrl.isNullOrBlank()) {
+                updatedUser.copy(
+                    profileImageUrl = "${updatedUser.profileImageUrl}?t=${System.currentTimeMillis()}"
+                )
+            } else {
+                updatedUser
+            }
+            _user.value = resolvedUser
 
-            NetworkResult.Success(updatedUser)
+            NetworkResult.Success(resolvedUser)
         } else {
             NetworkResult.Error("Failed to update profile (HTTP ${response.code()}).")
+        }
+    }
+
+    suspend fun uploadProfilePhoto(photoPart: MultipartBody.Part): NetworkResult<UserData> = safeCall(TAG) {
+        val response = RetrofitClient.apiService.uploadProfilePhoto(photoPart)
+
+        if (response.isSuccessful) {
+            val updatedUser = response.body()!!.data
+            val resolvedUser = if (!updatedUser.profileImageUrl.isNullOrBlank()) {
+                updatedUser.copy(
+                    profileImageUrl = "${updatedUser.profileImageUrl}?t=${System.currentTimeMillis()}"
+                )
+            } else {
+                updatedUser
+            }
+            _user.value = resolvedUser
+
+            NetworkResult.Success(resolvedUser)
+        } else {
+            NetworkResult.Error("Failed to upload profile photo (HTTP ${response.code()}).")
         }
     }
 

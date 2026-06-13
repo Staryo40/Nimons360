@@ -15,6 +15,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.labpro.nimons360.MainActivity
 import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
+import com.labpro.nimons360.core.navigation.FamilyDeepLink
 import com.labpro.nimons360.viewmodel.AuthViewModel
 import com.labpro.nimons360.viewmodel.AuthViewModelFactory
 import kotlinx.coroutines.launch
@@ -42,8 +43,11 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var pbLoading: ProgressBar
     private lateinit var tvError: TextView
 
+    private var pendingFamilyDeepLink: FamilyDeepLink? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        pendingFamilyDeepLink = FamilyDeepLink.fromIntent(intent)
 
         setContentView(R.layout.activity_login)
         bindViews()
@@ -127,6 +131,9 @@ class LoginActivity : AppCompatActivity() {
     private fun navigateToMain() {
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            pendingFamilyDeepLink?.let {
+                putExtra(FamilyDeepLink.EXTRA_URI, it.toUriString())
+            }
         }
         startActivity(intent)
         finish()

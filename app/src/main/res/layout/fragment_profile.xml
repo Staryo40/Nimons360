@@ -18,14 +18,25 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:contentDescription="@string/cd_back"
-            app:navigationIcon="@drawable/ic_close"
-            app:navigationIconTint="@color/text_primary"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
             app:title="@string/profile_title"
             app:titleCentered="true"
             app:titleTextAppearance="@style/TextAppearance.Nimons360.Headline"
-            app:titleTextColor="@color/text_primary" />
+            app:titleTextColor="@color/text_primary">
+
+            <ImageButton
+                android:id="@+id/btnClose"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="end"
+                android:layout_marginEnd="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/cd_back"
+                android:src="@drawable/ic_close"
+                app:tint="@color/text_primary" />
+
+        </androidx.appcompat.widget.Toolbar>
 
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
@@ -52,7 +63,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_max="480dp">
+                app:layout_constraintWidth_max="@dimen/content_max_width_form">
 
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
@@ -81,6 +92,10 @@
                                 android:id="@+id/tvAvatarInitials"
                                 android:layout_width="@dimen/avatar_xxl"
                                 android:layout_height="@dimen/avatar_xxl"
+                                android:autoSizeMaxTextSize="36sp"
+                                android:autoSizeMinTextSize="18sp"
+                                android:autoSizeStepGranularity="1sp"
+                                android:autoSizeTextType="uniform"
                                 android:background="@drawable/bg_circle_primary"
                                 android:gravity="center"
                                 android:textColor="@android:color/white"
@@ -88,30 +103,63 @@
                                 android:textStyle="bold"
                                 tools:text="L" />
 
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:id="@+id/ivProfilePhoto"
+                                android:layout_width="@dimen/avatar_xxl"
+                                android:layout_height="@dimen/avatar_xxl"
+                                android:scaleType="centerCrop"
+                                android:visibility="gone"
+                                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Nimons360.Circle"
+                                tools:visibility="visible" />
+
                             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                                android:id="@+id/btnEditName"
+                                android:id="@+id/btnEditPhoto"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="bottom|end"
                                 android:contentDescription="@string/cd_edit_profile"
                                 app:backgroundTint="@color/secondary_coral"
-                                app:tint="@color/on_secondary"
+                                app:tint="@color/white"
                                 app:fabCustomSize="32dp"
-                                app:srcCompat="@drawable/ic_edit" />
+                                app:srcCompat="@drawable/ic_camera" />
 
                         </FrameLayout>
 
-                        <TextView
-                            android:id="@+id/tvFullName"
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/spacing_xs"
-                            android:ellipsize="end"
-                            android:maxLines="1"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/text_lg"
-                            android:textStyle="bold"
-                            tools:text="Labpro ITB" />
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="@dimen/spacing_xs">
+
+                            <!-- Invisible balancing view to keep text perfectly centered -->
+                            <View
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:layout_marginEnd="8dp"
+                                android:visibility="invisible" />
+
+                            <TextView
+                                android:id="@+id/tvFullName"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/text_lg"
+                                android:textStyle="bold"
+                                tools:text="Labpro ITB" />
+
+                            <ImageButton
+                                android:id="@+id/btnEditName"
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:layout_marginStart="8dp"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:src="@drawable/ic_edit"
+                                app:tint="@color/white"
+                                android:contentDescription="@string/cd_edit_profile" />
+                        </LinearLayout>
 
                         <TextView
                             android:id="@+id/tvEmail"
@@ -119,7 +167,8 @@
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:maxLines="1"
-                            android:textColor="#CCFFFFFF"
+                            android:textColor="@color/white"
+                            android:alpha="0.92"
                             android:textSize="@dimen/text_sm"
                             tools:text="labpro@std.stei.itb.ac.id" />
 
@@ -127,6 +176,192 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- Location Privacy Sharing Section -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/page_horizontal_padding"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    app:cardBackgroundColor="@color/surface_white"
+                    app:cardCornerRadius="@dimen/radius_card"
+                    app:cardElevation="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:id="@+id/ivLocPrivacyIcon"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerVertical="true"
+                                android:src="@drawable/ic_info"
+                                app:tint="@color/primary_teal" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_toEndOf="@id/ivLocPrivacyIcon"
+                                android:layout_toStartOf="@id/switchShareLocation"
+                                android:layout_marginStart="@dimen/spacing_md"
+                                android:layout_centerVertical="true"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Share Location"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="@dimen/text_sm"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Allow family members to track your coordinates"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="@dimen/text_xs" />
+                            </LinearLayout>
+
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/switchShareLocation"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:minHeight="48dp" />
+                        </RelativeLayout>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Push Notifications Preferences Section -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/page_horizontal_padding"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    app:cardBackgroundColor="@color/surface_white"
+                    app:cardCornerRadius="@dimen/radius_card"
+                    app:cardElevation="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:id="@+id/ivNotifPrivacyIcon"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerVertical="true"
+                                android:src="@drawable/ic_info"
+                                app:tint="@color/primary_teal" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_toEndOf="@id/ivNotifPrivacyIcon"
+                                android:layout_toStartOf="@id/switchEnableNotifications"
+                                android:layout_marginStart="@dimen/spacing_md"
+                                android:layout_centerVertical="true"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Enable Push Notifications"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="@dimen/text_sm"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Receive alerts and greetings from family members"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="@dimen/text_xs" />
+                            </LinearLayout>
+
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/switchEnableNotifications"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:minHeight="48dp" />
+                        </RelativeLayout>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Actions Section (Bonus Placeholders) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/page_horizontal_padding"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    app:cardBackgroundColor="@color/surface_white"
+                    app:cardCornerRadius="@dimen/radius_card"
+                    app:cardElevation="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnCustomizePin"
+                            style="@style/Widget.Material3.Button.TextButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="@dimen/touch_target_min"
+                            android:gravity="center_vertical"
+                            android:paddingHorizontal="@dimen/spacing_md"
+                            android:text="Customize Pin"
+                            android:textColor="@color/primary_teal"
+                            app:icon="@drawable/ic_pin"
+                            app:iconGravity="textStart"
+                            app:iconPadding="@dimen/spacing_sm"
+                            app:iconTint="@color/primary_teal" />
+
+                        <com.google.android.material.divider.MaterialDivider
+                            android:layout_width="match_parent"
+                            android:layout_height="0.5dp"
+                            app:dividerColor="@color/divider" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAnalytics"
+                            style="@style/Widget.Material3.Button.TextButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="@dimen/touch_target_min"
+                            android:gravity="center_vertical"
+                            android:paddingHorizontal="@dimen/spacing_md"
+                            android:text="Analytics"
+                            android:textColor="@color/primary_teal"
+                            app:icon="@drawable/ic_analytics"
+                            app:iconGravity="textStart"
+                            app:iconPadding="@dimen/spacing_sm"
+                            app:iconTint="@color/primary_teal" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Sign Out Section -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -145,7 +380,8 @@
                             android:id="@+id/btnSignOut"
                             style="@style/Widget.Material3.Button.TextButton"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/touch_target_min"
+                            android:layout_height="wrap_content"
+                            android:minHeight="@dimen/touch_target_min"
                             android:gravity="center_vertical"
                             android:paddingHorizontal="@dimen/spacing_md"
                             android:text="@string/sign_out"

@@ -33,18 +33,19 @@ val firebaseAppId = env.getProperty("FIREBASE_APP_ID") ?: ""
 
 android {
     namespace = "com.labpro.nimons360"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.labpro.nimons360"
+        applicationId = "com.labpro.mad"
         minSdk = 30
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "BASE_URL", "\"https://mad.labpro.hmif.dev\"")
         buildConfigField("String", "AGORA_APP_ID", "\"${localProperties.getProperty("AGORA_APP_ID") ?: ""}\"")
+        buildConfigField("String", "FACEBOOK_APP_ID", "\"${localProperties.getProperty("FACEBOOK_APP_ID") ?: ""}\"")
     }
 
     buildTypes {
@@ -141,4 +142,8 @@ dependencies {
     // firebase
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-messaging")
+
+    // QR Code
+    implementation("com.google.zxing:core:3.5.3")
 }

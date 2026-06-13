@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
@@ -19,6 +20,7 @@ import com.labpro.nimons360.MainApplication
 import com.labpro.nimons360.R
 import com.labpro.nimons360.ui.features.families.CreateFamilyFragment
 import com.labpro.nimons360.ui.features.families.FamilyDetailFragment
+import com.labpro.nimons360.ui.features.profile.ProfileFragment
 import com.labpro.nimons360.ui.main.shared.EmptyStateCard
 import com.labpro.nimons360.ui.main.shared.LoadingSection
 import com.labpro.nimons360.ui.main.shared.RowDivider
@@ -30,14 +32,20 @@ import com.labpro.nimons360.ui.main.screens.home.DiscoverFamilyItem
 import com.labpro.nimons360.ui.main.screens.home.MyFamilyCard
 import androidx.compose.material3.pulltorefresh.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalConfiguration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeCompose(
     user: UserData,
-    onFamilyClick: (familyId: Int) -> Unit = {}
+    onFamilyClick: (familyId: Int) -> Unit = {},
+    onViewAllFamilies: () -> Unit = {},
 ) {
     val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val useCompactFamilyCards =
+        configuration.screenWidthDp >= 600 ||
+            configuration.screenWidthDp > configuration.screenHeightDp
     val vm: HomeViewModel = viewModel(
         factory = remember {
             val app = context.applicationContext as MainApplication
@@ -50,6 +58,8 @@ fun HomeCompose(
 
     val fm = remember { (context as FragmentActivity).supportFragmentManager }
 
+    val lifecycleOwner = LocalLifecycleOwner.current
+
     DisposableEffect(fm) {
         val callback = object : FragmentManager.FragmentLifecycleCallbacks() {
             override fun onFragmentDestroyed(fragmentManager: FragmentManager, fragment: Fragment) {
@@ -61,8 +71,19 @@ fun HomeCompose(
 
         fm.registerFragmentLifecycleCallbacks(callback, false)
 
+        fm.setFragmentResultListener(
+            ProfileFragment.REQUEST_KEY,
+            lifecycleOwner
+        ) { _, bundle ->
+            val ppChanged = bundle.getBoolean(ProfileFragment.KEY_PROFILE_CHANGED, false)
+            if (ppChanged) {
+                vm.refresh()
+            }
+        }
+
         onDispose {
             fm.unregisterFragmentLifecycleCallbacks(callback)
+            fm.clearFragmentResultListener(ProfileFragment.REQUEST_KEY)
         }
     }
 
@@ -79,10 +100,18 @@ fun HomeCompose(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .widthIn(max = 1200.dp)
+                .align(Alignment.Center)
                 .background(MaterialTheme.colorScheme.background),
-            contentPadding = PaddingValues(bottom = 24.dp),
+            contentPadding = PaddingValues(bottom = 104.dp),
         ) {
-            item { SectionHeader(stringResource(R.string.section_my_families)) }
+            item {
+                SectionHeader(
+                    title = stringResource(R.string.section_my_families),
+                    actionLabel = stringResource(R.string.action_see_all_families),
+                    onActionClick = onViewAllFamilies,
+                )
+            }
 
             item {
                 when {
@@ -92,13 +121,17 @@ fun HomeCompose(
                         modifier = Modifier.padding(bottom = 8.dp),
                     )
                     else -> LazyRow(
-                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        contentPadding = PaddingValues(
+                            start = 16.dp,
+                            end = 104.dp,
+                        ),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.padding(bottom = 8.dp),
                     ) {
                         items(state.myFamilies) { family ->
                             MyFamilyCard(
                                 family = family,
+                                compact = useCompactFamilyCards,
                                 onClick = { onFamilyClick(family.id) }
                             )
                         }

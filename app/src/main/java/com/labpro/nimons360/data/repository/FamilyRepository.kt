@@ -13,8 +13,6 @@ import com.labpro.nimons360.data.model.family_network.JoinFamilyResponse
 import com.labpro.nimons360.data.model.family_network.LeaveFamilyRequest
 import com.labpro.nimons360.data.model.family_network.LeaveFamilyResponse
 import com.labpro.nimons360.data.model.family_network.MyFamiliesResponse
-import com.labpro.nimons360.data.model.user.UpdateProfileRequest
-import com.labpro.nimons360.data.model.user.UserData
 import com.labpro.nimons360.data.remote.RetrofitClient
 import kotlinx.coroutines.flow.Flow
 
@@ -29,7 +27,7 @@ class FamilyRepository(
         if (response.isSuccessful && body != null) {
             NetworkResult.Success(body)
         } else {
-            NetworkResult.Error("Failed to fetch all families (HTTP ${response.code()}).")
+            NetworkResult.Error("Failed to fetch all families.")
         }
     }
 
@@ -40,7 +38,7 @@ class FamilyRepository(
         if (response.isSuccessful && body != null) {
             NetworkResult.Success(body)
         } else {
-            NetworkResult.Error("Failed to fetch user families (HTTP ${response.code()}).")
+            NetworkResult.Error("Failed to fetch user families.")
         }
     }
 
@@ -51,7 +49,7 @@ class FamilyRepository(
         if (response.isSuccessful && body != null) {
             NetworkResult.Success(body)
         } else {
-            NetworkResult.Error("Failed to fetch random unjoined families (HTTP ${response.code()}).")
+            NetworkResult.Error("Failed to fetch random unjoined families.")
         }
     }
 
@@ -62,7 +60,7 @@ class FamilyRepository(
         if (response.isSuccessful && body != null) {
             NetworkResult.Success(body)
         } else {
-            NetworkResult.Error("Failed to fetch family $familyId detail (HTTP ${response.code()}).")
+            NetworkResult.Error("Failed to fetch family $familyId detail.")
         }
     }
 
@@ -73,7 +71,7 @@ class FamilyRepository(
         if (response.isSuccessful && body != null) {
             NetworkResult.Success(body)
         } else {
-            NetworkResult.Error("Failed to create ${request.name} family  (HTTP ${response.code()}).")
+            NetworkResult.Error("Failed to create ${request.name} family.")
         }
     }
 
@@ -84,7 +82,7 @@ class FamilyRepository(
         if (response.isSuccessful && body != null) {
             NetworkResult.Success(body)
         } else {
-            NetworkResult.Error("Failed to join family ${request.familyId} with code ${request.familyCode} (HTTP ${response.code()}).")
+            NetworkResult.Error("Failed to join family ${request.familyId} with code ${request.familyCode}.")
         }
     }
 
@@ -95,7 +93,7 @@ class FamilyRepository(
         if (response.isSuccessful && body != null) {
             NetworkResult.Success(body)
         } else {
-            NetworkResult.Error("Failed to leave family ${request.familyId} (HTTP ${response.code()}).")
+            NetworkResult.Error("Failed to leave family ${request.familyId}.")
         }
     }
 

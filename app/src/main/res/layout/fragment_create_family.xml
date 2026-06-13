@@ -17,7 +17,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="56dp">
+            android:layout_height="wrap_content"
+            android:minHeight="56dp">
 
             <Button
                 android:id="@+id/btnCancel"
@@ -92,7 +93,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_max="480dp">
+                app:layout_constraintWidth_max="@dimen/content_max_width_form">
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -106,7 +107,8 @@
                         android:layout_height="@dimen/family_icon_lg"
                         android:layout_gravity="center_horizontal"
                         android:background="@drawable/bg_icon_item"
-                        android:contentDescription="@string/cd_selected_family_icon"
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no"
                         android:padding="@dimen/spacing_sm"
                         android:scaleType="fitCenter"
                         tools:src="@mipmap/ic_launcher" />
@@ -142,6 +144,7 @@
                         android:maxLength="40"
                         android:maxLines="1"
                         android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_secondary"
                         android:textSize="@dimen/text_body" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -161,6 +164,7 @@
                         android:layout_marginTop="1dp"
                         android:layout_marginEnd="@dimen/spacing_xs"
                         android:contentDescription="@null"
+                        app:tint="@color/text_secondary"
                         android:src="@drawable/ic_info" />
 
                     <TextView
